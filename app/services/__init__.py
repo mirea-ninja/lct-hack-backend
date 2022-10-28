@@ -1,1 +1,1 @@
-from .base import BaseService
+from .users import UsersService

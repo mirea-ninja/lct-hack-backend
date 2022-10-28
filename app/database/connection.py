@@ -7,13 +7,9 @@ from sqlalchemy.orm import sessionmaker
 from app.config import config
 
 if config.DEBUG:
-    engine = create_async_engine(
-        config.SQLALCHEMY_DATABASE_URI, future=True, echo=True
-    )
+    engine = create_async_engine(config.SQLALCHEMY_DATABASE_URI, future=True, echo=True)
 else:
-    engine = create_async_engine(
-        config.SQLALCHEMY_DATABASE_URI, future=True, echo=False
-    )
+    engine = create_async_engine(config.SQLALCHEMY_DATABASE_URI, future=True, echo=False)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 Base = declarative_base()
 
@@ -21,12 +17,3 @@ Base = declarative_base()
 async def get_session() -> AsyncSession:
     async with async_session() as session:
         yield session
-        await session.commit()
-
-
-async def db_refresh(db: AsyncSession, instance=Optional[Base]):
-    await db.refresh(instance)
-
-
-async def db_commit(db: AsyncSession):
-    await db.commit()

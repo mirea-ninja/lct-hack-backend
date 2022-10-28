@@ -48,9 +48,7 @@ class Config(_Settings):
     SQLALCHEMY_DATABASE_URI: Optional[AsyncPostgresDsn] = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_async_db_connection(
-            cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Any:
+    def assemble_async_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
         return AsyncPostgresDsn.build(
