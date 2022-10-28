@@ -20,7 +20,7 @@ class UsersService:
         return UserBase.from_orm(user)
 
     async def get_all(
-        self, db: AsyncSession, user: UUID4, id: UUID4, skip: int = 0, limit: int = 100
+        self, db: AsyncSession, user: UUID4, skip: int = 0, limit: int = 100
     ) -> List[UserBase]:
         users = await self.repository.get_all(db, user, skip=skip, limit=limit)
         return [UserBase.from_orm(u) for u in users]
