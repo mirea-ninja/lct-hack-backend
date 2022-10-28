@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - lct-hack-db-data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    environment:
+      DEBUG: ${DEBUG}
+
+      BACKEND_TTILE: ${BACKEND_TTILE}
+      BACKEND_DESCRIPTION: ${BACKEND_DESCRIPTION}
+      BACKEND_PREFIX: ${BACKEND_PREFIX}
+
+      BACKEND_HOST: ${BACKEND_HOST}
+      BACKEND_PORT: ${BACKEND_PORT}
+      BACKEND_RELOAD: ${BACKEND_RELOAD}
+
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS}
+
+      POSTGRES_SERVER: ${POSTGRES_SERVER}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      ENV: development
+    networks:
+      - default
+
+volumes:
+  lct-hack-db-data:
