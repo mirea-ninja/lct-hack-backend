@@ -64,6 +64,7 @@ async def get(
 ):
     return await users_service.get(db=db, id=id)
 
+
 @router.get(
     "/user/email/{email}",
     response_model=UserGet,
@@ -79,6 +80,7 @@ async def get(
     users_service: UsersService = Depends(),
 ):
     return await users_service.get_user_by_email(db=db, email=email)
+
 
 @router.put(
     "/user/{id}",
