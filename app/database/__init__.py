@@ -1,1 +1,1 @@
-from .connection import get_session, Base
+from .connection import Base, get_session

@@ -39,6 +39,10 @@ class Config(_Settings):
             return v
         raise ValueError(v)
 
+    BACKEND_JWT_SECRET: str
+    BACKEND_JWT_ALGORITHM: str
+    BACKEND_JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int
+
     # Postgres
     POSTGRES_SERVER: str
     POSTGRES_USER: str
