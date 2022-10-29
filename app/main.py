@@ -3,8 +3,8 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.config import config
 from app.routers.auth import router as auth_router
-from app.routers.users import router as users_router
 from app.routers.pull import router as pulls_router
+from app.routers.users import router as users_router
 
 tags_metadata = [
     {"name": "auth", "description": "Авторизация"},
