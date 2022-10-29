@@ -1,56 +1,55 @@
 from __future__ import annotations
 
-from fastapi import Depends, Response
+from fastapi import Response, HTTPException
 from pydantic import UUID4, EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.tables import User
-from app.models import UserBase, UserCreate, UserGet, UserPatch
+from app.models import UserCreate, UserGet, UserPatch
 from app.repositories import UsersRepository
 
 
 class UsersService:
     @staticmethod
-    async def create(db: AsyncSession, model: UserCreate) -> UserGet | None:
+    async def create(db: AsyncSession, model: UserCreate) -> UserGet:
         user = await UsersRepository.create(db, model)
-        if user:
-            return UserGet.from_orm(user)
-        return None
+        if user is None:
+            raise HTTPException(409, 'User is already exists')
+        return UserGet.from_orm(user)
 
     @staticmethod
-    async def get_all(db: AsyncSession, skip: int = 0, limit: int = 100) -> list[UserGet] | None:
+    async def get_all(db: AsyncSession, skip: int = 0, limit: int = 100) -> list[UserGet]:
         users = await UsersRepository.get_all(db, skip=skip, limit=limit)
-        if users:
-            return [UserGet.from_orm(u) for u in users]
-        return None
+        if users is None:
+            raise HTTPException(404, 'Users not found')
+        return [UserGet.from_orm(u) for u in users]
 
     @staticmethod
-    async def get(db: AsyncSession, id: UUID4) -> UserGet | None:
+    async def get(db: AsyncSession, id: UUID4) -> UserGet:
         user = await UsersRepository.get(db, id)
-        if user:
-            return UserGet.from_orm(user)
-        return None
+        if user is None:
+            raise HTTPException(404, 'User not found')
+        return UserGet.from_orm(user)
 
     @staticmethod
-    async def get_user_by_email(db: AsyncSession, email: EmailStr) -> UserGet | None:
+    async def get_user_by_email(db: AsyncSession, email: EmailStr) -> UserGet:
         user = await UsersRepository.get_user_by_email(db, email)
-        if user:
-            return UserGet.from_orm(user)
-        return None
+        if user is None:
+            raise HTTPException(404, 'User not found')
+        return UserGet.from_orm(user)
 
     @staticmethod
-    async def update(db: AsyncSession, user: UUID4, id: UUID4, model: UserCreate) -> UserGet | None:
+    async def update(db: AsyncSession, user: UUID4, id: UUID4, model: UserCreate) -> UserGet:
         user = await UsersRepository.update(db, user, id, model)
-        if user:
-            return UserGet.from_orm(user)
-        return None
+        if user is None:
+            raise HTTPException(404, 'User not found')
+        return UserGet.from_orm(user)
 
     @staticmethod
-    async def patch(db: AsyncSession, user: UUID4, id: UUID4, model: UserPatch) -> UserGet | None:
+    async def patch(db: AsyncSession, user: UUID4, id: UUID4, model: UserPatch) -> UserGet:
         user = await UsersRepository.patch(db, user, id, model)
-        if user:
-            return UserGet.from_orm(user)
-        return None
+        if user is None:
+            raise HTTPException(404, 'User not found')
+        return UserGet.from_orm(user)
 
     @staticmethod
     async def delete(db: AsyncSession, id: UUID4) -> Response(status_code=204):
