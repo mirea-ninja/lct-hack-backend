@@ -45,7 +45,7 @@ async def get_all(
     offset: int = Query(0, ge=0),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.get_all(db=db, limit=limit, skip=offset)
+    return await users_service.get_all(db=db, limit=limit, offset=offset)
 
 
 @router.get(
@@ -62,7 +62,7 @@ async def get(
     db: AsyncSession = Depends(get_session),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.get(db=db, id=id)
+    return await users_service.get(db=db, guid=id)
 
 
 @router.get(
@@ -98,7 +98,7 @@ async def update(
     user: UUID4 = Depends(get_user_from_access_token),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.update(db=db, user=user, id=id, model=model)
+    return await users_service.update(db=db, user=user, guid=id, model=model)
 
 
 @router.patch(
@@ -117,7 +117,7 @@ async def patch(
     user: UUID4 = Depends(get_user_from_access_token),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.patch(db=db, user=user, id=id, model=model)
+    return await users_service.patch(db=db, user=user, guid=id, model=model)
 
 
 @router.delete(
@@ -134,4 +134,4 @@ async def delete(
     db: AsyncSession = Depends(get_session),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.delete(db=db, id=id)
+    return await users_service.delete(db=db, guid=id)

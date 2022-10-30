@@ -19,13 +19,13 @@ class UsersRepository:
         return user
 
     @staticmethod
-    async def get_all(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[User]:
-        res = await db.execute(select(User).offset(skip).limit(limit))
+    async def get_all(db: AsyncSession, offset: int = 0, limit: int = 100) -> List[User]:
+        res = await db.execute(select(User).offset(offset).limit(limit))
         return res.scalars().unique().all()
 
     @staticmethod
-    async def get(db: AsyncSession, id: UUID4) -> User:
-        res = await db.execute(select(User).where(User.id == id).limit(1))
+    async def get(db: AsyncSession, guid: UUID4) -> User:
+        res = await db.execute(select(User).where(User.guid == guid).limit(1))
         return res.scalar()
 
     @staticmethod
@@ -34,14 +34,14 @@ class UsersRepository:
         return res.scalar()
 
     @staticmethod
-    async def update(db: AsyncSession, user: UUID4, id: UUID4, model: UserCreate) -> None:
+    async def update(db: AsyncSession, user: UUID4, guid: UUID4, model: UserCreate) -> None:
         raise NotImplementedError
 
     @staticmethod
-    async def patch(db: AsyncSession, user: UUID4, id: UUID4, model: UserPatch) -> None:
+    async def patch(db: AsyncSession, user: UUID4, guid: UUID4, model: UserPatch) -> None:
         raise NotImplementedError
 
     @staticmethod
-    async def delete(db: AsyncSession, id: UUID4) -> None:
-        await db.execute(delete(User).where(User.id == id))
+    async def delete(db: AsyncSession, guid: UUID4) -> None:
+        await db.execute(delete(User).where(User.guid == guid))
         await db.commit()

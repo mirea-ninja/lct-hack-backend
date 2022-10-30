@@ -13,8 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
 from app.models import Token, UserAuth, UserCreate, UserGet
-
-from .users import UsersService
+from app.repositories import UsersRepository
 
 bearer_scheme = HTTPBearer()
 
@@ -28,7 +27,7 @@ def verify_access_token(access_token: HTTPAuthorizationCredentials = Depends(bea
             options={"verify_aud": False},
         )
     except JOSEError:
-        raise HTTPException(401, "Invalid access token", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(401, "Неверный токен авторизации", headers={"WWW-Authenticate": "Bearer"})
 
 
 def get_user_from_access_token(request: Request) -> UUID4:
@@ -57,7 +56,7 @@ def get_payload(user: UserGet) -> dict[str, datetime | str]:
         "exp": expires_at,
         "iat": created_at,
         "jti": str(uuid4()),
-        "sub": str(user.id),
+        "sub": str(user.guid),
         "email": user.email,
         "first_name": user.first_name,
         "last_name": user.last_name,
@@ -75,28 +74,27 @@ def create_access_token(payload: dict[str, datetime | str]) -> str:
 
 class AuthService:
     async def signin(self, db: AsyncSession, model: UserAuth) -> Token:
-        user = await UsersService.get_user_by_email(db=db, email=model.email)
+        user = await UsersRepository.get_user_by_email(db=db, email=model.email)
 
         if not user:
-            raise HTTPException(401, "Invalid email or password")
+            raise HTTPException(401, "Неверный логин или пароль")
 
         if not verify_password(model.password, user.password):
-            raise HTTPException(401, "Invalid email or password")
+            raise HTTPException(401, "Неверный логин или пароль")
 
         payload = get_payload(user=user)
         access_token = create_access_token(payload=payload)
         return Token(access_token=access_token)
 
     async def signup(self, db: AsyncSession, model: UserCreate) -> Token:
-        user = await UsersService.get_user_by_email(db=db, email=model.email)
-
+        user = await UsersRepository.get_user_by_email(db=db, email=model.email)
         if user:
-            raise HTTPException(409, "User with this email already exists")
+            raise HTTPException(409, "Пользователь с таким email уже существует")
 
         hashed_password = crypt_password(model.password)
         model.password = hashed_password
 
-        user = await UsersService.create(db, model)
+        user = await UsersRepository.create(db, model)
         payload = get_payload(user=user)
         access_token = create_access_token(payload=payload)
         return Token(access_token=access_token)

@@ -9,7 +9,7 @@ from app.database.connection import Base
 class User(Base):
     __tablename__ = "user"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, unique=True)
+    guid = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, unique=True)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     first_name = Column(String(50), nullable=False)

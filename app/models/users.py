@@ -21,7 +21,7 @@ class UserCreate(UserBase):
 
 
 class UserGet(UserBase):
-    id: UUID4
+    guid: UUID4
     password: str  # WARNING: exclude from response
     created_at: datetime
     updated_at: datetime
