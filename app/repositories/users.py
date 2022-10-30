@@ -1,12 +1,14 @@
 from typing import List
 
+from fastapi import HTTPException
 from pydantic import UUID4, EmailStr
-from sqlalchemy import delete
+from sqlalchemy import delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.database.tables import User
-from app.models.users import UserCreate, UserPatch
+from app.models import UserGet
+from app.models.users import UserCreate, UserPatch, UserGet
 
 
 class UsersRepository:
@@ -34,12 +36,36 @@ class UsersRepository:
         return res.scalar()
 
     @staticmethod
-    async def update(db: AsyncSession, user: UUID4, guid: UUID4, model: UserCreate) -> None:
-        raise NotImplementedError
+    async def update(db: AsyncSession, guid: UUID4, model: UserCreate) -> UserGet:
+        user = await UsersRepository.get(db, guid)
+
+        if user is None:
+            raise HTTPException(404, 'Пользователь не найден')
+
+        from app.services.auth import crypt_password
+        model.password = crypt_password(model.password)
+
+        await db.execute(update(User).where(User.guid == guid).values(**model.dict()))
+        await db.commit()
+        await db.refresh(user)
+
+        return UserGet.from_orm(user)
 
     @staticmethod
-    async def patch(db: AsyncSession, user: UUID4, guid: UUID4, model: UserPatch) -> None:
-        raise NotImplementedError
+    async def patch(db: AsyncSession, guid: UUID4, model: UserPatch) -> UserGet:
+        user = await UsersRepository.get(db, guid)
+
+        if user is None:
+            raise HTTPException(404, 'Пользователь не найден')
+
+        if model is None or not model.dict(exclude_unset=True):
+            raise HTTPException(400, 'Должно быть задано хотя бы одно новое поле модели')
+
+        await db.execute(update(User).where(User.guid == guid).values(**model.dict()))
+        await db.commit()
+        await db.refresh(user)
+
+        return UserGet.from_orm(user)
 
     @staticmethod
     async def delete(db: AsyncSession, guid: UUID4) -> None:

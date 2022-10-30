@@ -38,15 +38,15 @@ class UsersService:
         return UserGet.from_orm(user)
 
     @staticmethod
-    async def update(db: AsyncSession, user: UUID4, guid: UUID4, model: UserCreate) -> UserGet:
-        user = await UsersRepository.update(db, user, guid, model)
+    async def update(db: AsyncSession, guid: UUID4, model: UserCreate) -> UserGet:
+        user = await UsersRepository.update(db, guid, model)
         if user is None:
             raise HTTPException(404, "Пользователь не найден")
         return UserGet.from_orm(user)
 
     @staticmethod
-    async def patch(db: AsyncSession, user: UUID4, guid: UUID4, model: UserPatch) -> UserGet:
-        user = await UsersRepository.patch(db, user, guid, model)
+    async def patch(db: AsyncSession, guid: UUID4, model: UserPatch) -> UserGet:
+        user = await UsersRepository.patch(db, guid, model)
         if user is None:
             raise HTTPException(404, "Пользователь не найден")
         return UserGet.from_orm(user)

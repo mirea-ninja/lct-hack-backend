@@ -95,10 +95,9 @@ async def update(
     model: UserCreate,
     id: UUID4 = Path(None, description="Id пользователя"),
     db: AsyncSession = Depends(get_session),
-    user: UUID4 = Depends(get_user_from_access_token),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.update(db=db, user=user, guid=id, model=model)
+    return await users_service.update(db=db, guid=id, model=model)
 
 
 @router.patch(
@@ -114,10 +113,9 @@ async def patch(
     model: UserPatch,
     id: UUID4 = Path(None, description="Id пользователя"),
     db: AsyncSession = Depends(get_session),
-    user: UUID4 = Depends(get_user_from_access_token),
     users_service: UsersService = Depends(),
 ):
-    return await users_service.patch(db=db, user=user, guid=id, model=model)
+    return await users_service.patch(db=db, guid=id, model=model)
 
 
 @router.delete(
