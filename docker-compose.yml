@@ -9,11 +9,49 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  broker:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${BROKER_USER}
+      RABBITMQ_DEFAULT_PASS: ${BROKER_PASS}
+    volumes:
+      - broker:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - default
+    healthcheck:
+      test: rabbitmq-diagnostics check_running
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./worker/Dockerfile
+    environment:
+      - BROKER_URL=${BROKER_URL}
+      - LOG_LEVEL=TRACE
+      - C_FORCE_ROOT=true
+    depends_on:
+      broker:
+        condition: service_healthy
+    networks:
+      - default
 
   backend:
     build: .
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
     ports:
@@ -35,6 +73,12 @@ services:
       BACKEND_JWT_ALGORITHM: ${BACKEND_JWT_ALGORITHM}
       BACKEND_JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${BACKEND_JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
 
+      BROKER_HOST: ${BROKER_HOST}
+      BROKER_PORT: ${BROKER_PORT}
+      BROKER_USER: ${BROKER_USER}
+      BROKER_PASS: ${BROKER_PASS}
+      BROKER_URL: ${BROKER_URL}
+
       POSTGRES_SERVER: ${POSTGRES_SERVER}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -45,3 +89,4 @@ services:
 
 volumes:
   lct-hack-db-data:
+  broker:
