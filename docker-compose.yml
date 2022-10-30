@@ -1,5 +1,18 @@
 version: "3.9"
 services:
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    ports:
+      - "80:8080"
+    environment:
+      URL: 'swagger.yml'
+    volumes:
+      - ./swagger/swagger.yml:/usr/share/nginx/html/swagger.yml
+    labels:
+      swaggerLabel: LCT Hack Backend
+      swaggerGroup: lst-hack
+      swaggerPort: 8081
+
   db:
     image: postgres:latest
     volumes:
@@ -55,7 +68,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
+      - ${BACKEND_PORT}80:${BACKEND_PORT}
     environment:
       DEBUG: ${DEBUG}
 

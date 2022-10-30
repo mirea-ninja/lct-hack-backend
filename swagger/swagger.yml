@@ -1,0 +1,498 @@
+openapi: 3.0.2
+info:
+  title: LCT Hack Backend
+  description: Backend part for LCT Hack
+  version: 0.1.0
+paths:
+  /signin:
+    post:
+      tags:
+        - auth
+      summary: Вход в сервис
+      description: Войти в сервис и получить токен
+      operationId: signin_signin_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuth'
+        required: true
+      responses:
+        '200':
+          description: Успешный возврат токена авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /signup:
+    post:
+      tags:
+        - auth
+      summary: Регистрация в сервисе
+      description: Зарегистирироваться в сервисе и получить токен
+      operationId: signup_signup_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '200':
+          description: Успешный возврат токена авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user:
+    get:
+      tags:
+        - users
+      summary: Получение всех пользователей
+      description: Получить список всех пользователей
+      operationId: get_all_user_get
+      parameters:
+        - required: false
+          schema:
+            title: Limit
+            minimum: 1
+            type: integer
+            default: 100
+          name: limit
+          in: query
+        - required: false
+          schema:
+            title: Offset
+            minimum: 0
+            type: integer
+            default: 0
+          name: offset
+          in: query
+      responses:
+        '200':
+          description: Успешный возврат списка пользователей
+          content:
+            application/json:
+              schema:
+                title: Response Get All User Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - users
+      summary: Создание пользователя
+      description: Создать пользователя и вернуть его
+      operationId: create_user_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /user/{id}:
+    get:
+      tags:
+        - users
+      summary: Получение пользователя по id
+      description: Получить пользователя по его id
+      operationId: get_user__id__get
+      parameters:
+        - description: Id пользователя
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id пользователя
+            format: uuid4
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Успешный возврат пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    put:
+      tags:
+        - users
+      summary: Изменение пользователя по id
+      description: Изменить пользователя по его id (полное обновление модели)
+      operationId: update_user__id__put
+      parameters:
+        - description: Id пользователя
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id пользователя
+            format: uuid4
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '200':
+          description: Успешное обновление пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - users
+      summary: Удаление пользователя по id
+      description: Удалить пользователя по его id
+      operationId: delete_user__id__delete
+      parameters:
+        - description: Id пользователя
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id пользователя
+            format: uuid4
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Успешное удаление пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - users
+      summary: Изменение пользователя по id (только указанные поля будут изменены)
+      description: Изменить пользователя по его id (частисно обновление модели)
+      operationId: patch_user__id__patch
+      parameters:
+        - description: Id пользователя
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id пользователя
+            format: uuid4
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
+        required: true
+      responses:
+        '200':
+          description: Успешное частичное обновление пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /user/email/{email}:
+    get:
+      tags:
+        - users
+      summary: Получение пользователя по email
+      description: Получить пользователя по его email
+      operationId: get_user_email__email__get
+      parameters:
+        - description: Email пользователя
+          required: true
+          schema:
+            title: Email
+            type: string
+            description: Email пользователя
+            format: email
+          name: email
+          in: path
+      responses:
+        '200':
+          description: Успешный возврат пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /pull:
+    post:
+      tags:
+        - pulls
+      summary: Загрузка пула
+      description: Загрузить новый пул в сервис
+      operationId: upload_pull_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_pull_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+components:
+  schemas:
+    Body_upload_pull_post:
+      title: Body_upload_pull_post
+      required:
+        - file
+      type: object
+      properties:
+        file:
+          title: File
+          type: string
+          format: binary
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    Token:
+      title: Token
+      required:
+        - access_token
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+    UserAuth:
+      title: UserAuth
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          format: email
+        password:
+          title: Password
+          type: string
+    UserCreate:
+      title: UserCreate
+      required:
+        - email
+        - first_name
+        - last_name
+        - password
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: Email адрес пользователя
+          format: email
+        first_name:
+          title: First Name
+          type: string
+          description: Имя пользователя
+        last_name:
+          title: Last Name
+          type: string
+          description: Фамилия пользователя
+        middle_name:
+          title: Middle Name
+          type: string
+          description: Отчество пользователя(при наличии)
+        password:
+          title: Password
+          type: string
+          description: Пароль пользователя
+    UserGet:
+      title: UserGet
+      required:
+        - email
+        - first_name
+        - last_name
+        - guid
+        - password
+        - created_at
+        - updated_at
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: Email адрес пользователя
+          format: email
+        first_name:
+          title: First Name
+          type: string
+          description: Имя пользователя
+        last_name:
+          title: Last Name
+          type: string
+          description: Фамилия пользователя
+        middle_name:
+          title: Middle Name
+          type: string
+          description: Отчество пользователя(при наличии)
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор пользователя
+          format: uuid4
+        password:
+          title: Password
+          type: string
+          description: Пароль пользователя
+        created_at:
+          title: Created At
+          type: string
+          description: Время создания пользователя
+          format: date-time
+        updated_at:
+          title: Updated At
+          type: string
+          description: Время последнего обновления пользователя
+          format: date-time
+    UserPatch:
+      title: UserPatch
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: Email адрес пользователя
+          format: email
+        first_name:
+          title: First Name
+          type: string
+          description: Имя пользователя
+        last_name:
+          title: Last Name
+          type: string
+          description: Фамилия пользователя
+        middle_name:
+          title: Middle Name
+          type: string
+          description: Отчество пользователя(при наличии)
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+tags:
+  - name: auth
+    description: Авторизация
+  - name: users
+    description: Работа с пользователями
+  - name: pulls
+    description: Работа с пулами

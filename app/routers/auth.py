@@ -12,6 +12,7 @@ router = APIRouter()
 @router.post(
     "/signin",
     response_model=Token,
+    response_description="Успешный возврат токена авторизации",
     status_code=status.HTTP_200_OK,
     description="Войти в сервис и получить токен",
     summary="Вход в сервис",
@@ -24,6 +25,7 @@ async def signin(model: UserAuth, db: AsyncSession = Depends(get_session), auth_
 @router.post(
     "/signup",
     response_model=Token,
+    response_description="Успешный возврат токена авторизации",
     status_code=status.HTTP_200_OK,
     description="Зарегистирироваться в сервисе и получить токен",
     summary="Регистрация в сервисе",
