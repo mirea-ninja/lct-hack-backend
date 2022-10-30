@@ -8,7 +8,7 @@ from starlette import status
 from app.database.connection import get_session
 from app.models import UserCreate, UserGet, UserPatch
 from app.services import UsersService
-from app.services.auth import get_user_from_access_token, verify_access_token
+from app.services.auth import verify_access_token
 
 router = APIRouter(dependencies=[Depends(verify_access_token)])
 
