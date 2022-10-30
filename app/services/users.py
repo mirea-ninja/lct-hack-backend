@@ -11,9 +11,11 @@ from app.repositories import UsersRepository
 class UsersService:
     @staticmethod
     async def create(db: AsyncSession, model: UserCreate) -> UserGet:
-        user = await UsersRepository.create(db, model)
-        if user is None:
+        user = await UsersRepository.get_user_by_email(db, model.email)
+        if user is not None:
             raise HTTPException(409, "Пользователь с таким email уже существует")
+        else:
+            user = await UsersRepository.create(db, model)
         return UserGet.from_orm(user)
 
     @staticmethod
