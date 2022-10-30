@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
 from dotenv import find_dotenv
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+from pydantic import AnyHttpUrl, BaseSettings, HttpUrl, PostgresDsn, validator
 
 
 class AsyncPostgresDsn(PostgresDsn):
@@ -62,6 +62,14 @@ class Config(_Settings):
             f"@{values.get('BROKER_HOST')}"
             f":{values.get('BROKER_PORT')}"
         )
+
+    # Storage
+    STORAGE_REGION: str
+    STORAGE_ENDPOINT: HttpUrl
+    STORAGE_ACCESS_KEY: str
+    STORAGE_ACCESS_KEY_ID: str
+    STORAGE_BUCKET_NAME: str
+    STORAGE_FOLDER_NAME: str
 
     # Postgres
     POSTGRES_SERVER: str

@@ -126,10 +126,8 @@ async def patch(
 
 @router.delete(
     "/user/{id}",
-    response_model=UserGet,
-    response_model_exclude={"password"},
     response_description="Успешное удаление пользователя",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     description="Удалить пользователя по его id",
     summary="Удаление пользователя по id",
     # responses={},

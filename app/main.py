@@ -3,14 +3,16 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.config import config
 from app.models.exceptions import add_exception_handlers, catch_unhandled_exceptions
+from app.routers.archive import router as archive_router
 from app.routers.auth import router as auth_router
-from app.routers.pull import router as pulls_router
+from app.routers.pull import router as pull_router
 from app.routers.users import router as users_router
 
 tags_metadata = [
     {"name": "auth", "description": "Авторизация"},
     {"name": "users", "description": "Работа с пользователями"},
-    {"name": "pulls", "description": "Работа с пулами"},
+    {"name": "pull", "description": "Работа с пулами"},
+    {"name": "archive", "description": "Работа с архивом"},
 ]
 
 app = FastAPI(
@@ -35,4 +37,5 @@ app.add_middleware(
 
 app.include_router(auth_router, tags=["auth"])
 app.include_router(users_router, tags=["users"])
-app.include_router(pulls_router, tags=["pulls"])
+app.include_router(pull_router, tags=["pull"])
+app.include_router(archive_router, tags=["archive"])
