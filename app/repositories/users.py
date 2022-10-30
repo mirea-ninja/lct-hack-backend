@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 
 from app.database.tables import User
 from app.models import UserGet
-from app.models.users import UserCreate, UserPatch, UserGet
+from app.models.users import UserCreate, UserGet, UserPatch
 
 
 class UsersRepository:
@@ -40,9 +40,10 @@ class UsersRepository:
         user = await UsersRepository.get(db, guid)
 
         if user is None:
-            raise HTTPException(404, 'Пользователь не найден')
+            raise HTTPException(404, "Пользователь не найден")
 
         from app.services.auth import crypt_password
+
         model.password = crypt_password(model.password)
 
         await db.execute(update(User).where(User.guid == guid).values(**model.dict()))
@@ -56,10 +57,10 @@ class UsersRepository:
         user = await UsersRepository.get(db, guid)
 
         if user is None:
-            raise HTTPException(404, 'Пользователь не найден')
+            raise HTTPException(404, "Пользователь не найден")
 
         if model is None or not model.dict(exclude_unset=True):
-            raise HTTPException(400, 'Должно быть задано хотя бы одно новое поле модели')
+            raise HTTPException(400, "Должно быть задано хотя бы одно новое поле модели")
 
         await db.execute(update(User).where(User.guid == guid).values(**model.dict()))
         await db.commit()
