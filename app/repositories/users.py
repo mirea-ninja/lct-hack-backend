@@ -2,12 +2,12 @@ from typing import List
 
 from fastapi import HTTPException
 from pydantic import UUID4, EmailStr
-from sqlalchemy import delete, update
+from sqlalchemy import BigInteger, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.sql.expression import cast
 
 from app.database.tables import User
-from app.models import UserGet
 from app.models.users import UserCreate, UserGet, UserPatch
 
 
@@ -22,7 +22,7 @@ class UsersRepository:
 
     @staticmethod
     async def get_all(db: AsyncSession, offset: int = 0, limit: int = 100) -> List[User]:
-        res = await db.execute(select(User).offset(offset).limit(limit))
+        res = await db.execute(select(User).offset(cast(offset, BigInteger)).limit(limit))
         return res.scalars().unique().all()
 
     @staticmethod
