@@ -12,7 +12,7 @@ class Adjustment(Base):
     __tablename__ = "adjustment"
 
     guid = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, unique=True)
-    trade = Column(Integer, nullable=False, default=-750)
+    trade = Column(Integer, nullable=False, default=-450)
     price_trade = Column(Numeric(7, 2), nullable=False)
     price_floor = Column(Numeric(7, 2), nullable=False)
     price_area = Column(Numeric(7, 2), nullable=False)
