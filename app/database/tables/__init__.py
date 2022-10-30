@@ -1,2 +1,2 @@
-from .users import User
 from .apartments import Apartment
+from .users import User

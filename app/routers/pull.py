@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status

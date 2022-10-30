@@ -1,10 +1,10 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, String, func, Integer, Boolean, Enum
+from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database.connection import Base
-from app.models.enums import Walls, Quality, Segment
+from app.models.enums import Quality, Segment, Walls
 
 
 class Apartment(Base):
