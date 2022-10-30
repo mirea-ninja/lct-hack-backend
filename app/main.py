@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.config import config
+from app.models.exceptions import add_exception_handlers, catch_unhandled_exceptions
 from app.routers.auth import router as auth_router
 from app.routers.pull import router as pulls_router
 from app.routers.users import router as users_router
@@ -19,6 +20,10 @@ app = FastAPI(
     title=config.BACKEND_TTILE,
     description=config.BACKEND_DESCRIPTION,
 )
+
+app.middleware("http")(catch_unhandled_exceptions)
+add_exception_handlers(app)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
