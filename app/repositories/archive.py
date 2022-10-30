@@ -1,14 +1,13 @@
 from typing import List
 
-from fastapi import HTTPException
-from pydantic import UUID4, EmailStr
-from sqlalchemy import BigInteger, delete, update
+from pydantic import UUID4
+from sqlalchemy import BigInteger, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
 
 from app.database.tables import User
-from app.models.users import UserCreate, UserGet, UserPatch
+from app.models.users import UserCreate
 
 
 class ArchiveRepository:

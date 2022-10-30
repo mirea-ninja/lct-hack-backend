@@ -1,4 +1,4 @@
-from .base import BaseEnum
+from .base_enum import BaseEnum
 
 
 class AllowedFileTypes(str, BaseEnum):

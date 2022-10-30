@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from fastapi import HTTPException, Response, UploadFile
-from pydantic import UUID4, EmailStr
+from fastapi import UploadFile
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
-from app.models import ApartmentBase, UserCreate, UserGet, UserPatch
-from app.repositories import UsersRepository
+from app.models import ApartmentBase
 from app.storage import get_s3_client
 
 
