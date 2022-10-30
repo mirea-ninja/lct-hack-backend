@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, Numeric, String, func
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database.connection import Base
@@ -12,6 +12,8 @@ class Apartment(Base):
 
     guid = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, unique=True)
     address = Column(String, nullable=False)
+    lat = Column(Numeric, nullable=False)
+    lon = Column(Numeric, nullable=False)
     rooms = Column(Integer, nullable=False)
     segment = Column(Enum(Segment), nullable=False)
     floors = Column(Integer, nullable=False)
