@@ -30,10 +30,5 @@ async def create(
 ):
     if not AllowedFileTypes.has_value(file.content_type):
         raise HTTPException(400, detail="Неверный тип файла. Доступные типы: xlsx, xls, csv")
-    # async with get_s3_client() as client:
-    #     await client.put_object(
-    #         Bucket=config.STORAGE_BUCKET_NAME,
-    #         Key=f"{file.filename}",
-    #         Body=new_file,
-    #     )
+
     return await pull_service.create(db=db, file=file, user=user)
