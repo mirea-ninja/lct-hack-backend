@@ -1,2 +1,2 @@
-from .archive import ArchiveRepository
+from .query import QueryRepository
 from .users import UsersRepository

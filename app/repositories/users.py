@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
 
 from app.database.tables import User
-from app.models.users import UserCreate, UserGet, UserPatch
+from app.models import UserCreate, UserPatch
 
 
 class UsersRepository:
@@ -36,7 +36,7 @@ class UsersRepository:
         return res.scalar()
 
     @staticmethod
-    async def update(db: AsyncSession, guid: UUID4, model: UserCreate) -> UserGet:
+    async def update(db: AsyncSession, guid: UUID4, model: UserCreate) -> User:
         user = await UsersRepository.get(db, guid)
 
         if user is None:
@@ -50,10 +50,10 @@ class UsersRepository:
         await db.commit()
         await db.refresh(user)
 
-        return UserGet.from_orm(user)
+        return user
 
     @staticmethod
-    async def patch(db: AsyncSession, guid: UUID4, model: UserPatch) -> UserGet:
+    async def patch(db: AsyncSession, guid: UUID4, model: UserPatch) -> User:
         user = await UsersRepository.get(db, guid)
 
         if user is None:
@@ -66,7 +66,7 @@ class UsersRepository:
         await db.commit()
         await db.refresh(user)
 
-        return UserGet.from_orm(user)
+        return user
 
     @staticmethod
     async def delete(db: AsyncSession, guid: UUID4) -> None:

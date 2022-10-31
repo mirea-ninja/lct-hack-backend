@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import List
+
 from fastapi import UploadFile
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +23,7 @@ async def send_file(file: bytes, filename: str) -> str:
 
 class PullService:
     @staticmethod
-    async def create(db: AsyncSession, user: UUID4, file: UploadFile):
+    async def create(db: AsyncSession, user: UUID4, file: UploadFile) -> List[ApartmentBase]:
         read_file = await file.read()
         await send_file(file=read_file, filename=file.filename)
         apartments = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]  # debug

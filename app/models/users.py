@@ -31,5 +31,5 @@ class UserGet(UserBase):
 
 
 @optional
-class UserPatch(UserBase):
+class UserPatch(UserCreate):
     pass
