@@ -19,7 +19,7 @@ class QueryService:
         queries = await QueryRepository.get_all(db, offset=offset, limit=limit)
         if queries is None:
             raise HTTPException(404, "Запросы не найдены")
-        return [QueryGet.from_orm(u) for u in queries]
+        return [QueryGet.from_orm(q) for q in queries]
 
     @staticmethod
     async def get(db: AsyncSession, guid: UUID4) -> QueryGet:
