@@ -20,12 +20,12 @@ class AdjustmentBase(BaseModel):
     distance_to_metro: DistanceToMetro = Field(description="Площадь квартиры")
     quality: Quality = Field(description="Площадь квартиры")
 
-    class Config:
-        orm_mode = True
-
 
 class AdjustmentGet(AdjustmentBase):
     guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
+
+    class Config:
+        orm_mode = True
 
 
 class ManualAdjustmentBase(BaseModel):
@@ -43,9 +43,9 @@ class ManualAdjustmentBase(BaseModel):
     distance_to_metro: int = Field(description="Площадь квартиры")
     quality: int = Field(description="Площадь квартиры")
 
-    class Config:
-        orm_mode = True
-
 
 class ManualAdjustmentGet(ManualAdjustmentBase):
     guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
+
+    class Config:
+        orm_mode = True

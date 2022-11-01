@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.database.connection import get_session
-from app.models import ApartmentGet, QueryCreate, QueryGet, QueryPatch
+from app.models import ApartmentGet, QueryCreate, QueryGet, QueryPatch, AdjustmentGet
 from app.services import QueryService
 from app.services.auth import verify_access_token
 
@@ -131,7 +131,7 @@ async def analogs(
 
 @router.patch(
     "/query/{id}/subquery/{subid}/set/analogs",
-    response_model=QueryGet,
+    response_model=AdjustmentGet,
     response_description="Расчет успешно завершен",
     status_code=status.HTTP_201_CREATED,
     description="Установить запросу выбранные аналоги, провести расчет и вернуть результат",

@@ -21,13 +21,11 @@ class ApartmentBase(BaseModel):
     m2price: Optional[Decimal] = 0
     price: Optional[int] = 0
 
+
+class ApartmentGet(ApartmentBase):
+    guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
     class Config:
         orm_mode = True
-
-
-class ApartmentGet(BaseModel):
-    guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
-
 
 class ApartmentCreate(ApartmentBase):
     pass
