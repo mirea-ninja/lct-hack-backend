@@ -3,22 +3,22 @@ from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, Field, HttpUrl
 
-from app.models import AdjustmentsGet, ApartmentGet, PricedApartmentGet
+from app.models import AdjustmentGet, ApartmentGet, ManualAdjustmentGet
 from app.models.utils import optional
 
 
 class SubQueryBase(BaseModel):
-    apartments: List[ApartmentGet] = Field(description="Список квартир во входном файле")
-    standart_object: PricedApartmentGet = Field(description="Стандартный объект")
-    analogs: List[PricedApartmentGet] = Field(description="Список подобранных аналогов")
-    selected_analogs: List[PricedApartmentGet] = Field(description="Список выбранных аналогов")
-    adjustments_analog_calculated: List[AdjustmentsGet] = Field(description="Список расчитаных аналогов")
-    adjustments_analog_user: List[AdjustmentsGet] = Field(
+    input_apartments: List[ApartmentGet] = Field(description="Список квартир во входном файле")
+    standart_object: ApartmentGet = Field(description="Стандартный объект")
+    analogs: List[ApartmentGet] = Field(description="Список подобранных аналогов")
+    selected_analogs: List[ApartmentGet] = Field(description="Список выбранных аналогов")
+    adjustments_analog_calculated: List[AdjustmentGet] = Field(description="Список расчитаных аналогов")
+    adjustments_analog_user: List[ManualAdjustmentGet] = Field(
         description="Список расчитаных аналогов, исправленных " "пользователем"
     )
-    adjustments_pool_calculated: List[AdjustmentsGet] = Field(description="Список настроек пула")
-    adjustments_pool_user: List[AdjustmentsGet] = Field(description="Список настроек пула")
-    output_apartments: List[PricedApartmentGet] = Field(description="Список выходных квартир")
+    adjustments_pool_calculated: List[AdjustmentGet] = Field(description="Список настроек пула")
+    adjustments_pool_user: List[ManualAdjustmentGet] = Field(description="Список настроек пула")
+    output_apartments: List[ApartmentGet] = Field(description="Список выходных квартир")
 
 
 class SubQueryCreate(SubQueryBase):
@@ -39,7 +39,7 @@ class SubQueryPatch(SubQueryBase):
 
 class QueryBase(BaseModel):
     name: Optional[str] = Field(None, description="Название запроса")
-    queries: List[SubQueryGet] = Field(description="Список подзапросов")
+    sub_queries: List[SubQueryGet] = Field(description="Список подзапросов")
     input_file: HttpUrl = Field(description="Ссылка на файл с входными данными")
     output_file: Optional[HttpUrl] = Field(None, description="Ссылка на файл с выходными данными")
 
@@ -60,5 +60,5 @@ class QueryGet(QueryBase):
 
 
 @optional
-class QueryPatch(QueryBase):
+class QueryPatch(QueryCreate):
     pass

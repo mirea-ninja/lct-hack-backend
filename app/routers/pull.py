@@ -7,7 +7,7 @@ from starlette import status
 
 from app.database import get_session
 from app.models import ApartmentBase
-from app.models.constants.file import AllowedFileTypes
+from app.models.enums.file import AllowedFileTypes
 from app.services import PullService
 from app.services.auth import get_user_from_access_token, verify_access_token
 

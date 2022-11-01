@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.database.connection import get_session
-from app.models import PricedApartmentGet, QueryCreate, QueryGet, QueryPatch
+from app.models import ApartmentGet, QueryCreate, QueryGet, QueryPatch
 from app.services import QueryService
 from app.services.auth import verify_access_token
 
@@ -100,7 +100,7 @@ async def delete(
 
 @router.patch(
     "/query/{id}/subquery/{subid}/set/base",
-    response_model=PricedApartmentGet,
+    response_model=ApartmentGet,
     response_description="Эталонный объект успешно установлен",
     status_code=status.HTTP_201_CREATED,
     description="Установить эталонный объект для запроса",
@@ -116,7 +116,7 @@ async def set_base(
 
 @router.get(
     "/query/{id}/subquery/{subid}/analogs",
-    response_model=list[PricedApartmentGet],
+    response_model=list[ApartmentGet],
     response_description="Успешный возврат списка аналогов",
     status_code=status.HTTP_200_OK,
     description="Получить список аналогов для запроса",
