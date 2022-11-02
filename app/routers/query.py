@@ -1,12 +1,22 @@
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.database.connection import get_session
-from app.models import ApartmentGet, QueryCreate, QueryGet, QueryPatch, AdjustmentGet
+from app.fixtures import set_analog_example_value, set_analogs_example_value
+from app.models import (
+    AdjustmentGet,
+    ApartmentCreate,
+    ApartmentGet,
+    QueryCreate,
+    QueryCreateBaseApartment,
+    QueryCreateUserApartments,
+    QueryGet,
+    QueryPatch,
+)
 from app.services import QueryService
-from app.services.auth import verify_access_token
+from app.services.auth import get_user_from_access_token, verify_access_token
 
 router = APIRouter(dependencies=[Depends(verify_access_token)])
 
@@ -58,10 +68,11 @@ async def get(
 async def update(
     model: QueryCreate,
     id: UUID4 = Path(None, description="Id запроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
     query_service: QueryService = Depends(),
 ):
-    return await query_service.update(db=db, guid=id, model=model)
+    return await query_service.update(db=db, guid=id, user=user, model=model)
 
 
 @router.patch(
@@ -76,10 +87,11 @@ async def update(
 async def patch(
     model: QueryPatch,
     id: UUID4 = Path(None, description="Id запроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
     query_service: QueryService = Depends(),
 ):
-    return await query_service.patch(db=db, guid=id, model=model)
+    return await query_service.patch(db=db, guid=id, user=user, model=model)
 
 
 @router.delete(
@@ -98,8 +110,8 @@ async def delete(
     return await query_service.delete(db=db, guid=id)
 
 
-@router.patch(
-    "/query/{id}/subquery/{subid}/set/base",
+@router.post(
+    "/query/{id}/subquery/{subid}/base-apartment",
     response_model=ApartmentGet,
     response_description="Эталонный объект успешно установлен",
     status_code=status.HTTP_201_CREATED,
@@ -108,10 +120,14 @@ async def delete(
     # responses={},
 )
 async def set_base(
-    model: QueryCreate,
+    analog: QueryCreateBaseApartment = Body(None, description="Список аналогов", example=set_analog_example_value),
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
 ):
-    pass
+    return await query_service.set_base(db=db, guid=id, subguid=subid, user=user, analog=analog)
 
 
 @router.get(
@@ -123,14 +139,35 @@ async def set_base(
     summary="Получение аналогов для запроса",
     # responses={},
 )
-async def analogs(
+async def get_analogs(
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
     db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
 ):
-    pass
+    return await query_service.get_analogs(db=db, guid=id, subguid=subid)
 
 
-@router.patch(
-    "/query/{id}/subquery/{subid}/set/analogs",
+@router.post(
+    "/query/{id}/subquery/{subid}/analogs",
+    response_description="Успешная установка аналогов",
+    status_code=status.HTTP_204_NO_CONTENT,
+    description="Установсить аналоги для запроса",
+    summary="Установка аналогов для запроса",
+    # responses={},
+)
+async def create_analogs(
+    analogs: list[ApartmentCreate],
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
+    db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
+):
+    return await query_service.create_analogs(db=db, guid=id, subguid=subid, analogs=analogs)
+
+
+@router.post(
+    "/query/{id}/subquery/{subid}/user-analogs",
     response_model=AdjustmentGet,
     response_description="Расчет успешно завершен",
     status_code=status.HTTP_201_CREATED,
@@ -139,7 +176,11 @@ async def analogs(
     # responses={},
 )
 async def set_analogs(
-    model: QueryCreate,
+    analogs: QueryCreateUserApartments = Body(None, description="Список аналогов", example=set_analogs_example_value),
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
 ):
-    pass
+    return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)

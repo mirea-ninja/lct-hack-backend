@@ -4,7 +4,16 @@ from fastapi import HTTPException, Response
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import QueryCreate, QueryGet, QueryPatch
+from app.models import (
+    AdjustmentGet,
+    ApartmentCreate,
+    ApartmentGet,
+    QueryCreate,
+    QueryCreateBaseApartment,
+    QueryCreateUserApartments,
+    QueryGet,
+    QueryPatch,
+)
 from app.repositories import QueryRepository
 
 
@@ -46,3 +55,35 @@ class QueryService:
     async def delete(db: AsyncSession, guid: UUID4) -> Response(status_code=204):
         await QueryRepository.delete(db, guid)
         return Response(status_code=204)
+
+    @staticmethod
+    async def set_base(
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analog: QueryCreateBaseApartment
+    ) -> ApartmentGet:
+        apartment = await QueryRepository.set_base(db, guid, subguid, user, analog)
+        if apartment is None:
+            raise HTTPException(404, "Запрос не найден")
+        return ApartmentGet.from_orm(apartment)
+
+    @staticmethod
+    async def get_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4) -> list[ApartmentGet]:
+        apartments = await QueryRepository.get_analogs(db, guid, subguid)
+        if apartments is None:
+            raise HTTPException(404, "Запросы не найдены")
+        return [ApartmentGet.from_orm(a) for a in apartments]
+
+    @staticmethod
+    async def create_analogs(
+        db: AsyncSession, guid: UUID4, subguid: UUID4, analogs: list[ApartmentCreate]
+    ) -> Response(status_code=204):
+        await QueryRepository.create_analogs(db, guid, subguid, analogs)
+        return Response(status_code=204)
+
+    @staticmethod
+    async def set_analogs(
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
+    ) -> AdjustmentGet:
+        adjustment = await QueryRepository.set_analogs(db, guid, subguid, user, analogs)
+        if adjustment is None:
+            raise HTTPException(404, "Запрос не найден")
+        return AdjustmentGet.from_orm(adjustment)

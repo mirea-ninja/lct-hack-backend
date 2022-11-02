@@ -4,7 +4,7 @@ from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, Numeric, Stri
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database.connection import Base
-from app.models.enums import Quality, Segment, Walls
+from app.models.enums import RepairType, Segment, Walls
 
 
 class Apartment(Base):
@@ -24,6 +24,6 @@ class Apartment(Base):
     kitchen_area = Column(Integer, nullable=False)
     has_balcony = Column(Boolean, nullable=False)
     distance_to_metro = Column(Integer, nullable=False)
-    quality = Column(Enum(Quality), nullable=False)
+    quality = Column(Enum(RepairType), nullable=False)
     m2price = Column(Numeric, nullable=False)
     price = Column(Integer, nullable=False)

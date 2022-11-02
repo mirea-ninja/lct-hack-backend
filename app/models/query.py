@@ -62,3 +62,11 @@ class QueryGet(QueryBase):
 @optional
 class QueryPatch(QueryCreate):
     pass
+
+
+class QueryCreateBaseApartment(BaseModel):
+    analog: UUID4 = Field(description="Уникальный идентификатор аналога")
+
+
+class QueryCreateUserApartments(BaseModel):
+    analogs: List[UUID4] = Field(description="Уникальные идентификатор аналогов")

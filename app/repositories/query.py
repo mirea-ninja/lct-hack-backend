@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
 
-from app.database.tables import Query
-from app.models import QueryCreate, QueryPatch
+from app.database.tables import Adjustment, Apartment, Query
+from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, QueryCreateUserApartments, QueryPatch
 
 
 class QueryRepository:
@@ -59,3 +59,23 @@ class QueryRepository:
     async def delete(db: AsyncSession, guid: UUID4) -> None:
         await db.execute(delete(Query).where(Query.guid == guid))
         await db.commit()
+
+    @staticmethod
+    async def set_base(
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analog: QueryCreateBaseApartment
+    ) -> Apartment:
+        pass
+
+    @staticmethod
+    async def get_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4) -> List[Apartment]:
+        pass
+
+    @staticmethod
+    async def create_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, analogs: List[ApartmentCreate]) -> None:
+        pass
+
+    @staticmethod
+    async def set_analogs(
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
+    ) -> Adjustment:
+        pass

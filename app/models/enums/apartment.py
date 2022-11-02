@@ -1,14 +1,9 @@
 from datetime import datetime
-from enum import Enum
+
+from .base_enum import BaseEnum
 
 
-class Walls(Enum):
-    BRICK = "кирпич"
-    PANEL = "панель"
-    MONOLITH = "монолит"
-
-
-class Segment(Enum):
+class Segment(str, BaseEnum):
     NEW = "новостройка"
     MODERN = "современное жилье"
     OLD = "старый жилой фонд"
@@ -22,7 +17,13 @@ class Segment(Enum):
             return 0, 1989
 
 
-class RepairType(Enum):
+class Walls(str, BaseEnum):
+    BRICK = "кирпич"
+    PANEL = "панель"
+    MONOLITH = "монолит"
+
+
+class RepairType(str, BaseEnum):
     WITHOUT_REPAIR = "без отделки"
     MUNICIPAL_REPAIR = "муниципальный ремонт"
     MODERN_REPAIR = "современный ремонт"

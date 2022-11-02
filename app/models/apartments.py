@@ -24,8 +24,10 @@ class ApartmentBase(BaseModel):
 
 class ApartmentGet(ApartmentBase):
     guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
+
     class Config:
         orm_mode = True
+
 
 class ApartmentCreate(ApartmentBase):
     pass
