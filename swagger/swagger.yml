@@ -211,12 +211,8 @@ paths:
           name: id
           in: path
       responses:
-        '200':
+        '204':
           description: Успешное удаление пользователя
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserGet'
         '422':
           description: Validation Error
           content:
@@ -297,22 +293,402 @@ paths:
   /pull:
     post:
       tags:
-        - pulls
+        - pull
       summary: Загрузка пула
       description: Загрузить новый пул в сервис
-      operationId: upload_pull_post
+      operationId: create_pull_post
+      parameters:
+        - description: Название пула
+          required: false
+          schema:
+            title: Name
+            type: string
+            description: Название пула
+          name: name
+          in: query
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Body_upload_pull_post'
+              $ref: '#/components/schemas/Body_create_pull_post'
+        required: true
+      responses:
+        '201':
+          description: Пул успешно загружен и обработан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query:
+    get:
+      tags:
+        - query
+      summary: Получение всех запросов
+      description: Получить список всех запросов
+      operationId: get_all_query_get
+      parameters:
+        - required: false
+          schema:
+            title: Limit
+            minimum: 1
+            type: integer
+            default: 100
+          name: limit
+          in: query
+        - required: false
+          schema:
+            title: Offset
+            minimum: 0
+            type: integer
+            default: 0
+          name: offset
+          in: query
+      responses:
+        '200':
+          description: Успешный возврат списка запросов
+          content:
+            application/json:
+              schema:
+                title: Response Get All Query Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}:
+    get:
+      tags:
+        - query
+      summary: Получение запрос по id
+      description: Получить запрос по его id
+      operationId: get_query__id__get
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Успешный возврат запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    put:
+      tags:
+        - query
+      summary: Изменение запрос по id
+      description: Изменить запрос по его id (полное обновление модели)
+      operationId: update_query__id__put
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCreate'
         required: true
       responses:
         '200':
-          description: Successful Response
+          description: Успешное обновление запроса
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - query
+      summary: Удаление запрос по id
+      description: Удалить запрос по его id
+      operationId: delete_query__id__delete
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+      responses:
+        '204':
+          description: Успешное удаление запроса
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - query
+      summary: Изменение запрос по id (только указанные поля будут изменены)
+      description: Изменить запрос по его id (частисно обновление модели)
+      operationId: patch_query__id__patch
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryPatch'
+        required: true
+      responses:
+        '200':
+          description: Успешное частичное обновление запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/base-apartment:
+    post:
+      tags:
+        - query
+      summary: Уставнока эталонного объекта
+      description: Установить эталонный объект для запроса
+      operationId: set_base_query__id__subquery__subid__base_apartment_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Analog
+              allOf:
+                - $ref: '#/components/schemas/QueryCreateBaseApartment'
+              description: Список аналогов
+            example:
+              analog: f56ca69f-5155-4c4a-a775-519bddc2376d
+      responses:
+        '201':
+          description: Эталонный объект успешно установлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApartmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/analogs:
+    get:
+      tags:
+        - query
+      summary: Получение аналогов для запроса
+      description: Получить список аналогов для запроса
+      operationId: get_analogs_query__id__subquery__subid__analogs_get
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      responses:
+        '200':
+          description: Успешный возврат списка аналогов
+          content:
+            application/json:
+              schema:
+                title: Response Get Analogs Query  Id  Subquery  Subid  Analogs Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApartmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - query
+      summary: Установка аналогов для запроса
+      description: Установсить аналоги для запроса
+      operationId: create_analogs_query__id__subquery__subid__analogs_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Analogs
+              type: array
+              items:
+                $ref: '#/components/schemas/ApartmentCreate'
+        required: true
+      responses:
+        '204':
+          description: Успешная установка аналогов
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/user-analogs:
+    post:
+      tags:
+        - query
+      summary: Уставнока аналогов и расчет
+      description: Установить запросу выбранные аналоги, провести расчет и вернуть результат
+      operationId: set_analogs_query__id__subquery__subid__user_analogs_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Analogs
+              allOf:
+                - $ref: '#/components/schemas/QueryCreateUserApartments'
+              description: Список аналогов
+            example:
+              analogs:
+                - ed428c83-a77c-4e3b-baf7-537f7351b9a0
+                - 40b2eb4e-2c2d-4186-88ef-8ac797965310
+                - bc80b8d9-cec3-4ba0-81b8-c83741d6a383
+                - 872acbaa-0023-44ab-96b6-b686d5afb319
+      responses:
+        '201':
+          description: Расчет успешно завершен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdjustmentGet'
         '422':
           description: Validation Error
           content:
@@ -323,8 +699,308 @@ paths:
         - HTTPBearer: []
 components:
   schemas:
-    Body_upload_pull_post:
-      title: Body_upload_pull_post
+    AdjustmentGet:
+      title: AdjustmentGet
+      required:
+        - price_trade
+        - price_area
+        - price_kitchen_area
+        - price_balcony
+        - price_metro
+        - price_final
+        - floor
+        - apt_area
+        - kitchen_area
+        - has_balcony
+        - distance_to_metro
+        - quality
+        - guid
+      type: object
+      properties:
+        trade:
+          title: Trade
+          type: integer
+          description: Процент чего-то
+          default: -450
+        price_trade:
+          title: Price Trade
+          type: number
+          description: Цена чего-то
+        price_area:
+          title: Price Area
+          type: number
+          description: Цена чего-то
+        price_kitchen_area:
+          title: Price Kitchen Area
+          type: number
+          description: Цена чего-то
+        price_balcony:
+          title: Price Balcony
+          type: number
+          description: Цена чего-то
+        price_metro:
+          title: Price Metro
+          type: number
+          description: Цена чего-то
+        price_final:
+          title: Price Final
+          type: number
+          description: Цена чего-то
+        floor:
+          allOf:
+            - $ref: '#/components/schemas/Floor'
+          description: Этаж
+        apt_area:
+          allOf:
+            - $ref: '#/components/schemas/AptArea'
+          description: Площадь квартиры
+        kitchen_area:
+          allOf:
+            - $ref: '#/components/schemas/KitchenArea'
+          description: Площадь квартиры
+        has_balcony:
+          allOf:
+            - $ref: '#/components/schemas/HasBalcony'
+          description: Площадь квартиры
+        distance_to_metro:
+          allOf:
+            - $ref: '#/components/schemas/DistanceToMetro'
+          description: Площадь квартиры
+        quality:
+          allOf:
+            - $ref: '#/components/schemas/Quality'
+          description: Площадь квартиры
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор квартиры
+          format: uuid4
+    ApartmentBase:
+      title: ApartmentBase
+      required:
+        - address
+        - lat
+        - lon
+        - rooms
+        - segment
+        - floors
+        - walls
+        - floor
+        - apartment_area
+        - kitchen_area
+        - has_balcony
+        - distance_to_metro
+        - quality
+      type: object
+      properties:
+        address:
+          title: Address
+          type: string
+        lat:
+          title: Lat
+          type: number
+        lon:
+          title: Lon
+          type: number
+        rooms:
+          title: Rooms
+          type: integer
+        segment:
+          title: Segment
+          type: string
+        floors:
+          title: Floors
+          type: integer
+        walls:
+          title: Walls
+          type: string
+        floor:
+          title: Floor
+          type: integer
+        apartment_area:
+          title: Apartment Area
+          type: integer
+        kitchen_area:
+          title: Kitchen Area
+          type: integer
+        has_balcony:
+          title: Has Balcony
+          type: boolean
+        distance_to_metro:
+          title: Distance To Metro
+          type: integer
+        quality:
+          title: Quality
+          type: string
+        m2price:
+          title: M2Price
+          type: number
+          default: 0
+        price:
+          title: Price
+          type: integer
+          default: 0
+    ApartmentCreate:
+      title: ApartmentCreate
+      required:
+        - address
+        - lat
+        - lon
+        - rooms
+        - segment
+        - floors
+        - walls
+        - floor
+        - apartment_area
+        - kitchen_area
+        - has_balcony
+        - distance_to_metro
+        - quality
+      type: object
+      properties:
+        address:
+          title: Address
+          type: string
+        lat:
+          title: Lat
+          type: number
+        lon:
+          title: Lon
+          type: number
+        rooms:
+          title: Rooms
+          type: integer
+        segment:
+          title: Segment
+          type: string
+        floors:
+          title: Floors
+          type: integer
+        walls:
+          title: Walls
+          type: string
+        floor:
+          title: Floor
+          type: integer
+        apartment_area:
+          title: Apartment Area
+          type: integer
+        kitchen_area:
+          title: Kitchen Area
+          type: integer
+        has_balcony:
+          title: Has Balcony
+          type: boolean
+        distance_to_metro:
+          title: Distance To Metro
+          type: integer
+        quality:
+          title: Quality
+          type: string
+        m2price:
+          title: M2Price
+          type: number
+          default: 0
+        price:
+          title: Price
+          type: integer
+          default: 0
+    ApartmentGet:
+      title: ApartmentGet
+      required:
+        - address
+        - lat
+        - lon
+        - rooms
+        - segment
+        - floors
+        - walls
+        - floor
+        - apartment_area
+        - kitchen_area
+        - has_balcony
+        - distance_to_metro
+        - quality
+        - guid
+      type: object
+      properties:
+        address:
+          title: Address
+          type: string
+        lat:
+          title: Lat
+          type: number
+        lon:
+          title: Lon
+          type: number
+        rooms:
+          title: Rooms
+          type: integer
+        segment:
+          title: Segment
+          type: string
+        floors:
+          title: Floors
+          type: integer
+        walls:
+          title: Walls
+          type: string
+        floor:
+          title: Floor
+          type: integer
+        apartment_area:
+          title: Apartment Area
+          type: integer
+        kitchen_area:
+          title: Kitchen Area
+          type: integer
+        has_balcony:
+          title: Has Balcony
+          type: boolean
+        distance_to_metro:
+          title: Distance To Metro
+          type: integer
+        quality:
+          title: Quality
+          type: string
+        m2price:
+          title: M2Price
+          type: number
+          default: 0
+        price:
+          title: Price
+          type: integer
+          default: 0
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор квартиры
+          format: uuid4
+    AptArea:
+      title: AptArea
+      enum:
+        - -2200
+        - -1700
+        - -1200
+        - -1100
+        - -700
+        - -600
+        - 0
+        - 300
+        - 600
+        - 700
+        - 900
+        - 1300
+        - 1400
+        - 1600
+        - 2100
+        - 2400
+        - 2800
+        - 3100
+      type: integer
+      description: An enumeration.
+    Body_create_pull_post:
+      title: Body_create_pull_post
       required:
         - file
       type: object
@@ -332,7 +1008,52 @@ components:
         file:
           title: File
           type: string
+          description: Excel таблица с пулом
           format: binary
+    DistanceToMetro:
+      title: DistanceToMetro
+      enum:
+        - -2200
+        - -1900
+        - -1700
+        - -1500
+        - -1300
+        - -1100
+        - -1000
+        - -900
+        - -800
+        - -700
+        - -600
+        - -500
+        - -400
+        - 0
+        - 400
+        - 500
+        - 600
+        - 700
+        - 900
+        - 1000
+        - 1100
+        - 1200
+        - 1500
+        - 1700
+        - 2000
+        - 2400
+        - 2900
+      type: integer
+      description: An enumeration.
+    Floor:
+      title: Floor
+      enum:
+        - -310
+        - 0
+        - 320
+        - -400
+        - 420
+        - -700
+        - 750
+      type: integer
+      description: An enumeration.
     HTTPValidationError:
       title: HTTPValidationError
       type: object
@@ -342,6 +1063,389 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ValidationError'
+    HasBalcony:
+      title: HasBalcony
+      enum:
+        - -500
+        - 0
+        - 530
+      type: integer
+      description: An enumeration.
+    KitchenArea:
+      title: KitchenArea
+      enum:
+        - -830
+        - -550
+        - -290
+        - 300
+        - 580
+        - 900
+      type: integer
+      description: An enumeration.
+    ManualAdjustmentGet:
+      title: ManualAdjustmentGet
+      required:
+        - price_trade
+        - price_area
+        - price_kitchen_area
+        - price_balcony
+        - price_metro
+        - price_final
+        - floor
+        - apt_area
+        - kitchen_area
+        - has_balcony
+        - distance_to_metro
+        - quality
+        - guid
+      type: object
+      properties:
+        trade:
+          title: Trade
+          type: integer
+          description: Процент чего-то
+          default: -450
+        price_trade:
+          title: Price Trade
+          type: number
+          description: Цена чего-то
+        price_area:
+          title: Price Area
+          type: number
+          description: Цена чего-то
+        price_kitchen_area:
+          title: Price Kitchen Area
+          type: number
+          description: Цена чего-то
+        price_balcony:
+          title: Price Balcony
+          type: number
+          description: Цена чего-то
+        price_metro:
+          title: Price Metro
+          type: number
+          description: Цена чего-то
+        price_final:
+          title: Price Final
+          type: number
+          description: Цена чего-то
+        floor:
+          title: Floor
+          type: integer
+          description: Этаж
+        apt_area:
+          title: Apt Area
+          type: integer
+          description: Площадь квартиры
+        kitchen_area:
+          title: Kitchen Area
+          type: integer
+          description: Площадь квартиры
+        has_balcony:
+          title: Has Balcony
+          type: integer
+          description: Площадь квартиры
+        distance_to_metro:
+          title: Distance To Metro
+          type: integer
+          description: Площадь квартиры
+        quality:
+          title: Quality
+          type: integer
+          description: Площадь квартиры
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор квартиры
+          format: uuid4
+    Quality:
+      title: Quality
+      enum:
+        - -20100
+        - -13400
+        - -6700
+        - 0
+        - 6700
+        - 13400
+        - 20100
+      type: integer
+      description: An enumeration.
+    QueryCreate:
+      title: QueryCreate
+      required:
+        - input_file
+        - sub_queries
+        - created_by
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Название запроса
+        input_file:
+          title: Input File
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с входными данными
+          format: uri
+        output_file:
+          title: Output File
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с выходными данными
+          format: uri
+        sub_queries:
+          title: Sub Queries
+          type: array
+          items:
+            $ref: '#/components/schemas/SubQueryCreate'
+          description: Список подзапросов
+        created_by:
+          title: Created By
+          type: string
+          description: Уникальный идентификатор пользователя, создавшего запись
+          format: uuid4
+    QueryCreateBaseApartment:
+      title: QueryCreateBaseApartment
+      required:
+        - analog
+      type: object
+      properties:
+        analog:
+          title: Analog
+          type: string
+          description: Уникальный идентификатор аналога
+          format: uuid4
+    QueryCreateUserApartments:
+      title: QueryCreateUserApartments
+      required:
+        - analogs
+      type: object
+      properties:
+        analogs:
+          title: Analogs
+          type: array
+          items:
+            type: string
+            format: uuid4
+          description: Уникальные идентификатор аналогов
+    QueryGet:
+      title: QueryGet
+      required:
+        - input_file
+        - guid
+        - sub_queries
+        - created_by
+        - updated_by
+        - created_at
+        - updated_at
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Название запроса
+        input_file:
+          title: Input File
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с входными данными
+          format: uri
+        output_file:
+          title: Output File
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с выходными данными
+          format: uri
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор записи
+          format: uuid4
+        sub_queries:
+          title: Sub Queries
+          type: array
+          items:
+            $ref: '#/components/schemas/SubQueryGet'
+          description: Список подзапросов
+        created_by:
+          title: Created By
+          type: string
+          description: Уникальный идентификатор пользователя, создавшего запись
+          format: uuid4
+        updated_by:
+          title: Updated By
+          type: string
+          description: Уникальный идентификатор пользователя, обновившего запись
+          format: uuid4
+        created_at:
+          title: Created At
+          type: string
+          description: Время создания записи
+          format: date-time
+        updated_at:
+          title: Updated At
+          type: string
+          description: Время последнего обновления записи
+          format: date-time
+    QueryPatch:
+      title: QueryPatch
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Название запроса
+        input_file:
+          title: Input File
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с входными данными
+          format: uri
+        output_file:
+          title: Output File
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с выходными данными
+          format: uri
+        sub_queries:
+          title: Sub Queries
+          type: array
+          items:
+            $ref: '#/components/schemas/SubQueryCreate'
+          description: Список подзапросов
+        created_by:
+          title: Created By
+          type: string
+          description: Уникальный идентификатор пользователя, создавшего запись
+          format: uuid4
+    SubQueryCreate:
+      title: SubQueryCreate
+      type: object
+      properties:
+        input_apartments:
+          title: Input Apartments
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список квартир во входном файле
+        standart_object:
+          title: Standart Object
+          allOf:
+            - $ref: '#/components/schemas/ApartmentBase'
+          description: Стандартный объект
+        analogs:
+          title: Analogs
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список подобранных аналогов
+        selected_analogs:
+          title: Selected Analogs
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список выбранных аналогов
+        adjustments_analog_calculated:
+          title: Adjustments Analog Calculated
+          type: array
+          items:
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список расчитаных аналогов
+        adjustments_analog_user:
+          title: Adjustments Analog User
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualAdjustmentGet'
+          description: Список расчитаных аналогов, исправленных пользователем
+        adjustments_pool_calculated:
+          title: Adjustments Pool Calculated
+          type: array
+          items:
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список настроек пула
+        adjustments_pool_user:
+          title: Adjustments Pool User
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualAdjustmentGet'
+          description: Список настроек пула
+        output_apartments:
+          title: Output Apartments
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список выходных квартир
+    SubQueryGet:
+      title: SubQueryGet
+      required:
+        - guid
+      type: object
+      properties:
+        input_apartments:
+          title: Input Apartments
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список квартир во входном файле
+        standart_object:
+          title: Standart Object
+          allOf:
+            - $ref: '#/components/schemas/ApartmentBase'
+          description: Стандартный объект
+        analogs:
+          title: Analogs
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список подобранных аналогов
+        selected_analogs:
+          title: Selected Analogs
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список выбранных аналогов
+        adjustments_analog_calculated:
+          title: Adjustments Analog Calculated
+          type: array
+          items:
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список расчитаных аналогов
+        adjustments_analog_user:
+          title: Adjustments Analog User
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualAdjustmentGet'
+          description: Список расчитаных аналогов, исправленных пользователем
+        adjustments_pool_calculated:
+          title: Adjustments Pool Calculated
+          type: array
+          items:
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список настроек пула
+        adjustments_pool_user:
+          title: Adjustments Pool User
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualAdjustmentGet'
+          description: Список настроек пула
+        output_apartments:
+          title: Output Apartments
+          type: array
+          items:
+            $ref: '#/components/schemas/ApartmentBase'
+          description: Список выходных квартир
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор подзапроса
+          format: uuid4
     Token:
       title: Token
       required:
@@ -464,6 +1568,10 @@ components:
           title: Middle Name
           type: string
           description: Отчество пользователя(при наличии)
+        password:
+          title: Password
+          type: string
+          description: Пароль пользователя
     ValidationError:
       title: ValidationError
       required:
@@ -494,5 +1602,7 @@ tags:
     description: Авторизация
   - name: users
     description: Работа с пользователями
-  - name: pulls
+  - name: pull
     description: Работа с пулами
+  - name: query
+    description: Работа с запросами
