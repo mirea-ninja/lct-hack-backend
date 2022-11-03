@@ -19,8 +19,8 @@ from app.repositories import QueryRepository
 
 class QueryService:
     @staticmethod
-    async def create(db: AsyncSession, user: UUID4, model: QueryCreate) -> QueryGet:
-        query = await QueryRepository.create(db, user, model)
+    async def create(db: AsyncSession, model: QueryCreate) -> QueryGet:
+        query = await QueryRepository.create(db, model)
         return QueryGet.from_orm(query)
 
     @staticmethod

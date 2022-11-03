@@ -27,6 +27,17 @@ class SubQuery(Base):
     guid = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, unique=True)
     query_guid = Column(UUID(as_uuid=True), ForeignKey("query.guid"), nullable=False)
     query = relationship("Query", back_populates="sub_queries")
+
+    # input_apartments_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # standart_object_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # analogs_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # selected_analogs_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # adjustments_analog_calculated_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # adjustments_analog_user_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # adjustments_pool_calculated_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # adjustments_pool_user_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+    # output_apartments_guid = Column(UUID(as_uuid=True), ForeignKey("apartment.guid"))
+
     input_apartments = relationship("Apartment", lazy="joined")
     standart_object = relationship("Apartment", uselist=False, lazy="joined")
     analogs = relationship("Apartment", lazy="joined")

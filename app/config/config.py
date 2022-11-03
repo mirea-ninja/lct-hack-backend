@@ -43,6 +43,8 @@ class Config(_Settings):
     BACKEND_JWT_ALGORITHM: str
     BACKEND_JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int
 
+    BACKEND_DADATA_TOKEN: str
+
     # Broker
     BROKER_HOST: str
     BROKER_PORT: int

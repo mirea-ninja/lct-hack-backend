@@ -13,8 +13,12 @@ from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, Q
 
 class QueryRepository:
     @staticmethod
-    async def create(db: AsyncSession, user: UUID4, model: QueryCreate) -> Query:
-        pass
+    async def create(db: AsyncSession, model: QueryCreate) -> Query:
+        query = Query(**model.dict())
+        db.add(query)
+        await db.commit()
+        await db.refresh(query)
+        return query
 
     @staticmethod
     async def get_all(db: AsyncSession, offset: int = 0, limit: int = 100) -> List[Query]:
