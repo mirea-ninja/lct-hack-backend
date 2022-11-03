@@ -25,7 +25,7 @@ async def send_file(file: bytes, filename: str) -> str:
     return f"{config.STORAGE_ENDPOINT}/{config.STORAGE_BUCKET_NAME}/{filename}"
 
 
-class PullService:
+class PoolService:
     @staticmethod
     async def _rename_columns(df: pd.DataFrame) -> pd.DataFrame:
         return df.rename(
@@ -86,8 +86,8 @@ class PullService:
         read_file = await file.read()
         await send_file(file=read_file, filename=file.filename)
         df = pd.read_excel(BytesIO(read_file))
-        df = await PullService._rename_columns(df)
-        await PullService._split_by_rooms(df)
+        df = await PoolService._rename_columns(df)
+        await PoolService._split_by_rooms(df)
 
         if name is None:
             name = df.at[0, "address"]
