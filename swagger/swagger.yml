@@ -537,7 +537,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: 1816de31-6c4a-4272-ae9e-fe4920714e40
+              guid: 9b8418f7-012e-403a-8fb0-c35b4fa2d653
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -646,8 +646,8 @@ paths:
     post:
       tags:
         - subquery
-      summary: Установка аналогов и расчет
-      description: Установить подзапросу выбранные аналоги, провести расчет и вернуть результат
+      summary: Установка аналогов для подзапроса
+      description: Установить подзапросу выбранные аналоги
       operationId: set_analogs_query__id__subquery__subid__user_analogs_post
       parameters:
         - description: Id запроса
@@ -678,13 +678,13 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 4ff834aa-e575-42c1-bf42-35fa3e0aa0ec
-                - 2066645c-c2e1-447f-a0c6-5f8103a066f6
-                - d901b5d2-c704-47b2-976c-dbb7292e7375
-                - 72d93235-326d-4083-a5e8-0d5fd2a34cdd
+                - 6523ebfc-6942-4eeb-875b-74df7fe8b8e4
+                - 4717006b-2ab1-4e4a-9dd6-47c1c1d60ca2
+                - 42903ca2-8da3-45ba-b808-68e84573d7ed
+                - b69fc8d8-bed6-475d-b431-23867d4fa60f
       responses:
         '201':
-          description: Расчет успешно завершен
+          description: Аналоги успешно установлены
           content:
             application/json:
               schema:
