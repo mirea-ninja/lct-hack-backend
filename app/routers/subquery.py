@@ -71,10 +71,10 @@ async def create_analogs(
 @router.post(
     "/query/{id}/subquery/{subid}/user-analogs",
     response_model=AdjustmentGet,
-    response_description="Расчет успешно завершен",
+    response_description="Аналоги успешно установлены",
     status_code=status.HTTP_201_CREATED,
-    description="Установить подзапросу выбранные аналоги, провести расчет и вернуть результат",
-    summary="Установка аналогов и расчет",
+    description="Установить подзапросу выбранные аналоги",
+    summary="Установка аналогов для подзапроса",
     # responses={},
 )
 async def set_analogs(

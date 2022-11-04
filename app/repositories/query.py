@@ -110,4 +110,8 @@ class QueryRepository:
     async def set_analogs(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
     ) -> Adjustment:
-        pass
+        for analog in analogs.guids:
+            await db.execute(
+                update(Apartment).where(Apartment.guid == analog).values({"selected_analogs_guid": subguid})
+            )
+            await db.commit()
