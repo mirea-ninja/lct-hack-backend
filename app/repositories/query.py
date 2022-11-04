@@ -1,7 +1,6 @@
 from typing import List
 
 from fastapi import HTTPException
-from loguru import logger
 from pydantic import UUID4
 from sqlalchemy import BigInteger, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -85,17 +84,12 @@ class QueryRepository:
     async def set_base(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
     ) -> Apartment:
-        subquery = await QueryRepository.get_subquery(db, subguid)
-
-        if subquery is None:
-            raise HTTPException(404, "Подзапрос не найден")
-        apartment = Apartment(**dict(filter(lambda apart: apart.guid == 'c5ec9d7f-1637-4c40-b474-aaae9dec6f27', subquery.input_apartments)))
-        logger.info(apartment)
-        await db.execute(update(SubQuery).where(SubQuery.guid == subguid).values({"standart_object": apartment}))
+        await db.execute(
+            update(Apartment).where(Apartment.guid == stantart_object.guid).values({"standart_object_guid": subguid})
+        )
         await db.commit()
-        await db.refresh(subquery)
-        logger.info(subquery)
-
+        res = await db.execute(select(Apartment).where(Apartment.guid == stantart_object.guid).limit(1))
+        return res.scalar()
 
     @staticmethod
     async def get_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4) -> List[Apartment]:

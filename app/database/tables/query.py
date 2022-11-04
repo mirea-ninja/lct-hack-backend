@@ -37,13 +37,9 @@ class SubQuery(Base):
     adjustments_analog_calculated = relationship(
         "Adjustment", lazy="joined", foreign_keys="Adjustment.analog_calculated_guid"
     )
-    adjustments_analog_user = relationship(
-        "Adjustment", lazy="joined", foreign_keys="Adjustment.analog_user_guid"
-    )
+    adjustments_analog_user = relationship("Adjustment", lazy="joined", foreign_keys="Adjustment.analog_user_guid")
     adjustments_pool_calculated = relationship(
         "Adjustment", lazy="joined", foreign_keys="Adjustment.pool_calculated_guid"
     )
-    adjustments_pool_user = relationship(
-        "Adjustment", lazy="joined", foreign_keys="Adjustment.pool_user_guid"
-    )
+    adjustments_pool_user = relationship("Adjustment", lazy="joined", foreign_keys="Adjustment.pool_user_guid")
     output_apartments = relationship("Apartment", lazy="joined", foreign_keys="Apartment.output_apartments_guid")

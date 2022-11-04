@@ -67,6 +67,7 @@ class QueryCreate(QueryBase):
     created_by: UUID4 = Field(description="Уникальный идентификатор пользователя, создавшего запись")
     updated_by: UUID4 = Field(description="Уникальный идентификатор пользователя, обновившего запись")
 
+
 class QueryGet(QueryBase):
     guid: UUID4 = Field(description="Уникальный идентификатор записи")
     sub_queries: List[SubQueryGet] = Field(description="Список подзапросов")
@@ -84,12 +85,8 @@ class QueryPatch(QueryCreate):
     pass
 
 
-class QueryCreateBaseGuid(BaseModel):
-    guid: UUID4 = Field(description="Уникальный идентификатор эталонного объекта")
-
-
 class QueryCreateBaseApartment(BaseModel):
-    standart_object: QueryCreateBaseGuid
+    guid: UUID4 = Field(description="Уникальный идентификатор эталонного объекта")
 
 
 class QueryCreateUserApartments(BaseModel):

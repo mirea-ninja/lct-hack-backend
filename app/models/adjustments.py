@@ -2,8 +2,6 @@ from decimal import Decimal
 
 from pydantic import UUID4, BaseModel, Field
 
-from app.models.enums import AptArea, DistanceToMetro, Floor, HasBalcony, KitchenArea, Quality
-
 
 class AdjustmentBase(BaseModel):
     trade: int = Field(-450, description="Корректировка на торг")

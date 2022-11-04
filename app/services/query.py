@@ -60,9 +60,16 @@ class QueryService:
     async def set_base(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analog: QueryCreateBaseApartment
     ) -> ApartmentGet:
-        apartment = await QueryRepository.set_base(db, guid, subguid, user, analog)
-        if apartment is None:
+        query = await QueryRepository.get(db, guid)
+
+        if query is None:
             raise HTTPException(404, "Запрос не найден")
+
+        sub_query = await QueryRepository.get_subquery(db, subguid)
+        if sub_query is None:
+            raise HTTPException(404, "Подзапрос не найден")
+
+        apartment = await QueryRepository.set_base(db, guid, subguid, user, analog)
         return ApartmentGet.from_orm(apartment)
 
     @staticmethod

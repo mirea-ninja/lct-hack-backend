@@ -6,7 +6,6 @@ from io import BytesIO
 import aiohttp
 import pandas as pd
 from fastapi import UploadFile
-from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 

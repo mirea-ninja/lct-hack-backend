@@ -9,4 +9,4 @@ set_analogs_example_value = {
     ]
 }
 
-set_analog_example_value = {"standart_object": {"guid": uuid.uuid4()}}
+set_analog_example_value = {"guid": uuid.uuid4()}
