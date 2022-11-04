@@ -80,7 +80,7 @@ async def update(
     response_model=QueryGet,
     response_description="Успешное частичное обновление запроса",
     status_code=status.HTTP_200_OK,
-    description="Изменить запрос по его id (частисно обновление модели)",
+    description="Изменить запрос по его id (частичное обновление модели)",
     summary="Изменение запрос по id (только указанные поля будут изменены)",
     # responses={},
 )
@@ -109,14 +109,13 @@ async def delete(
 ):
     return await query_service.delete(db=db, guid=id)
 
-
 @router.post(
     "/query/{id}/subquery/{subid}/base-apartment",
     response_model=ApartmentGet,
     response_description="Эталонный объект успешно установлен",
     status_code=status.HTTP_201_CREATED,
-    description="Установить эталонный объект для запроса",
-    summary="Уставнока эталонного объекта",
+    description="Установить эталонный объект для подзапроса",
+    summary="Установка эталонного объекта",
     # responses={},
 )
 async def set_base(
@@ -135,8 +134,8 @@ async def set_base(
     response_model=list[ApartmentGet],
     response_description="Успешный возврат списка аналогов",
     status_code=status.HTTP_200_OK,
-    description="Получить список аналогов для запроса",
-    summary="Получение аналогов для запроса",
+    description="Получить список аналогов для подзапроса",
+    summary="Получение аналогов для подзапроса",
     # responses={},
 )
 async def get_analogs(
@@ -152,8 +151,8 @@ async def get_analogs(
     "/query/{id}/subquery/{subid}/analogs",
     response_description="Успешная установка аналогов",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Установсить аналоги для запроса",
-    summary="Установка аналогов для запроса",
+    description="Установить аналоги для подзапроса",
+    summary="Установка аналогов для подзапроса",
     # responses={},
 )
 async def create_analogs(
@@ -171,8 +170,8 @@ async def create_analogs(
     response_model=AdjustmentGet,
     response_description="Расчет успешно завершен",
     status_code=status.HTTP_201_CREATED,
-    description="Установить запросу выбранные аналоги, провести расчет и вернуть результат",
-    summary="Уставнока аналогов и расчет",
+    description="Установить подзапросу выбранные аналоги, провести расчет и вернуть результат",
+    summary="Установка аналогов и расчет",
     # responses={},
 )
 async def set_analogs(

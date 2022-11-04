@@ -9,7 +9,7 @@ from app.models.utils import optional
 
 class SubQueryBase(BaseModel):
     input_apartments: Optional[List[ApartmentBase]] = Field(
-        description="Список квартир во входном файле"
+        description="Список квартир в подзапросе"
     )
     standart_object: Optional[ApartmentBase] = Field(
         description="Эталонный объект"
@@ -24,13 +24,13 @@ class SubQueryBase(BaseModel):
         description="Список корректировок для аналогов"
     )
     adjustments_analog_user: Optional[List[ManualAdjustmentGet]] = Field(
-        description="Список корректировок для аналогов, исправленных " "пользователем"
+        description="Список корректировок для аналогов, исправленных пользователем"
     )
     adjustments_pool_calculated: Optional[List[AdjustmentGet]] = Field(
         description="Список корректировок для пула"
     )
     adjustments_pool_user: Optional[List[ManualAdjustmentGet]] = Field(
-        description="Список корректировок для пула, исправленных " "пользователем"
+        description="Список корректировок для пула, исправленных пользователем"
     )
     output_apartments: Optional[List[ApartmentBase]] = Field(
         description="Список выходных квартир"

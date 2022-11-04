@@ -128,3 +128,7 @@ class PoolService:
 
         query_db = await QueryService.create(db=db, model=query)
         return query_db
+
+    @staticmethod
+    async def get_file(db: AsyncSession, query_id: UUID4):
+        pass

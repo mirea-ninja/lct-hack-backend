@@ -1,4 +1,5 @@
 from typing import List
+from attr import s
 
 from fastapi import HTTPException
 from pydantic import UUID4
@@ -7,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
 
-from app.database.tables import Adjustment, Apartment, Query
+from app.database.tables import Adjustment, Apartment, Query, SubQuery
 from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, QueryCreateUserApartments, QueryPatch
 
 
@@ -65,10 +66,26 @@ class QueryRepository:
         await db.commit()
 
     @staticmethod
+    async def get_subquery(db: AsyncSession, subguid: UUID4) -> SubQuery:
+        res = await db.execute(select(SubQuery).where(SubQuery.guid == subguid).limit(1))
+        return res.scalar()
+
+    @staticmethod
     async def set_base(
-        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analog: QueryCreateBaseApartment
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
     ) -> Apartment:
-        pass
+        query = await QueryRepository.get(db, guid)
+        subquery = await QueryRepository.get_subquery(db, subguid)
+
+        if query is None:
+            raise HTTPException(404, "Запрос не найден")
+
+        if subquery is None:
+            raise HTTPException(404, "Подзапрос не найден")
+
+        await db.execute(update(SubQuery).where(SubQuery.guid == subguid).values({'standart_object': stantart_object}))
+        await db.commit() #TODO проверьте
+
 
     @staticmethod
     async def get_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4) -> List[Apartment]:
