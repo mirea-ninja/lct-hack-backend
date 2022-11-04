@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import UUID4, BaseModel, Field
 
+from app.models.utils import optional
+
 
 class ApartmentBase(BaseModel):
     address: str = Field(description="Адрес квартиры")
@@ -30,4 +32,9 @@ class ApartmentGet(ApartmentBase):
 
 
 class ApartmentCreate(ApartmentBase):
+    pass
+
+
+@optional
+class ApartmentPatch(ApartmentCreate):
     pass

@@ -3,9 +3,11 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.config import config
 from app.models.exceptions import add_exception_handlers, catch_unhandled_exceptions
+from app.routers.apartment import router as apartment_router
 from app.routers.auth import router as auth_router
 from app.routers.pool import router as pool_router
 from app.routers.query import router as query_router
+from app.routers.subquery import router as subquery_router
 from app.routers.users import router as users_router
 
 tags_metadata = [
@@ -13,6 +15,8 @@ tags_metadata = [
     {"name": "users", "description": "Работа с пользователями"},
     {"name": "pool", "description": "Работа с пулами"},
     {"name": "query", "description": "Работа с запросами"},
+    {"name": "subquery", "description": "Работа с подзапросами"},
+    {"name": "apartment", "description": "Работа с квартирами"},
 ]
 
 app = FastAPI(
@@ -39,3 +43,5 @@ app.include_router(auth_router, tags=["auth"])
 app.include_router(users_router, tags=["users"])
 app.include_router(pool_router, tags=["pool"])
 app.include_router(query_router, tags=["query"])
+app.include_router(subquery_router, tags=["subquery"])
+app.include_router(apartment_router, tags=["apartment"])

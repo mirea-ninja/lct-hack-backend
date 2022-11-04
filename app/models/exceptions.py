@@ -37,7 +37,6 @@ class Message(BaseModel):
 endpoint_message = {
     ("POST", "/signin"): "Ошибка входа в систему",
     ("POST", "/signup"): "Ошибка регистрации в системе",
-
     ("POST", "/user"): "Ошибка создания пользователя",
     ("GET", "/user"): "Ошибка получения всех пользователей",
     ("GET", "/user/{id}"): "Ошибка получения пользователя по id",
@@ -45,19 +44,22 @@ endpoint_message = {
     ("PUT", "/user/{id}"): "Ошибка изменения пользователя по id",
     ("PATCH", "/user/{id}"): "Ошибка частичного изменения пользователя по id",
     ("DELETE", "/user/{id}"): "Ошибка удаления пользователя по id",
-
     ("POST", "/pool"): "Ошибка загрузки пула",
-
     ("GET", "/query"): "Ошибка получения всех запросов",
     ("GET", "/query/{id}"): "Ошибка получения запроса по id",
     ("PUT", "/query/{id}"): "Ошибка изменения запроса по id",
     ("PATCH", "/query/{id}"): "Ошибка частичного изменения запроса по id",
     ("DELETE", "/query/{id}"): "Ошибка удаления запроса по id",
-
     ("POST", "/query/{id}/subquery/{subid}/base-apartment"): "Ошибка установки эталонного объекта",
     ("GET", "/query/{id}/subquery/{subid}/analogs"): "Ошибка получения аналогов",
     ("POST", "/query/{id}/subquery/{subid}/analogs"): "Ошибка установки аналогов",
     ("POST", "/query/{id}/subquery/{subid}/user-analogs"): "Ошибка установки аналогов и расчета",
+    ("POST", "/query/{id}/subquery/{subid}/apartment"): "Ошибка создания квартиры",
+    ("GET", "/query/{id}/subquery/{subid}/apartment"): "Ошибка получения всех квартир",
+    ("GET", "/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка получения квартиры по id",
+    ("PUT", "/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка изменения квартиры по id",
+    ("PATCH", "/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка частичного изменения квартиры по id",
+    ("DELETE", "/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка удаления квартиры по id",
 }
 
 

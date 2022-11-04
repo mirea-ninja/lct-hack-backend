@@ -1,20 +1,10 @@
-from fastapi import APIRouter, Body, Depends, Path, Query
+from fastapi import APIRouter, Depends, Path, Query
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.database.connection import get_session
-from app.fixtures import set_analog_example_value, set_analogs_example_value
-from app.models import (
-    AdjustmentGet,
-    ApartmentCreate,
-    ApartmentGet,
-    QueryCreate,
-    QueryCreateBaseApartment,
-    QueryCreateUserApartments,
-    QueryGet,
-    QueryPatch,
-)
+from app.models import QueryCreate, QueryGet, QueryPatch
 from app.services import QueryService
 from app.services.auth import get_user_from_access_token, verify_access_token
 
@@ -108,79 +98,3 @@ async def delete(
     query_service: QueryService = Depends(),
 ):
     return await query_service.delete(db=db, guid=id)
-
-
-@router.post(
-    "/query/{id}/subquery/{subid}/base-apartment",
-    response_model=ApartmentGet,
-    response_description="Эталонный объект успешно установлен",
-    status_code=status.HTTP_201_CREATED,
-    description="Установить эталонный объект для подзапроса",
-    summary="Установка эталонного объекта",
-    # responses={},
-)
-async def set_base(
-    analog: QueryCreateBaseApartment = Body(None, description="Список аналогов", example=set_analog_example_value),
-    id: UUID4 = Path(None, description="Id запроса"),
-    subid: UUID4 = Path(None, description="Id подзапроса"),
-    user: UUID4 = Depends(get_user_from_access_token),
-    db: AsyncSession = Depends(get_session),
-    query_service: QueryService = Depends(),
-):
-    return await query_service.set_base(db=db, guid=id, subguid=subid, user=user, analog=analog)
-
-
-@router.get(
-    "/query/{id}/subquery/{subid}/analogs",
-    response_model=list[ApartmentGet],
-    response_description="Успешный возврат списка аналогов",
-    status_code=status.HTTP_200_OK,
-    description="Получить список аналогов для подзапроса",
-    summary="Получение аналогов для подзапроса",
-    # responses={},
-)
-async def get_analogs(
-    id: UUID4 = Path(None, description="Id запроса"),
-    subid: UUID4 = Path(None, description="Id подзапроса"),
-    db: AsyncSession = Depends(get_session),
-    query_service: QueryService = Depends(),
-):
-    return await query_service.get_analogs(db=db, guid=id, subguid=subid)
-
-
-@router.post(
-    "/query/{id}/subquery/{subid}/analogs",
-    response_description="Успешная установка аналогов",
-    status_code=status.HTTP_204_NO_CONTENT,
-    description="Установить аналоги для подзапроса",
-    summary="Установка аналогов для подзапроса",
-    # responses={},
-)
-async def create_analogs(
-    analogs: list[ApartmentCreate],
-    id: UUID4 = Path(None, description="Id запроса"),
-    subid: UUID4 = Path(None, description="Id подзапроса"),
-    db: AsyncSession = Depends(get_session),
-    query_service: QueryService = Depends(),
-):
-    return await query_service.create_analogs(db=db, guid=id, subguid=subid, analogs=analogs)
-
-
-@router.post(
-    "/query/{id}/subquery/{subid}/user-analogs",
-    response_model=AdjustmentGet,
-    response_description="Расчет успешно завершен",
-    status_code=status.HTTP_201_CREATED,
-    description="Установить подзапросу выбранные аналоги, провести расчет и вернуть результат",
-    summary="Установка аналогов и расчет",
-    # responses={},
-)
-async def set_analogs(
-    analogs: QueryCreateUserApartments = Body(None, description="Список аналогов", example=set_analogs_example_value),
-    id: UUID4 = Path(None, description="Id запроса"),
-    subid: UUID4 = Path(None, description="Id подзапроса"),
-    user: UUID4 = Depends(get_user_from_access_token),
-    db: AsyncSession = Depends(get_session),
-    query_service: QueryService = Depends(),
-):
-    return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)
