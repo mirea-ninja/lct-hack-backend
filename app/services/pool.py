@@ -100,6 +100,12 @@ class PoolService:
         df = await PoolService._rename_columns(df)
         dfs = await PoolService._split_by_rooms(df)
 
+        df = pd.concat(dfs, ignore_index=True)
+
+        df["lat"], df["lon"] = zip(
+            *df["address"].apply(lambda x: await PoolService._convert_address(x))
+        )
+
         if name is None:
             name = df.at[0, "address"]
 
