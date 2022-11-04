@@ -9,12 +9,21 @@ from sqlalchemy.sql.expression import cast
 
 from app.database.tables import Apartment
 from app.models import ApartmentCreate, ApartmentPatch
+from app.repositories.query import QueryRepository
 
 
 class ApartmentRepository:
     @staticmethod
     async def create(db: AsyncSession, guid: UUID4, subid: UUID4, model: ApartmentCreate) -> Apartment:
-        pass
+        aparment = Apartment(**model.dict())
+        db.add(aparment)
+        await db.commit()
+        await db.refresh(aparment)
+        subquery = await QueryRepository.get_subquery(db, subid)
+        subquery.analogs.append(aparment)
+        await db.commit()
+        await db.refresh(subquery)
+        return aparment
 
     @staticmethod
     async def get_all(
@@ -24,7 +33,12 @@ class ApartmentRepository:
         return res.scalars().unique().all()
 
     @staticmethod
-    async def get(db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4,) -> Apartment:
+    async def get(
+        db: AsyncSession,
+        guid: UUID4,
+        subid: UUID4,
+        aid: UUID4,
+    ) -> Apartment:
         res = await db.execute(select(Apartment).where(Apartment.guid == aid).limit(1))
         return res.scalar()
 
