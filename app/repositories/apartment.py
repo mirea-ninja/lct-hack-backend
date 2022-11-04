@@ -18,19 +18,19 @@ class ApartmentRepository:
 
     @staticmethod
     async def get_all(
-        db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4, offset: int = 0, limit: int = 100
+        db: AsyncSession, guid: UUID4, subid: UUID4, offset: int = 0, limit: int = 100
     ) -> List[Apartment]:
         res = await db.execute(select(Apartment).offset(cast(offset, BigInteger)).limit(limit))
         return res.scalars().unique().all()
 
     @staticmethod
-    async def get(db: AsyncSession, guid: UUID4) -> Apartment:
-        res = await db.execute(select(Apartment).where(Apartment.guid == guid).limit(1))
+    async def get(db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4,) -> Apartment:
+        res = await db.execute(select(Apartment).where(Apartment.guid == aid).limit(1))
         return res.scalar()
 
     @staticmethod
     async def update(db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4, model: ApartmentCreate) -> Apartment:
-        apartment = await ApartmentRepository.get(db, guid)
+        apartment = await ApartmentRepository.get(db, guid, subid, aid)
 
         if apartment is None:
             raise HTTPException(404, "Квартира не найдена")
@@ -43,7 +43,7 @@ class ApartmentRepository:
 
     @staticmethod
     async def patch(db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4, model: ApartmentPatch) -> Apartment:
-        apartment = await ApartmentRepository.get(db, guid)
+        apartment = await ApartmentRepository.get(db, guid, subid, aid)
 
         if apartment is None:
             raise HTTPException(404, "Квартира не найдена")
