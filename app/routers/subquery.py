@@ -86,3 +86,43 @@ async def set_analogs(
     query_service: QueryService = Depends(),
 ):
     return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)
+
+
+@router.post(
+    "/query/{id}/subquery/{subid}/calculate-analogs",
+    response_model=AdjustmentGet,
+    response_description="Аналоги успешно рассчитаны",
+    status_code=status.HTTP_201_CREATED,
+    description="Рассчитать аналоги для подзапроса",
+    summary="Расчет аналогов для подзапроса",
+    # responses={},
+)
+async def set_analogs(
+    analogs: QueryCreateUserApartments = Body(None, description="Список аналогов", example=set_analogs_example_value),
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
+    db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
+):
+    return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)
+
+
+@router.post(
+    "/query/{id}/subquery/{subid}/calculate-pool",
+    response_model=AdjustmentGet,
+    response_description="Пул успешно рассчитан",
+    status_code=status.HTTP_201_CREATED,
+    description="Рассчитать пул для подзапроса",
+    summary="Расчет пула для подзапроса",
+    # responses={},
+)
+async def set_analogs(
+    analogs: QueryCreateUserApartments = Body(None, description="Список аналогов", example=set_analogs_example_value),
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
+    db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
+):
+    return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)
