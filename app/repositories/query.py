@@ -93,11 +93,18 @@ class QueryRepository:
 
     @staticmethod
     async def get_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4) -> List[Apartment]:
-        pass
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        if len(subquery.analogs) < 5:
+            raise HTTPException(503, "Недостаточно аналогов")
+        return subquery.analogs
 
     @staticmethod
     async def create_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, analogs: List[ApartmentCreate]) -> None:
-        pass
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        db_analogs = [Apartment(**apartment.dict()) for apartment in analogs]
+        subquery.analogs = db_analogs
+        await db.commit()
+        await db.refresh(subquery)
 
     @staticmethod
     async def set_analogs(
