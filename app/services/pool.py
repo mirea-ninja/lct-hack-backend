@@ -51,7 +51,7 @@ class PoolService:
         df.replace("Нет", False, inplace=True)
         df["has_balcony"] = df["has_balcony"].astype("bool")
         df["rooms"] = df["rooms"].astype("int32")
-        return [df[df["rooms"] == i] for i in range(len(df["rooms"].value_counts()))]
+        return [df[df["rooms"] == i] for i in range(len(df["rooms"].value_counts(ascending=True)))]
 
     @staticmethod
     async def _convert_address(address: str) -> tuple[float, float]:
@@ -68,14 +68,14 @@ class PoolService:
                 json={"query": address},
             ) as response:
                 if response.status != 200:
-                    return 0, 0
+                    return -1, -1
                 data = await response.json()
                 if data["suggestions"]:
                     return (
                         data["suggestions"][0]["data"]["geo_lat"],
                         data["suggestions"][0]["data"]["geo_lon"],
                     )
-                return 0, 0
+                return -1, -1
 
     @staticmethod
     async def _convert_dfs_to_model(dfs: list[pd.DataFrame]) -> list[SubQueryCreate]:
