@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import secrets
 from io import BytesIO
 
@@ -101,10 +102,19 @@ class PoolService:
         dfs = await PoolService._split_by_rooms(df)
 
         df = pd.concat(dfs, ignore_index=True)
+        df.drop_duplicates(inplace=True)
 
-        df["lat"], df["lon"] = zip(
-            *df["address"].apply(lambda x: await PoolService._convert_address(x))
-        )
+        addresses = df["address"].to_list()
+        unique_addresses = list(set(addresses))
+
+        tasks = [PoolService._convert_address(address) for address in unique_addresses]
+        results = await asyncio.gather(*tasks)
+        addresses_dict = dict(zip(unique_addresses, results))
+
+        df["lat"] = df["address"].map(addresses_dict).apply(lambda x: x[0])
+        df["lon"] = df["address"].map(addresses_dict).apply(lambda x: x[1])
+
+        df = df[(df["lat"] != -1) & (df["lon"] != -1)]
 
         if name is None:
             name = df.at[0, "address"]
