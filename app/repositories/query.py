@@ -1,7 +1,7 @@
 from typing import List
-from attr import s
 
 from fastapi import HTTPException
+from loguru import logger
 from pydantic import UUID4
 from sqlalchemy import BigInteger, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,18 @@ from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, Q
 class QueryRepository:
     @staticmethod
     async def create(db: AsyncSession, model: QueryCreate) -> Query:
-        query = Query(**model.dict())
+        query = Query(
+            name=model.name,
+            input_file=model.input_file,
+            sub_queries=list(),
+            created_by=model.created_by,
+            updated_by=model.updated_by,
+        )
+        for sub_query in model.sub_queries:
+            sub_query_object = SubQuery(
+                input_apartments=[Apartment(**apartment.dict()) for apartment in sub_query.input_apartments],
+            )
+            query.sub_queries.append(sub_query_object)
         db.add(query)
         await db.commit()
         await db.refresh(query)
@@ -74,17 +85,16 @@ class QueryRepository:
     async def set_base(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
     ) -> Apartment:
-        query = await QueryRepository.get(db, guid)
         subquery = await QueryRepository.get_subquery(db, subguid)
-
-        if query is None:
-            raise HTTPException(404, "Запрос не найден")
 
         if subquery is None:
             raise HTTPException(404, "Подзапрос не найден")
-
-        await db.execute(update(SubQuery).where(SubQuery.guid == subguid).values({'standart_object': stantart_object}))
-        await db.commit() #TODO проверьте
+        apartment = Apartment(**dict(filter(lambda apart: apart.guid == 'c5ec9d7f-1637-4c40-b474-aaae9dec6f27', subquery.input_apartments)))
+        logger.info(apartment)
+        await db.execute(update(SubQuery).where(SubQuery.guid == subguid).values({"standart_object": apartment}))
+        await db.commit()
+        await db.refresh(subquery)
+        logger.info(subquery)
 
 
     @staticmethod

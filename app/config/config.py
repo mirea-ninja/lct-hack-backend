@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
 from dotenv import find_dotenv
-from pydantic import AnyHttpUrl, BaseSettings, HttpUrl, PostgresDsn, validator
+from pydantic import BaseSettings, HttpUrl, PostgresDsn, validator
 
 
 class AsyncPostgresDsn(PostgresDsn):
@@ -45,6 +45,9 @@ class Config(_Settings):
     BACKEND_JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int
 
     BACKEND_DADATA_TOKEN: str
+
+    BACKEND_DISABLE_AUTH: bool
+    BACKEND_DISABLE_FILE_SENDING: bool
 
     # Broker
     BROKER_HOST: str

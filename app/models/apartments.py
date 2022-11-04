@@ -6,8 +6,8 @@ from pydantic import UUID4, BaseModel, Field
 
 class ApartmentBase(BaseModel):
     address: str = Field(description="Адрес квартиры")
-    lat: Decimal = Field(description="Широта")
-    lon: Decimal = Field(description="Долгота")
+    lat: Optional[Decimal] = Field(description="Широта")
+    lon: Optional[Decimal] = Field(description="Долгота")
     rooms: int = Field(description="Количество комнат")
     segment: str = Field(description="Тип жилья")
     floors: int = Field(description="Количество этажей")

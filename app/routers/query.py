@@ -109,6 +109,7 @@ async def delete(
 ):
     return await query_service.delete(db=db, guid=id)
 
+
 @router.post(
     "/query/{id}/subquery/{subid}/base-apartment",
     response_model=ApartmentGet,

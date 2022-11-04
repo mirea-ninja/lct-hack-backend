@@ -1,7 +1,7 @@
 import uuid
 
 set_analogs_example_value = {
-    "analogs": [
+    "guids": [
         uuid.uuid4(),
         uuid.uuid4(),
         uuid.uuid4(),
@@ -9,4 +9,4 @@ set_analogs_example_value = {
     ]
 }
 
-set_analog_example_value = {"analog": uuid.uuid4()}
+set_analog_example_value = {"standart_object": {"guid": uuid.uuid4()}}

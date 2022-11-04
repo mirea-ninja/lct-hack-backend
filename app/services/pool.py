@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+import secrets
 from io import BytesIO
 
 import aiohttp
 import pandas as pd
 from fastapi import UploadFile
+from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
 from app.models import ApartmentCreate, QueryCreate, QueryGet, SubQueryCreate
-from app.models.enums import RepairType, Segment, Walls
 from app.services.query import QueryService
 from app.storage import get_s3_client
 
@@ -79,51 +80,38 @@ class PoolService:
 
     @staticmethod
     async def _convert_dfs_to_model(dfs: list[pd.DataFrame]) -> list[SubQueryCreate]:
-        pass
+        sub_queries = []
+        for df in dfs:
+            to_dict = df.to_dict(orient="records")
+            apartments = [ApartmentCreate(**apartment) for apartment in to_dict]
+            sub_queries.append(SubQueryCreate(input_apartments=apartments))
+        return sub_queries
+
+    @staticmethod
+    async def _create_random_name() -> str:
+        return secrets.token_hex(8)
 
     @staticmethod
     async def create(db: AsyncSession, user: UUID4, name: str, file: UploadFile) -> QueryGet:
         read_file = await file.read()
-        await send_file(file=read_file, filename=file.filename)
+        filename = await PoolService._create_random_name()
+        await send_file(file=read_file, filename=filename)
+
         df = pd.read_excel(BytesIO(read_file))
         df = await PoolService._rename_columns(df)
-        await PoolService._split_by_rooms(df)
+        dfs = await PoolService._split_by_rooms(df)
 
         if name is None:
             name = df.at[0, "address"]
 
-        # sub_queries = await PullService._convert_dfs_to_model(dfs)
-
-        # DEBUG
-        sub_queries = [
-            SubQueryCreate(
-                input_apartments=[
-                    ApartmentCreate(
-                        address="г. Москва, ул. Ватутина, д. 9",
-                        lat=0,
-                        lon=0,
-                        rooms=1,
-                        segment=Segment.MODERN,
-                        floors=5,
-                        walls=Walls.BRICK,
-                        floor=1,
-                        apartment_area=30,
-                        kitchen_area=10,
-                        has_balcony=False,
-                        distance_to_metro=5,
-                        quality=RepairType.MODERN_REPAIR,
-                        m2price=0,
-                        price=0,
-                    )
-                ]
-            )
-        ]
+        sub_queries = await PoolService._convert_dfs_to_model(dfs)
 
         query = QueryCreate(
             name=name,
             sub_queries=sub_queries,
             created_by=user,
-            input_file=f"{config.STORAGE_ENDPOINT}/{config.STORAGE_BUCKET_NAME}/{file.filename}",
+            updated_by=user,
+            input_file=f"{config.STORAGE_ENDPOINT}/{config.STORAGE_BUCKET_NAME}/{filename}.xlsx",
         )
 
         query_db = await QueryService.create(db=db, model=query)
