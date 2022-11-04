@@ -24,10 +24,12 @@ router = APIRouter(dependencies=[Depends(verify_access_token)])
 )
 async def create(
     model: ApartmentCreate,
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
     db: AsyncSession = Depends(get_session),
     apartment_service: ApartmentService = Depends(),
 ):
-    return await apartment_service.create(db=db, model=model)
+    return await apartment_service.create(db=db, guid=id, subid=subid, model=model)
 
 
 @router.get(

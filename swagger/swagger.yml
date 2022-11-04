@@ -505,7 +505,7 @@ paths:
   /query/{id}/subquery/{subid}/base-apartment:
     post:
       tags:
-        - query
+        - subquery
       summary: Установка эталонного объекта
       description: Установить эталонный объект для подзапроса
       operationId: set_base_query__id__subquery__subid__base_apartment_post
@@ -537,7 +537,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: 324bf7b2-c6f8-4754-bed3-35ced8115e42
+              guid: 1816de31-6c4a-4272-ae9e-fe4920714e40
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -556,7 +556,7 @@ paths:
   /query/{id}/subquery/{subid}/analogs:
     get:
       tags:
-        - query
+        - subquery
       summary: Получение аналогов для подзапроса
       description: Получить список аналогов для подзапроса
       operationId: get_analogs_query__id__subquery__subid__analogs_get
@@ -599,7 +599,7 @@ paths:
         - HTTPBearer: []
     post:
       tags:
-        - query
+        - subquery
       summary: Установка аналогов для подзапроса
       description: Установить аналоги для подзапроса
       operationId: create_analogs_query__id__subquery__subid__analogs_post
@@ -645,7 +645,7 @@ paths:
   /query/{id}/subquery/{subid}/user-analogs:
     post:
       tags:
-        - query
+        - subquery
       summary: Установка аналогов и расчет
       description: Установить подзапросу выбранные аналоги, провести расчет и вернуть результат
       operationId: set_analogs_query__id__subquery__subid__user_analogs_post
@@ -678,10 +678,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 8d1c30ee-b407-402e-82ba-543cce36100e
-                - 948e8c88-5eba-45c5-8554-fb733a830e84
-                - aabc3dbd-fd24-448e-af1d-b0f96cf2192c
-                - 6bb90c58-1e31-4461-ac81-cbc0d6e10ae0
+                - 4ff834aa-e575-42c1-bf42-35fa3e0aa0ec
+                - 2066645c-c2e1-447f-a0c6-5f8103a066f6
+                - d901b5d2-c704-47b2-976c-dbb7292e7375
+                - 72d93235-326d-4083-a5e8-0d5fd2a34cdd
       responses:
         '201':
           description: Расчет успешно завершен
@@ -689,6 +689,317 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdjustmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/apartment:
+    get:
+      tags:
+        - apartment
+      summary: Получение всех квартир
+      description: Получить список всех квартир
+      operationId: get_all_query__id__subquery__subid__apartment_get
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+        - required: false
+          schema:
+            title: Limit
+            minimum: 1
+            type: integer
+            default: 100
+          name: limit
+          in: query
+        - required: false
+          schema:
+            title: Offset
+            minimum: 0
+            type: integer
+            default: 0
+          name: offset
+          in: query
+      responses:
+        '200':
+          description: Успешный возврат списка квартир
+          content:
+            application/json:
+              schema:
+                title: Response Get All Query  Id  Subquery  Subid  Apartment Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApartmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - apartment
+      summary: Создание квартиры
+      description: Создать квартиру и вернуть её
+      operationId: create_query__id__subquery__subid__apartment_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApartmentCreate'
+        required: true
+      responses:
+        '201':
+          description: Квартира успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApartmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/apartment/{aid}:
+    get:
+      tags:
+        - apartment
+      summary: Получение квартиры по id
+      description: Получить квартиры по его id
+      operationId: get_query__id__subquery__subid__apartment__aid__get
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+        - description: Id квартиры
+          required: true
+          schema:
+            title: Aid
+            type: string
+            description: Id квартиры
+            format: uuid4
+          name: aid
+          in: path
+      responses:
+        '200':
+          description: Успешный возврат квартиры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApartmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    put:
+      tags:
+        - apartment
+      summary: Изменение квартиры по id
+      description: Изменить квартиры по его id (полное обновление модели)
+      operationId: update_query__id__subquery__subid__apartment__aid__put
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+        - description: Id квартиры
+          required: true
+          schema:
+            title: Aid
+            type: string
+            description: Id квартиры
+            format: uuid4
+          name: aid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApartmentCreate'
+        required: true
+      responses:
+        '200':
+          description: Успешное обновление квартиры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApartmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - apartment
+      summary: Удаление квартиры по id
+      description: Удалить квартиры по его id
+      operationId: delete_query__id__subquery__subid__apartment__aid__delete
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+        - description: Id квартиры
+          required: true
+          schema:
+            title: Aid
+            type: string
+            description: Id квартиры
+            format: uuid4
+          name: aid
+          in: path
+      responses:
+        '204':
+          description: Успешное удаление квартиры
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - apartment
+      summary: Изменение квартиры по id (только указанные поля будут изменены)
+      description: Изменить квартиру по его id (частисно обновление модели)
+      operationId: patch_query__id__subquery__subid__apartment__aid__patch
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+        - description: Id квартиры
+          required: true
+          schema:
+            title: Aid
+            type: string
+            description: Id квартиры
+            format: uuid4
+          name: aid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApartmentPatch'
+        required: true
+      responses:
+        '200':
+          description: Успешное частичное обновление квартиры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApartmentGet'
         '422':
           description: Validation Error
           content:
@@ -1015,6 +1326,72 @@ components:
           type: string
           description: Уникальный идентификатор квартиры
           format: uuid4
+    ApartmentPatch:
+      title: ApartmentPatch
+      type: object
+      properties:
+        address:
+          title: Address
+          type: string
+          description: Адрес квартиры
+        lat:
+          title: Lat
+          type: number
+          description: Широта
+        lon:
+          title: Lon
+          type: number
+          description: Долгота
+        rooms:
+          title: Rooms
+          type: integer
+          description: Количество комнат
+        segment:
+          title: Segment
+          type: string
+          description: Тип жилья
+        floors:
+          title: Floors
+          type: integer
+          description: Количество этажей
+        walls:
+          title: Walls
+          type: string
+          description: Материал стен
+        floor:
+          title: Floor
+          type: integer
+          description: Этаж
+        apartment_area:
+          title: Apartment Area
+          type: integer
+          description: Площадь квартиры
+        kitchen_area:
+          title: Kitchen Area
+          type: integer
+          description: Площадь кухни
+        has_balcony:
+          title: Has Balcony
+          type: boolean
+          description: Наличие балкона
+        distance_to_metro:
+          title: Distance To Metro
+          type: integer
+          description: Расстояние до метро
+        quality:
+          title: Quality
+          type: string
+          description: Отделка
+        m2price:
+          title: M2Price
+          type: number
+          description: Цена за квадратный метр
+          default: 0
+        price:
+          title: Price
+          type: integer
+          description: Цена квартиры
+          default: 0
     Body_create_pool_post:
       title: Body_create_pool_post
       required:
@@ -1482,3 +1859,7 @@ tags:
     description: Работа с пулами
   - name: query
     description: Работа с запросами
+  - name: subquery
+    description: Работа с подзапросами
+  - name: apartment
+    description: Работа с квартирами

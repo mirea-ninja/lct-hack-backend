@@ -10,7 +10,7 @@ from app.repositories import ApartmentRepository
 
 class ApartmentService:
     @staticmethod
-    async def create(db: AsyncSession, model: ApartmentCreate) -> ApartmentGet:
+    async def create(db: AsyncSession, guid: UUID4, subid: UUID4, model: ApartmentCreate) -> ApartmentGet:
         apartment = await ApartmentRepository.create(db, model)
         return ApartmentGet.from_orm(apartment)
 

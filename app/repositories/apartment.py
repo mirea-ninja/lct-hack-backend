@@ -13,7 +13,7 @@ from app.models import ApartmentCreate, ApartmentPatch
 
 class ApartmentRepository:
     @staticmethod
-    async def create(db: AsyncSession, model: ApartmentCreate) -> Apartment:
+    async def create(db: AsyncSession, guid: UUID4, subid: UUID4, model: ApartmentCreate) -> Apartment:
         pass
 
     @staticmethod
