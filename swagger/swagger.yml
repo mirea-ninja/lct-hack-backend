@@ -290,27 +290,27 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /pull:
+  /pool:
     post:
       tags:
-        - pull
+        - pool
       summary: Загрузка пула
       description: Загрузить новый пул в сервис
-      operationId: create_pull_post
+      operationId: create_pool_post
       parameters:
-        - description: Название пула
+        - description: Название запроса
           required: false
           schema:
             title: Name
             type: string
-            description: Название пула
+            description: Название запроса
           name: name
           in: query
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Body_create_pull_post'
+              $ref: '#/components/schemas/Body_create_pool_post'
         required: true
       responses:
         '201':
@@ -469,7 +469,7 @@ paths:
       tags:
         - query
       summary: Изменение запрос по id (только указанные поля будут изменены)
-      description: Изменить запрос по его id (частисно обновление модели)
+      description: Изменить запрос по его id (частичное обновление модели)
       operationId: patch_query__id__patch
       parameters:
         - description: Id запроса
@@ -506,8 +506,8 @@ paths:
     post:
       tags:
         - query
-      summary: Уставнока эталонного объекта
-      description: Установить эталонный объект для запроса
+      summary: Установка эталонного объекта
+      description: Установить эталонный объект для подзапроса
       operationId: set_base_query__id__subquery__subid__base_apartment_post
       parameters:
         - description: Id запроса
@@ -537,7 +537,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              analog: f56ca69f-5155-4c4a-a775-519bddc2376d
+              guid: 324bf7b2-c6f8-4754-bed3-35ced8115e42
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -557,8 +557,8 @@ paths:
     get:
       tags:
         - query
-      summary: Получение аналогов для запроса
-      description: Получить список аналогов для запроса
+      summary: Получение аналогов для подзапроса
+      description: Получить список аналогов для подзапроса
       operationId: get_analogs_query__id__subquery__subid__analogs_get
       parameters:
         - description: Id запроса
@@ -600,8 +600,8 @@ paths:
     post:
       tags:
         - query
-      summary: Установка аналогов для запроса
-      description: Установсить аналоги для запроса
+      summary: Установка аналогов для подзапроса
+      description: Установить аналоги для подзапроса
       operationId: create_analogs_query__id__subquery__subid__analogs_post
       parameters:
         - description: Id запроса
@@ -646,8 +646,8 @@ paths:
     post:
       tags:
         - query
-      summary: Уставнока аналогов и расчет
-      description: Установить запросу выбранные аналоги, провести расчет и вернуть результат
+      summary: Установка аналогов и расчет
+      description: Установить подзапросу выбранные аналоги, провести расчет и вернуть результат
       operationId: set_analogs_query__id__subquery__subid__user_analogs_post
       parameters:
         - description: Id запроса
@@ -677,11 +677,11 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateUserApartments'
               description: Список аналогов
             example:
-              analogs:
-                - ed428c83-a77c-4e3b-baf7-537f7351b9a0
-                - 40b2eb4e-2c2d-4186-88ef-8ac797965310
-                - bc80b8d9-cec3-4ba0-81b8-c83741d6a383
-                - 872acbaa-0023-44ab-96b6-b686d5afb319
+              guids:
+                - 8d1c30ee-b407-402e-82ba-543cce36100e
+                - 948e8c88-5eba-45c5-8554-fb733a830e84
+                - aabc3dbd-fd24-448e-af1d-b0f96cf2192c
+                - 6bb90c58-1e31-4461-ac81-cbc0d6e10ae0
       responses:
         '201':
           description: Расчет успешно завершен
@@ -702,85 +702,83 @@ components:
     AdjustmentGet:
       title: AdjustmentGet
       required:
-        - price_trade
-        - price_area
-        - price_kitchen_area
-        - price_balcony
-        - price_metro
-        - price_final
         - floor
         - apt_area
         - kitchen_area
         - has_balcony
         - distance_to_metro
         - quality
+        - price_trade
+        - price_area
+        - price_kitchen_area
+        - price_balcony
+        - price_metro
+        - price_final
         - guid
       type: object
       properties:
         trade:
           title: Trade
           type: integer
-          description: Процент чего-то
+          description: Корректировка на торг
           default: -450
+        floor:
+          title: Floor
+          type: integer
+          description: Корректировка на этаж
+        apt_area:
+          title: Apt Area
+          type: integer
+          description: Корректировка на площадь квартиры
+        kitchen_area:
+          title: Kitchen Area
+          type: integer
+          description: Корректировка на площадь кухни
+        has_balcony:
+          title: Has Balcony
+          type: integer
+          description: Корректировка на наличие балкона
+        distance_to_metro:
+          title: Distance To Metro
+          type: integer
+          description: Корректировка на удаленность от метро
+        quality:
+          title: Quality
+          type: integer
+          description: Корректировка на отделку
         price_trade:
           title: Price Trade
           type: number
-          description: Цена чего-то
+          description: Цена после корректировки на торг
         price_area:
           title: Price Area
           type: number
-          description: Цена чего-то
+          description: Цена после корректировки на площадь
         price_kitchen_area:
           title: Price Kitchen Area
           type: number
-          description: Цена чего-то
+          description: Цена после корректировки на площадь кухни
         price_balcony:
           title: Price Balcony
           type: number
-          description: Цена чего-то
+          description: Цена после корректировки на наличие балкона
         price_metro:
           title: Price Metro
           type: number
-          description: Цена чего-то
+          description: Цена после корректировки на удаленность от метро
         price_final:
           title: Price Final
           type: number
-          description: Цена чего-то
-        floor:
-          allOf:
-            - $ref: '#/components/schemas/Floor'
-          description: Этаж
-        apt_area:
-          allOf:
-            - $ref: '#/components/schemas/AptArea'
-          description: Площадь квартиры
-        kitchen_area:
-          allOf:
-            - $ref: '#/components/schemas/KitchenArea'
-          description: Площадь квартиры
-        has_balcony:
-          allOf:
-            - $ref: '#/components/schemas/HasBalcony'
-          description: Площадь квартиры
-        distance_to_metro:
-          allOf:
-            - $ref: '#/components/schemas/DistanceToMetro'
-          description: Площадь квартиры
-        quality:
-          allOf:
-            - $ref: '#/components/schemas/Quality'
-          description: Площадь квартиры
+          description: Цена после корректировки на отделку
         guid:
           title: Guid
           type: string
-          description: Уникальный идентификатор квартиры
+          description: Уникальный идентификатор квартиры, для которой проводилась корректировка автоматически
           format: uuid4
     ApartmentBase:
       title: ApartmentBase
       required:
         - address
-        - lat
-        - lon
         - rooms
         - segment
         - floors
@@ -796,56 +794,69 @@ components:
         address:
           title: Address
           type: string
+          description: Адрес квартиры
         lat:
           title: Lat
           type: number
+          description: Широта
         lon:
           title: Lon
           type: number
+          description: Долгота
         rooms:
           title: Rooms
           type: integer
+          description: Количество комнат
         segment:
           title: Segment
           type: string
+          description: Тип жилья
         floors:
           title: Floors
           type: integer
+          description: Количество этажей
         walls:
           title: Walls
           type: string
+          description: Материал стен
         floor:
           title: Floor
           type: integer
+          description: Этаж
         apartment_area:
           title: Apartment Area
           type: integer
+          description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
           type: integer
+          description: Площадь кухни
         has_balcony:
           title: Has Balcony
           type: boolean
+          description: Наличие балкона
         distance_to_metro:
           title: Distance To Metro
           type: integer
+          description: Расстояние до метро
         quality:
           title: Quality
           type: string
+          description: Отделка
         m2price:
           title: M2Price
           type: number
+          description: Цена за квадратный метр
           default: 0
         price:
           title: Price
           type: integer
+          description: Цена квартиры
           default: 0
     ApartmentCreate:
       title: ApartmentCreate
       required:
         - address
-        - lat
-        - lon
         - rooms
         - segment
         - floors
@@ -861,56 +872,69 @@ components:
         address:
           title: Address
           type: string
+          description: Адрес квартиры
         lat:
           title: Lat
           type: number
+          description: Широта
         lon:
           title: Lon
           type: number
+          description: Долгота
         rooms:
           title: Rooms
           type: integer
+          description: Количество комнат
         segment:
           title: Segment
           type: string
+          description: Тип жилья
         floors:
           title: Floors
           type: integer
+          description: Количество этажей
         walls:
           title: Walls
           type: string
+          description: Материал стен
         floor:
           title: Floor
           type: integer
+          description: Этаж
         apartment_area:
           title: Apartment Area
           type: integer
+          description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
           type: integer
+          description: Площадь кухни
         has_balcony:
           title: Has Balcony
           type: boolean
+          description: Наличие балкона
         distance_to_metro:
           title: Distance To Metro
           type: integer
+          description: Расстояние до метро
         quality:
           title: Quality
           type: string
+          description: Отделка
         m2price:
           title: M2Price
           type: number
+          description: Цена за квадратный метр
           default: 0
         price:
           title: Price
           type: integer
+          description: Цена квартиры
           default: 0
     ApartmentGet:
       title: ApartmentGet
       required:
         - address
-        - lat
-        - lon
         - rooms
         - segment
         - floors
@@ -927,80 +951,72 @@ components:
         address:
           title: Address
           type: string
+          description: Адрес квартиры
         lat:
           title: Lat
           type: number
+          description: Широта
         lon:
           title: Lon
           type: number
+          description: Долгота
         rooms:
           title: Rooms
           type: integer
+          description: Количество комнат
         segment:
           title: Segment
           type: string
+          description: Тип жилья
         floors:
           title: Floors
           type: integer
+          description: Количество этажей
         walls:
           title: Walls
           type: string
+          description: Материал стен
         floor:
           title: Floor
           type: integer
+          description: Этаж
         apartment_area:
           title: Apartment Area
           type: integer
+          description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
           type: integer
+          description: Площадь кухни
         has_balcony:
           title: Has Balcony
           type: boolean
+          description: Наличие балкона
         distance_to_metro:
           title: Distance To Metro
           type: integer
+          description: Расстояние до метро
         quality:
           title: Quality
           type: string
+          description: Отделка
         m2price:
           title: M2Price
           type: number
+          description: Цена за квадратный метр
           default: 0
         price:
           title: Price
           type: integer
+          description: Цена квартиры
           default: 0
         guid:
           title: Guid
           type: string
           description: Уникальный идентификатор квартиры
           format: uuid4
-    AptArea:
-      title: AptArea
-      enum:
-        - -2200
-        - -1700
-        - -1200
-        - -1100
-        - -700
-        - -600
-        - 0
-        - 300
-        - 600
-        - 700
-        - 900
-        - 1300
-        - 1400
-        - 1600
-        - 2100
-        - 2400
-        - 2800
-        - 3100
-      type: integer
-      description: An enumeration.
-    Body_create_pull_post:
-      title: Body_create_pull_post
+    Body_create_pool_post:
+      title: Body_create_pool_post
       required:
         - file
       type: object
@@ -1010,50 +1026,6 @@ components:
           type: string
           description: Excel таблица с пулом
           format: binary
-    DistanceToMetro:
-      title: DistanceToMetro
-      enum:
-        - -2200
-        - -1900
-        - -1700
-        - -1500
-        - -1300
-        - -1100
-        - -1000
-        - -900
-        - -800
-        - -700
-        - -600
-        - -500
-        - -400
-        - 0
-        - 400
-        - 500
-        - 600
-        - 700
-        - 900
-        - 1000
-        - 1100
-        - 1200
-        - 1500
-        - 1700
-        - 2000
-        - 2400
-        - 2900
-      type: integer
-      description: An enumeration.
-    Floor:
-      title: Floor
-      enum:
-        - -310
-        - 0
-        - 320
-        - -400
-        - 420
-        - -700
-        - 750
-      type: integer
-      description: An enumeration.
     HTTPValidationError:
       title: HTTPValidationError
       type: object
@@ -1063,119 +1035,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ValidationError'
-    HasBalcony:
-      title: HasBalcony
-      enum:
-        - -500
-        - 0
-        - 530
-      type: integer
-      description: An enumeration.
-    KitchenArea:
-      title: KitchenArea
-      enum:
-        - -830
-        - -550
-        - -290
-        - 300
-        - 580
-        - 900
-      type: integer
-      description: An enumeration.
-    ManualAdjustmentGet:
-      title: ManualAdjustmentGet
-      required:
-        - price_trade
-        - price_area
-        - price_kitchen_area
-        - price_balcony
-        - price_metro
-        - price_final
-        - floor
-        - apt_area
-        - kitchen_area
-        - has_balcony
-        - distance_to_metro
-        - quality
-        - guid
-      type: object
-      properties:
-        trade:
-          title: Trade
-          type: integer
-          description: Процент чего-то
-          default: -450
-        price_trade:
-          title: Price Trade
-          type: number
-          description: Цена чего-то
-        price_area:
-          title: Price Area
-          type: number
-          description: Цена чего-то
-        price_kitchen_area:
-          title: Price Kitchen Area
-          type: number
-          description: Цена чего-то
-        price_balcony:
-          title: Price Balcony
-          type: number
-          description: Цена чего-то
-        price_metro:
-          title: Price Metro
-          type: number
-          description: Цена чего-то
-        price_final:
-          title: Price Final
-          type: number
-          description: Цена чего-то
-        floor:
-          title: Floor
-          type: integer
-          description: Этаж
-        apt_area:
-          title: Apt Area
-          type: integer
-          description: Площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
-          type: integer
-          description: Площадь квартиры
-        has_balcony:
-          title: Has Balcony
-          type: integer
-          description: Площадь квартиры
-        distance_to_metro:
-          title: Distance To Metro
-          type: integer
-          description: Площадь квартиры
-        quality:
-          title: Quality
-          type: integer
-          description: Площадь квартиры
-        guid:
-          title: Guid
-          type: string
-          description: Уникальный идентификатор квартиры
-          format: uuid4
-    Quality:
-      title: Quality
-      enum:
-        - -20100
-        - -13400
-        - -6700
-        - 0
-        - 6700
-        - 13400
-        - 20100
-      type: integer
-      description: An enumeration.
     QueryCreate:
       title: QueryCreate
       required:
         - input_file
         - sub_queries
         - created_by
+        - updated_by
       type: object
       properties:
         name:
@@ -1207,30 +1073,35 @@ components:
           type: string
           description: Уникальный идентификатор пользователя, создавшего запись
           format: uuid4
+        updated_by:
+          title: Updated By
+          type: string
+          description: Уникальный идентификатор пользователя, обновившего запись
+          format: uuid4
     QueryCreateBaseApartment:
       title: QueryCreateBaseApartment
       required:
-        - analog
+        - guid
       type: object
       properties:
-        analog:
-          title: Analog
+        guid:
+          title: Guid
           type: string
-          description: Уникальный идентификатор аналога
+          description: Уникальный идентификатор эталонного объекта
           format: uuid4
     QueryCreateUserApartments:
       title: QueryCreateUserApartments
       required:
-        - analogs
+        - guids
       type: object
       properties:
-        analogs:
-          title: Analogs
+        guids:
+          title: Guids
           type: array
           items:
             type: string
             format: uuid4
-          description: Уникальные идентификатор аналогов
+          description: Уникальные идентификаторы аналогов, устанавливаемых пользователем
     QueryGet:
       title: QueryGet
       required:
@@ -1325,6 +1196,11 @@ components:
           type: string
           description: Уникальный идентификатор пользователя, создавшего запись
           format: uuid4
+        updated_by:
+          title: Updated By
+          type: string
+          description: Уникальный идентификатор пользователя, обновившего запись
+          format: uuid4
     SubQueryCreate:
       title: SubQueryCreate
       type: object
@@ -1334,12 +1210,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApartmentBase'
-          description: Список квартир во входном файле
+          description: Список квартир в подзапросе
         standart_object:
           title: Standart Object
           allOf:
             - $ref: '#/components/schemas/ApartmentBase'
-          description: Стандартный объект
+          description: Эталонный объект
         analogs:
           title: Analogs
           type: array
@@ -1357,25 +1233,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdjustmentGet'
-          description: Список расчитаных аналогов
+          description: Список корректировок для аналогов
         adjustments_analog_user:
           title: Adjustments Analog User
           type: array
           items:
-            $ref: '#/components/schemas/ManualAdjustmentGet'
-          description: Список расчитаных аналогов, исправленных пользователем
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок для аналогов, исправленных пользователем
         adjustments_pool_calculated:
           title: Adjustments Pool Calculated
           type: array
           items:
             $ref: '#/components/schemas/AdjustmentGet'
-          description: Список настроек пула
+          description: Список корректировок для пула
         adjustments_pool_user:
           title: Adjustments Pool User
           type: array
           items:
-            $ref: '#/components/schemas/ManualAdjustmentGet'
-          description: Список настроек пула
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок для пула, исправленных пользователем
         output_apartments:
           title: Output Apartments
           type: array
@@ -1388,64 +1264,64 @@ components:
         - guid
       type: object
       properties:
+        guid:
+          title: Guid
+          type: string
+          description: Уникальный идентификатор подзапроса
+          format: uuid4
         input_apartments:
           title: Input Apartments
           type: array
           items:
-            $ref: '#/components/schemas/ApartmentBase'
-          description: Список квартир во входном файле
+            $ref: '#/components/schemas/ApartmentGet'
+          description: Список квартир в подзапросе
         standart_object:
           title: Standart Object
           allOf:
-            - $ref: '#/components/schemas/ApartmentBase'
-          description: Стандартный объект
+            - $ref: '#/components/schemas/ApartmentGet'
+          description: Эталонный объект
         analogs:
           title: Analogs
           type: array
           items:
-            $ref: '#/components/schemas/ApartmentBase'
+            $ref: '#/components/schemas/ApartmentGet'
           description: Список подобранных аналогов
         selected_analogs:
           title: Selected Analogs
           type: array
           items:
-            $ref: '#/components/schemas/ApartmentBase'
+            $ref: '#/components/schemas/ApartmentGet'
           description: Список выбранных аналогов
         adjustments_analog_calculated:
           title: Adjustments Analog Calculated
           type: array
           items:
             $ref: '#/components/schemas/AdjustmentGet'
-          description: Список расчитаных аналогов
+          description: Список корректировок для аналогов
         adjustments_analog_user:
           title: Adjustments Analog User
           type: array
           items:
-            $ref: '#/components/schemas/ManualAdjustmentGet'
-          description: Список расчитаных аналогов, исправленных пользователем
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок для аналогов, исправленных пользователем
         adjustments_pool_calculated:
           title: Adjustments Pool Calculated
           type: array
           items:
             $ref: '#/components/schemas/AdjustmentGet'
-          description: Список настроек пула
+          description: Список корректировок для пула
         adjustments_pool_user:
           title: Adjustments Pool User
           type: array
           items:
-            $ref: '#/components/schemas/ManualAdjustmentGet'
-          description: Список настроек пула
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок для пула, исправленных пользователем
         output_apartments:
           title: Output Apartments
           type: array
           items:
-            $ref: '#/components/schemas/ApartmentBase'
+            $ref: '#/components/schemas/ApartmentGet'
           description: Список выходных квартир
-        guid:
-          title: Guid
-          type: string
-          description: Уникальный идентификатор подзапроса
-          format: uuid4
     Token:
       title: Token
       required:
@@ -1602,7 +1478,7 @@ tags:
     description: Авторизация
   - name: users
     description: Работа с пользователями
-  - name: pull
+  - name: pool
     description: Работа с пулами
   - name: query
     description: Работа с запросами
