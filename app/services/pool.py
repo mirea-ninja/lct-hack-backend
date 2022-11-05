@@ -52,7 +52,8 @@ class PoolService:
         df.replace("Нет", False, inplace=True)
         df["has_balcony"] = df["has_balcony"].astype("bool")
         df["rooms"] = df["rooms"].astype("int32")
-        return [df[df["rooms"] == i] for i in range(len(df["rooms"].value_counts(ascending=True)))]
+        df.sort_values(by=["rooms"], inplace=True)
+        return [df[df["rooms"] == i] for i in range(len(df["rooms"].value_counts()))]
 
     @staticmethod
     async def _convert_address(address: str) -> tuple[float, float]:

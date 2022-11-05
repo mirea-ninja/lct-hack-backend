@@ -1,3 +1,4 @@
+from collections import namedtuple
 from typing import List
 
 from fastapi import HTTPException
@@ -109,9 +110,23 @@ class QueryRepository:
     @staticmethod
     async def set_analogs(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
-    ) -> Adjustment:
+    ) -> None:
         for analog in analogs.guids:
             await db.execute(
                 update(Apartment).where(Apartment.guid == analog).values({"selected_analogs_guid": subguid})
             )
             await db.commit()
+
+    @staticmethod
+    async def calculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> None:
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        standart_object = subquery.standart_object
+        analogs = subquery.analogs
+
+        for analog in analogs:
+            if standart_object.floor == 1:
+                pass
+            elif standart_object.floor == standart_object.floors:
+                pass
+            else:
+                pass
