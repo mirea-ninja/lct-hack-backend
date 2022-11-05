@@ -97,15 +97,14 @@ async def set_analogs(
     summary="Расчет аналогов для подзапроса",
     # responses={},
 )
-async def set_analogs(
-    analogs: QueryCreateUserApartments = Body(None, description="Список аналогов", example=set_analogs_example_value),
+async def calculate_analogs(
     id: UUID4 = Path(None, description="Id запроса"),
     subid: UUID4 = Path(None, description="Id подзапроса"),
     user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
     query_service: QueryService = Depends(),
 ):
-    return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)
+    return await query_service.calculate_analogs(db=db, guid=id, subguid=subid, user=user)
 
 
 @router.post(
@@ -117,12 +116,11 @@ async def set_analogs(
     summary="Расчет пула для подзапроса",
     # responses={},
 )
-async def set_analogs(
-    analogs: QueryCreateUserApartments = Body(None, description="Список аналогов", example=set_analogs_example_value),
+async def calculate_pool(
     id: UUID4 = Path(None, description="Id запроса"),
     subid: UUID4 = Path(None, description="Id подзапроса"),
     user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
     query_service: QueryService = Depends(),
 ):
-    return await query_service.set_analogs(db=db, guid=id, subguid=subid, user=user, analogs=analogs)
+    return await query_service.calculate_pool(db=db, guid=id, subguid=subid, user=user)

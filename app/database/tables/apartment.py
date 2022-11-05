@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.database.connection import Base
 
@@ -26,6 +27,8 @@ class Apartment(Base):
     quality = Column(String, nullable=True)
     m2price = Column(Numeric, nullable=True)
     price = Column(Integer, nullable=True)
+
+    adjustment = relationship("Adjustment", back_populates="apartment", uselist=False)
 
     input_apartments_guid = Column(UUID(as_uuid=True), ForeignKey("sub_query.guid"))
     standart_object_guid = Column(UUID(as_uuid=True), ForeignKey("sub_query.guid"))

@@ -49,26 +49,6 @@ class Config(_Settings):
     BACKEND_DISABLE_AUTH: bool
     BACKEND_DISABLE_FILE_SENDING: bool
 
-    # Broker
-    BROKER_HOST: str
-    BROKER_PORT: int
-    BROKER_USER: str
-    BROKER_PASS: str
-
-    BROKER_URL: Optional[str] = None
-
-    @validator("BROKER_URL", pre=True)
-    def assemble_broker_url(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        if isinstance(v, str):
-            return v
-        return (
-            f"amqp://"
-            f"{values.get('BROKER_USER')}"
-            f":{values.get('BROKER_PASS')}"
-            f"@{values.get('BROKER_HOST')}"
-            f":{values.get('BROKER_PORT')}"
-        )
-
     # Storage
     STORAGE_REGION: str
     STORAGE_ENDPOINT: HttpUrl
