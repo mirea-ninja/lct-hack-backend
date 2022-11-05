@@ -5,7 +5,8 @@ from starlette import status
 
 from app.database.connection import get_session
 from app.fixtures import set_analog_example_value, set_analogs_example_value
-from app.models import AdjustmentGet, ApartmentCreate, ApartmentGet, QueryCreateBaseApartment, QueryCreateUserApartments
+from app.models import AdjustmentGet, ApartmentCreate, ApartmentGet, QueryCreateBaseApartment, \
+    QueryCreateUserApartments, QueryGet
 from app.services import QueryService
 from app.services.auth import get_user_from_access_token, verify_access_token
 
@@ -90,9 +91,9 @@ async def set_analogs(
 
 @router.post(
     "/query/{id}/subquery/{subid}/calculate-analogs",
-    response_model=AdjustmentGet,
+    response_model=QueryGet,
     response_description="Аналоги успешно рассчитаны",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
     description="Рассчитать аналоги для подзапроса",
     summary="Расчет аналогов для подзапроса",
     # responses={},
@@ -109,9 +110,9 @@ async def calculate_analogs(
 
 @router.post(
     "/query/{id}/subquery/{subid}/calculate-pool",
-    response_model=AdjustmentGet,
+    response_model=QueryGet,
     response_description="Пул успешно рассчитан",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
     description="Рассчитать пул для подзапроса",
     summary="Расчет пула для подзапроса",
     # responses={},

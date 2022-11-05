@@ -537,7 +537,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: b7544341-c278-4cf4-9f21-3eef646ef455
+              guid: 6173d289-4754-4483-a7cd-e361c9de1468
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -678,10 +678,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - c97a7713-cc0a-4990-82a2-a46adc81abd6
-                - 05a3c1f8-4749-48da-866f-03f13be85da3
-                - 1c4eaf51-1109-483d-a3bc-b1352526632e
-                - 26002377-08e1-459b-8640-c22b609ce72e
+                - fb6b02e4-95e7-4664-abf2-cb38309b015b
+                - 862288c3-c3ea-4afe-a4c4-21100cf26587
+                - e04e2771-3bdc-4fa4-bb8c-c4841ca58ce5
+                - 4c4f07f1-b682-47a7-aab7-f3d38a14d945
       responses:
         '201':
           description: Аналоги успешно установлены
@@ -689,6 +689,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdjustmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/calculate-analogs:
+    post:
+      tags:
+        - subquery
+      summary: Расчет аналогов для подзапроса
+      description: Рассчитать аналоги для подзапроса
+      operationId: calculate_analogs_query__id__subquery__subid__calculate_analogs_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      responses:
+        '200':
+          description: Аналоги успешно рассчитаны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /query/{id}/subquery/{subid}/calculate-pool:
+    post:
+      tags:
+        - subquery
+      summary: Расчет пула для подзапроса
+      description: Рассчитать пул для подзапроса
+      operationId: calculate_pool_query__id__subquery__subid__calculate_pool_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      responses:
+        '200':
+          description: Пул успешно рассчитан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGet'
         '422':
           description: Validation Error
           content:
@@ -1013,6 +1095,7 @@ components:
     AdjustmentGet:
       title: AdjustmentGet
       required:
+        - trade
         - floor
         - apt_area
         - kitchen_area
@@ -1020,6 +1103,7 @@ components:
         - distance_to_metro
         - quality
         - price_trade
+        - price_floor
         - price_area
         - price_kitchen_area
         - price_balcony
@@ -1030,35 +1114,38 @@ components:
       properties:
         trade:
           title: Trade
-          type: integer
+          type: number
           description: Корректировка на торг
-          default: -450
         floor:
           title: Floor
-          type: integer
+          type: number
           description: Корректировка на этаж
         apt_area:
           title: Apt Area
-          type: integer
+          type: number
           description: Корректировка на площадь квартиры
         kitchen_area:
           title: Kitchen Area
-          type: integer
+          type: number
           description: Корректировка на площадь кухни
         has_balcony:
           title: Has Balcony
-          type: integer
+          type: number
           description: Корректировка на наличие балкона
         distance_to_metro:
           title: Distance To Metro
-          type: integer
+          type: number
           description: Корректировка на удаленность от метро
         quality:
           title: Quality
-          type: integer
+          type: number
           description: Корректировка на отделку
         price_trade:
           title: Price Trade
+          type: number
+          description: Цена после корректировки на торг
+        price_floor:
+          title: Price Floor
           type: number
           description: Цена после корректировки на торг
         price_area:
@@ -1332,6 +1419,12 @@ components:
           type: string
           description: Уникальный идентификатор квартиры
           format: uuid4
+        adjustments:
+          title: Adjustments
+          type: array
+          items:
+            $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок
     ApartmentPatch:
       title: ApartmentPatch
       type: object
