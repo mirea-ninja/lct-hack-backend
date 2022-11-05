@@ -94,3 +94,11 @@ class QueryService:
         if adjustment is None:
             raise HTTPException(404, "Запрос не найден")
         return AdjustmentGet.from_orm(adjustment)
+
+    @staticmethod
+    async def calculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> None:
+        apartments = await QueryRepository.calculate_analogs(db, guid, subguid, user)
+
+    @staticmethod
+    async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> None:
+        apartments = await QueryRepository.calculate_pool(db, guid, subguid, user)

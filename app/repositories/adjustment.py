@@ -2,13 +2,12 @@ from typing import List
 
 from fastapi import HTTPException
 from pydantic import UUID4
-from sqlalchemy import BigInteger, delete, update
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.database.tables import Adjustment
 from app.models import AdjustmentPatch, AdjustmentCreate
-from app.repositories.query import QueryRepository
 
 
 class AdjustmentRepository:
@@ -18,10 +17,6 @@ class AdjustmentRepository:
         db.add(adjustment)
         await db.commit()
         await db.refresh(adjustment)
-        subquery = await QueryRepository.get_subquery(db, subid)
-        subquery.analogs.adjustments = adjustment
-        await db.commit()
-        await db.refresh(subquery)
         return adjustment
 
     @staticmethod

@@ -11,6 +11,7 @@ from sqlalchemy.sql.expression import cast
 from app.database.tables import Adjustment, Apartment, Query, SubQuery
 from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, QueryCreateUserApartments, QueryPatch, \
     AdjustmentCreate
+from app.repositories.adjustment import AdjustmentRepository
 
 
 class QueryRepository:
@@ -84,7 +85,7 @@ class QueryRepository:
 
     @staticmethod
     async def set_base(
-        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
+            db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
     ) -> Apartment:
         await db.execute(
             update(Apartment).where(Apartment.guid == stantart_object.guid).values({"standart_object_guid": subguid})
@@ -110,7 +111,7 @@ class QueryRepository:
 
     @staticmethod
     async def set_analogs(
-        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
+            db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
     ) -> None:
         for analog in analogs.guids:
             await db.execute(
@@ -125,4 +126,14 @@ class QueryRepository:
         analogs = subquery.analogs
 
         for analog in analogs:
-            result = AdjustmentCreate()
+            model = AdjustmentCreate()
+            adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
+            analog.adjustment = adjustment
+            await db.commit()
+            await db.refresh(subquery)
+
+    @staticmethod
+    async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> None:
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        standart_object = subquery.standart_object
+        input_apartments = subquery.input_apartments
