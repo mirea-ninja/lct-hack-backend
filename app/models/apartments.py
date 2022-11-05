@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import UUID4, BaseModel, Field, HttpUrl
 
+from app.models.adjustments import AdjustmentGet
 from app.models.utils import optional
 
 
@@ -27,6 +28,7 @@ class ApartmentBase(BaseModel):
 
 class ApartmentGet(ApartmentBase):
     guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
+    adjustments: Optional[list[AdjustmentGet]] = Field(description="Список корректировок")
 
     class Config:
         orm_mode = True

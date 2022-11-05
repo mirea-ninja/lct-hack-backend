@@ -28,38 +28,6 @@ services:
       timeout: 5s
       retries: 5
 
-  broker:
-    image: rabbitmq:3-management
-    environment:
-      RABBITMQ_DEFAULT_USER: ${BROKER_USER}
-      RABBITMQ_DEFAULT_PASS: ${BROKER_PASS}
-    volumes:
-      - broker:/var/lib/rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - default
-    healthcheck:
-      test: rabbitmq-diagnostics check_running
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  worker:
-    build:
-      context: .
-      dockerfile: ./worker/Dockerfile
-    environment:
-      - BROKER_URL=${BROKER_URL}
-      - LOG_LEVEL=TRACE
-      - C_FORCE_ROOT=true
-    depends_on:
-      broker:
-        condition: service_healthy
-    networks:
-      - default
-
   backend:
     build: .
     depends_on:
@@ -91,12 +59,6 @@ services:
       BACKEND_DISABLE_AUTH: ${BACKEND_DISABLE_AUTH}
       BACKEND_DISABLE_FILE_SENDING: ${BACKEND_DISABLE_FILE_SENDING}
 
-      BROKER_HOST: ${BROKER_HOST}
-      BROKER_PORT: ${BROKER_PORT}
-      BROKER_USER: ${BROKER_USER}
-      BROKER_PASS: ${BROKER_PASS}
-      BROKER_URL: ${BROKER_URL}
-
       STORAGE_REGION: ${STORAGE_REGION}
       STORAGE_ENDPOINT: ${STORAGE_ENDPOINT}
       STORAGE_ACCESS_KEY: ${STORAGE_ACCESS_KEY}
@@ -115,4 +77,3 @@ services:
 
 volumes:
   lct-hack-db-data:
-  broker:

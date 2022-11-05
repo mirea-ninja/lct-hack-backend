@@ -27,3 +27,11 @@ class AdjustmentGet(AdjustmentBase):
 
     class Config:
         orm_mode = True
+
+
+class AdjustmentCreate(AdjustmentBase):
+    pass
+
+
+class AdjustmentPatch(AdjustmentCreate):
+    pass

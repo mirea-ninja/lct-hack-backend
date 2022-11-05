@@ -9,7 +9,8 @@ from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
 
 from app.database.tables import Adjustment, Apartment, Query, SubQuery
-from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, QueryCreateUserApartments, QueryPatch
+from app.models import ApartmentCreate, QueryCreate, QueryCreateBaseApartment, QueryCreateUserApartments, QueryPatch, \
+    AdjustmentCreate
 
 
 class QueryRepository:
@@ -124,9 +125,4 @@ class QueryRepository:
         analogs = subquery.analogs
 
         for analog in analogs:
-            if standart_object.floor == 1:
-                pass
-            elif standart_object.floor == standart_object.floors:
-                pass
-            else:
-                pass
+            result = AdjustmentCreate()
