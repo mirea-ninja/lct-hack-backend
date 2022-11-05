@@ -12,7 +12,7 @@ from app.models import (
     QueryCreateBaseApartment,
     QueryCreateUserApartments,
     QueryGet,
-    QueryPatch,
+    QueryPatch, SubQueryGet,
 )
 from app.repositories import QueryRepository
 
@@ -96,9 +96,11 @@ class QueryService:
         return AdjustmentGet.from_orm(adjustment)
 
     @staticmethod
-    async def calculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> None:
-        apartments = await QueryRepository.calculate_analogs(db, guid, subguid, user)
+    async def calculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:
+        query = await QueryRepository.calculate_analogs(db, guid, subguid, user)
+        return QueryGet.from_orm(query)
 
     @staticmethod
-    async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> None:
-        apartments = await QueryRepository.calculate_pool(db, guid, subguid, user)
+    async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:
+        query = await QueryRepository.calculate_pool(db, guid, subguid, user)
+        return QueryGet.from_orm(query)

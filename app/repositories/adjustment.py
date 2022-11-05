@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import HTTPException
 from pydantic import UUID4
 from sqlalchemy import update
@@ -7,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.database.tables import Adjustment
-from app.models import AdjustmentPatch, AdjustmentCreate
+from app.models import AdjustmentCreate, AdjustmentPatch
 
 
 class AdjustmentRepository:
@@ -21,10 +19,10 @@ class AdjustmentRepository:
 
     @staticmethod
     async def get(
-            db: AsyncSession,
-            guid: UUID4,
-            subid: UUID4,
-            aid: UUID4,
+        db: AsyncSession,
+        guid: UUID4,
+        subid: UUID4,
+        aid: UUID4,
     ) -> Adjustment:
         res = await db.execute(select(Adjustment).where(Adjustment.guid == aid).limit(1))
         return res.scalar()
