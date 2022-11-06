@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List
 
 from fastapi import HTTPException
-from loguru import logger
 from pydantic import UUID4
 from sqlalchemy import BigInteger, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -265,7 +264,7 @@ class QueryRepository:
                 repair_type[analog.quality.lower()],
                 price_metro,
             )
-            standart_object_m2price += analog.m2price
+            standart_object_m2price += price_final
             model = AdjustmentCreate(
                 trade=trade,
                 floor=floor,
@@ -319,7 +318,7 @@ class QueryRepository:
             else:
                 standart_object_floor = "middle"
 
-            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, input_apartment.m2price)
+            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, standart_object.m2price)
             floor, price_floor = await QueryRepository.get_adj_and_price(
                 "floor", input_apartment_floor, standart_object_floor, price_trade
             )
@@ -358,11 +357,9 @@ class QueryRepository:
                 price_metro=price_metro,
                 price_final=price_final,
             )
-            input_apartment.m2price = (
-                (price_final - float(standart_object_m2price)) * 100 / float(standart_object_m2price)
-            )
+            input_apartment.m2price = (price_final - standart_object_m2price) * 100 / standart_object_m2price
             input_apartment.price = (
-                (price_final - float(standart_object_m2price)) * 100 / float(standart_object_m2price)
+                (price_final - standart_object_m2price) * 100 / standart_object_m2price
             ) * standart_object.apartment_area
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             input_apartment.adjustment = adjustment

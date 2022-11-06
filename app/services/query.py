@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from fastapi import HTTPException, Response
-from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
