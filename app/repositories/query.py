@@ -138,14 +138,14 @@ class QueryRepository:
     @staticmethod
     async def _find_match(adjustment: dict, key: int, value: int) -> int | float:
         for k, v in adjustment.items():
-            if k[0] < key <= k[1]:
+            if k[0] <= key <= k[1]:
                 for i, j in v.items():
-                    if i[0] < value <= i[1]:
+                    if i[0] <= value <= i[1]:
                         return j
 
     @staticmethod
     async def get_adj_and_price(
-        adj_type: str, calculating_object_value: int | str, analog_value: int | str, analog_price: float
+        adj_type: str, calculating_object_value: int | str, analog_value: int | str, analog_price: int
     ) -> tuple[float, int]:
         Floor = await QueryRepository._nameddict("Floor", ["first", "middle", "last"])
         AptArea = await QueryRepository._nameddict(
@@ -281,6 +281,7 @@ class QueryRepository:
             )
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             analog.adjustment = adjustment
+        standart_object_m2price = standart_object_m2price / len(analogs)
         standart_object.m2price = standart_object_m2price
         standart_object.price = standart_object_m2price * standart_object.apartment_area
         await db.commit()
@@ -291,6 +292,7 @@ class QueryRepository:
     async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> Query:
         subquery = await QueryRepository.get_subquery(db, subguid)
         standart_object = subquery.standart_object
+        standart_object_m2price = standart_object.m2price
         input_apartments = subquery.input_apartments
         repair_type = {
             "без отделки": "without_repair",
@@ -298,6 +300,8 @@ class QueryRepository:
             "современный ремонт": "modern",
         }
         for input_apartment in input_apartments:
+            if input_apartment.guid == standart_object.guid:
+                continue
             if input_apartment.floor == 1:
                 input_apartment_floor = "first"
             elif input_apartment.floor == input_apartment.floors:
@@ -352,10 +356,10 @@ class QueryRepository:
                 price_final=price_final,
             )
             input_apartment.m2price = (
-                (price_final - float(standart_object.m2price)) * 100 / float(standart_object.m2price)
+                (price_final - float(standart_object_m2price)) * 100 / float(standart_object_m2price)
             )
             input_apartment.price = (
-                (price_final - float(standart_object.m2price)) * 100 / float(standart_object.m2price)
+                (price_final - float(standart_object_m2price)) * 100 / float(standart_object_m2price)
             ) * standart_object.apartment_area
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             input_apartment.adjustment = adjustment

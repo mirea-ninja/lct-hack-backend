@@ -1,8 +1,8 @@
 """rebuild migrations
 
-Revision ID: 846146bb0e5e
+Revision ID: 8782f28b170b
 Revises: 
-Create Date: 2022-11-06 08:15:51.918626
+Create Date: 2022-11-06 10:02:39.446392
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '846146bb0e5e'
+revision = '8782f28b170b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -61,12 +61,12 @@ def upgrade() -> None:
     sa.Column('floors', sa.Integer(), nullable=False),
     sa.Column('walls', sa.String(), nullable=True),
     sa.Column('floor', sa.Integer(), nullable=False),
-    sa.Column('apartment_area', sa.Integer(), nullable=False),
-    sa.Column('kitchen_area', sa.Integer(), nullable=True),
+    sa.Column('apartment_area', sa.Numeric(), nullable=False),
+    sa.Column('kitchen_area', sa.Numeric(), nullable=True),
     sa.Column('has_balcony', sa.Boolean(), nullable=True),
     sa.Column('distance_to_metro', sa.Integer(), nullable=True),
     sa.Column('quality', sa.String(), nullable=True),
-    sa.Column('m2price', sa.Numeric(), nullable=True),
+    sa.Column('m2price', sa.Integer(), nullable=True),
     sa.Column('price', sa.Integer(), nullable=True),
     sa.Column('input_apartments_guid', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('standart_object_guid', postgresql.UUID(as_uuid=True), nullable=True),
@@ -85,19 +85,19 @@ def upgrade() -> None:
     sa.Column('guid', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('apartment_guid', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('trade', sa.Float(), nullable=False),
-    sa.Column('price_trade', sa.Numeric(), nullable=False),
+    sa.Column('price_trade', sa.Integer(), nullable=False),
     sa.Column('floor', sa.Float(), nullable=False),
-    sa.Column('price_floor', sa.Numeric(), nullable=False),
+    sa.Column('price_floor', sa.Integer(), nullable=False),
     sa.Column('apt_area', sa.Float(), nullable=False),
-    sa.Column('price_area', sa.Numeric(), nullable=False),
+    sa.Column('price_area', sa.Integer(), nullable=False),
     sa.Column('kitchen_area', sa.Float(), nullable=False),
-    sa.Column('price_kitchen', sa.Numeric(), nullable=False),
+    sa.Column('price_kitchen', sa.Integer(), nullable=False),
     sa.Column('has_balcony', sa.Float(), nullable=False),
-    sa.Column('price_balcony', sa.Numeric(), nullable=False),
+    sa.Column('price_balcony', sa.Integer(), nullable=False),
     sa.Column('distance_to_metro', sa.Float(), nullable=False),
-    sa.Column('price_metro', sa.Numeric(), nullable=False),
+    sa.Column('price_metro', sa.Integer(), nullable=False),
     sa.Column('quality', sa.Float(), nullable=False),
-    sa.Column('price_final', sa.Numeric(), nullable=False),
+    sa.Column('price_final', sa.Integer(), nullable=False),
     sa.Column('analog_calculated_guid', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('analog_user_guid', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('pool_calculated_guid', postgresql.UUID(as_uuid=True), nullable=True),
