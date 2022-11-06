@@ -49,8 +49,9 @@ async def create(
 )
 async def export(
     id: UUID4 = Query(description="Id запроса"),
+    include_adjustments: bool = Query(False, description="Включить корректировки", alias="includeAdjustments"),
     user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
     pool_service: PoolService = Depends(),
 ):
-    return await pool_service.export(db=db, guid=id, user=user)
+    return await pool_service.export(db=db, guid=id, include_adjustments=include_adjustments, user=user)

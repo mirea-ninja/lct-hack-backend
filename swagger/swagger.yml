@@ -344,6 +344,15 @@ paths:
             format: uuid4
           name: id
           in: query
+        - description: Включить корректировки
+          required: false
+          schema:
+            title: Includeadjustments
+            type: boolean
+            description: Включить корректировки
+            default: false
+          name: includeAdjustments
+          in: query
       responses:
         '200':
           description: Пул успешно обработан и экспортирован
@@ -565,7 +574,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: ff01dd46-08ac-41d8-b6aa-ec1310d4bb0c
+              guid: ae10133d-2b62-4b16-96c1-4ac60805a822
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -706,10 +715,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 77f8a0a6-50c7-41a5-9c8e-5c412035fed4
-                - eaa7d583-be0c-400a-b2db-0f889def6817
-                - 0f5872cf-f4a7-4e8a-acce-847db00fe64a
-                - e2960d2b-852b-4c04-b5f7-231a70e24706
+                - 5ce1e8dc-bbe9-4cc5-a6c3-63c7cd7acf17
+                - 34e6ef7b-9e2d-458a-90d2-546b50170ba2
+                - e33bb243-dccc-42d3-b08f-ead157801145
+                - f43c4973-c4c3-4d83-97e5-1d0496c0f665
       responses:
         '201':
           description: Аналоги успешно установлены
