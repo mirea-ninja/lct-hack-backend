@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 
 from app.config import config
 from app.models.exceptions import add_exception_handlers, catch_unhandled_exceptions
@@ -40,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-
+app.mount("/static", StaticFiles(directory="./app/docs"), name="static")
 app.include_router(auth_router, tags=["auth"])
 app.include_router(users_router, tags=["users"])
 app.include_router(pool_router, tags=["pool"])
