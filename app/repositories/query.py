@@ -104,8 +104,6 @@ class QueryRepository:
     @staticmethod
     async def get_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4) -> List[Apartment]:
         subquery = await QueryRepository.get_subquery(db, subguid)
-        if len(subquery.analogs) < 5:
-            raise HTTPException(503, "Недостаточно аналогов")
         return subquery.analogs
 
     @staticmethod
