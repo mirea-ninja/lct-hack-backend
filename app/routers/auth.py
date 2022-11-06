@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from app.config import config
 from app.database import get_session
 from app.models import Token, UserAuth, UserCreate
 from app.services import AuthService
 
-router = APIRouter()
+router = APIRouter(prefix=config.BACKEND_PREFIX)
 
 
 @router.post(

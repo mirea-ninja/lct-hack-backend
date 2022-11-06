@@ -3,12 +3,13 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from app.config import config
 from app.database.connection import get_session
 from app.models import QueryCreate, QueryGet, QueryPatch
 from app.services import QueryService
 from app.services.auth import get_user_from_access_token, verify_access_token
 
-router = APIRouter(dependencies=[Depends(verify_access_token)])
+router = APIRouter(prefix=config.BACKEND_PREFIX, dependencies=[Depends(verify_access_token)])
 
 
 @router.get(

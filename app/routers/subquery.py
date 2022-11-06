@@ -3,6 +3,7 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from app.config import config
 from app.database.connection import get_session
 from app.fixtures import set_analog_example_value, set_analogs_example_value
 from app.models import (
@@ -16,7 +17,7 @@ from app.models import (
 from app.services import QueryService
 from app.services.auth import get_user_from_access_token, verify_access_token
 
-router = APIRouter(dependencies=[Depends(verify_access_token)])
+router = APIRouter(prefix=config.BACKEND_PREFIX, dependencies=[Depends(verify_access_token)])
 
 
 @router.post(

@@ -294,7 +294,7 @@ class QueryRepository:
     async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> Query:
         subquery = await QueryRepository.get_subquery(db, subguid)
         standart_object = subquery.standart_object
-        standart_object_m2price = standart_object.m2price
+        standart_object.m2price
         input_apartments = subquery.input_apartments
         repair_type = {
             "без отделки": "without_repair",
