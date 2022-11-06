@@ -1,9 +1,10 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, Path
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from starlette.responses import FileResponse
 
 from app.config import config
 from app.database import get_session
@@ -35,3 +36,21 @@ async def create(
         raise HTTPException(400, detail="Неверный тип файла. Доступные типы: xlsx, xls, csv")
 
     return await pool_service.create(db=db, user=user, name=name, file=file)
+
+
+@router.get(
+    "/export",
+    response_class=FileResponse,
+    response_description="Пул успешно обработан и экспортирован",
+    status_code=status.HTTP_200_OK,
+    description="Экспортировать пул в файл",
+    summary="Экспорт пула",
+    # responses={},
+)
+async def export(
+    id: UUID4 = Query(description="Id запроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
+    db: AsyncSession = Depends(get_session),
+    pool_service: PoolService = Depends(),
+):
+    return await pool_service.export(db=db, guid=id, user=user)

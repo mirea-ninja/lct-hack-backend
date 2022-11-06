@@ -143,5 +143,5 @@ class PoolService:
         return query_db
 
     @staticmethod
-    async def get_file(db: AsyncSession, query_id: UUID4):
+    async def export(db: AsyncSession, guid: UUID4, user: UUID4):
         pass

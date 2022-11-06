@@ -4,13 +4,13 @@ info:
   description: Backend part for LCT Hack
   version: 0.1.0
 paths:
-  /signin:
+  /api/signin:
     post:
       tags:
         - auth
       summary: Вход в сервис
       description: Войти в сервис и получить токен
-      operationId: signin_signin_post
+      operationId: signin_api_signin_post
       requestBody:
         content:
           application/json:
@@ -30,13 +30,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /signup:
+  /api/signup:
     post:
       tags:
         - auth
       summary: Регистрация в сервисе
       description: Зарегистирироваться в сервисе и получить токен
-      operationId: signup_signup_post
+      operationId: signup_api_signup_post
       requestBody:
         content:
           application/json:
@@ -56,13 +56,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /user:
+  /api/user:
     get:
       tags:
         - users
       summary: Получение всех пользователей
       description: Получить список всех пользователей
-      operationId: get_all_user_get
+      operationId: get_all_api_user_get
       parameters:
         - required: false
           schema:
@@ -86,7 +86,7 @@ paths:
           content:
             application/json:
               schema:
-                title: Response Get All User Get
+                title: Response Get All Api User Get
                 type: array
                 items:
                   $ref: '#/components/schemas/UserGet'
@@ -103,7 +103,7 @@ paths:
         - users
       summary: Создание пользователя
       description: Создать пользователя и вернуть его
-      operationId: create_user_post
+      operationId: create_api_user_post
       requestBody:
         content:
           application/json:
@@ -125,13 +125,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /user/{id}:
+  /api/user/{id}:
     get:
       tags:
         - users
       summary: Получение пользователя по id
       description: Получить пользователя по его id
-      operationId: get_user__id__get
+      operationId: get_api_user__id__get
       parameters:
         - description: Id пользователя
           required: true
@@ -162,7 +162,7 @@ paths:
         - users
       summary: Изменение пользователя по id
       description: Изменить пользователя по его id (полное обновление модели)
-      operationId: update_user__id__put
+      operationId: update_api_user__id__put
       parameters:
         - description: Id пользователя
           required: true
@@ -199,7 +199,7 @@ paths:
         - users
       summary: Удаление пользователя по id
       description: Удалить пользователя по его id
-      operationId: delete_user__id__delete
+      operationId: delete_api_user__id__delete
       parameters:
         - description: Id пользователя
           required: true
@@ -226,7 +226,7 @@ paths:
         - users
       summary: Изменение пользователя по id (только указанные поля будут изменены)
       description: Изменить пользователя по его id (частисно обновление модели)
-      operationId: patch_user__id__patch
+      operationId: patch_api_user__id__patch
       parameters:
         - description: Id пользователя
           required: true
@@ -258,13 +258,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /user/email/{email}:
+  /api/user/email/{email}:
     get:
       tags:
         - users
       summary: Получение пользователя по email
       description: Получить пользователя по его email
-      operationId: get_user_email__email__get
+      operationId: get_api_user_email__email__get
       parameters:
         - description: Email пользователя
           required: true
@@ -290,13 +290,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /pool:
+  /api/pool:
     post:
       tags:
         - pool
       summary: Загрузка пула
       description: Загрузить новый пул в сервис
-      operationId: create_pool_post
+      operationId: create_api_pool_post
       parameters:
         - description: Название запроса
           required: false
@@ -310,7 +310,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Body_create_pool_post'
+              $ref: '#/components/schemas/Body_create_api_pool_post'
         required: true
       responses:
         '201':
@@ -327,13 +327,41 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query:
+  /api/export:
+    get:
+      tags:
+        - pool
+      summary: Экспорт пула
+      description: Экспортировать пул в файл
+      operationId: export_api_export_get
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: query
+      responses:
+        '200':
+          description: Пул успешно обработан и экспортирован
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /api/query:
     get:
       tags:
         - query
       summary: Получение всех запросов
       description: Получить список всех запросов
-      operationId: get_all_query_get
+      operationId: get_all_api_query_get
       parameters:
         - required: false
           schema:
@@ -357,7 +385,7 @@ paths:
           content:
             application/json:
               schema:
-                title: Response Get All Query Get
+                title: Response Get All Api Query Get
                 type: array
                 items:
                   $ref: '#/components/schemas/QueryGet'
@@ -369,13 +397,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}:
+  /api/query/{id}:
     get:
       tags:
         - query
       summary: Получение запрос по id
       description: Получить запрос по его id
-      operationId: get_query__id__get
+      operationId: get_api_query__id__get
       parameters:
         - description: Id запроса
           required: true
@@ -406,7 +434,7 @@ paths:
         - query
       summary: Изменение запрос по id
       description: Изменить запрос по его id (полное обновление модели)
-      operationId: update_query__id__put
+      operationId: update_api_query__id__put
       parameters:
         - description: Id запроса
           required: true
@@ -443,7 +471,7 @@ paths:
         - query
       summary: Удаление запрос по id
       description: Удалить запрос по его id
-      operationId: delete_query__id__delete
+      operationId: delete_api_query__id__delete
       parameters:
         - description: Id запроса
           required: true
@@ -470,7 +498,7 @@ paths:
         - query
       summary: Изменение запрос по id (только указанные поля будут изменены)
       description: Изменить запрос по его id (частичное обновление модели)
-      operationId: patch_query__id__patch
+      operationId: patch_api_query__id__patch
       parameters:
         - description: Id запроса
           required: true
@@ -502,13 +530,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/base-apartment:
+  /api/query/{id}/subquery/{subid}/base-apartment:
     post:
       tags:
         - subquery
       summary: Установка эталонного объекта
       description: Установить эталонный объект для подзапроса
-      operationId: set_base_query__id__subquery__subid__base_apartment_post
+      operationId: set_base_api_query__id__subquery__subid__base_apartment_post
       parameters:
         - description: Id запроса
           required: true
@@ -537,7 +565,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: 6173d289-4754-4483-a7cd-e361c9de1468
+              guid: ff01dd46-08ac-41d8-b6aa-ec1310d4bb0c
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -553,13 +581,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/analogs:
+  /api/query/{id}/subquery/{subid}/analogs:
     get:
       tags:
         - subquery
       summary: Получение аналогов для подзапроса
       description: Получить список аналогов для подзапроса
-      operationId: get_analogs_query__id__subquery__subid__analogs_get
+      operationId: get_analogs_api_query__id__subquery__subid__analogs_get
       parameters:
         - description: Id запроса
           required: true
@@ -585,7 +613,7 @@ paths:
           content:
             application/json:
               schema:
-                title: Response Get Analogs Query  Id  Subquery  Subid  Analogs Get
+                title: Response Get Analogs Api Query  Id  Subquery  Subid  Analogs Get
                 type: array
                 items:
                   $ref: '#/components/schemas/ApartmentGet'
@@ -602,7 +630,7 @@ paths:
         - subquery
       summary: Установка аналогов для подзапроса
       description: Установить аналоги для подзапроса
-      operationId: create_analogs_query__id__subquery__subid__analogs_post
+      operationId: create_analogs_api_query__id__subquery__subid__analogs_post
       parameters:
         - description: Id запроса
           required: true
@@ -642,13 +670,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/user-analogs:
+  /api/query/{id}/subquery/{subid}/user-analogs:
     post:
       tags:
         - subquery
       summary: Установка аналогов для подзапроса
       description: Установить подзапросу выбранные аналоги
-      operationId: set_analogs_query__id__subquery__subid__user_analogs_post
+      operationId: set_analogs_api_query__id__subquery__subid__user_analogs_post
       parameters:
         - description: Id запроса
           required: true
@@ -678,17 +706,17 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - fb6b02e4-95e7-4664-abf2-cb38309b015b
-                - 862288c3-c3ea-4afe-a4c4-21100cf26587
-                - e04e2771-3bdc-4fa4-bb8c-c4841ca58ce5
-                - 4c4f07f1-b682-47a7-aab7-f3d38a14d945
+                - 77f8a0a6-50c7-41a5-9c8e-5c412035fed4
+                - eaa7d583-be0c-400a-b2db-0f889def6817
+                - 0f5872cf-f4a7-4e8a-acce-847db00fe64a
+                - e2960d2b-852b-4c04-b5f7-231a70e24706
       responses:
         '201':
           description: Аналоги успешно установлены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdjustmentGet'
+                $ref: '#/components/schemas/SubQueryGet'
         '422':
           description: Validation Error
           content:
@@ -697,13 +725,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/calculate-analogs:
+  /api/query/{id}/subquery/{subid}/calculate-analogs:
     post:
       tags:
         - subquery
       summary: Расчет аналогов для подзапроса
       description: Рассчитать аналоги для подзапроса
-      operationId: calculate_analogs_query__id__subquery__subid__calculate_analogs_post
+      operationId: calculate_analogs_api_query__id__subquery__subid__calculate_analogs_post
       parameters:
         - description: Id запроса
           required: true
@@ -738,13 +766,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/calculate-pool:
+  /api/query/{id}/subquery/{subid}/calculate-pool:
     post:
       tags:
         - subquery
       summary: Расчет пула для подзапроса
       description: Рассчитать пул для подзапроса
-      operationId: calculate_pool_query__id__subquery__subid__calculate_pool_post
+      operationId: calculate_pool_api_query__id__subquery__subid__calculate_pool_post
       parameters:
         - description: Id запроса
           required: true
@@ -779,13 +807,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/apartment:
+  /api/query/{id}/subquery/{subid}/apartment:
     get:
       tags:
         - apartment
       summary: Получение всех квартир
       description: Получить список всех квартир
-      operationId: get_all_query__id__subquery__subid__apartment_get
+      operationId: get_all_api_query__id__subquery__subid__apartment_get
       parameters:
         - description: Id запроса
           required: true
@@ -827,7 +855,7 @@ paths:
           content:
             application/json:
               schema:
-                title: Response Get All Query  Id  Subquery  Subid  Apartment Get
+                title: Response Get All Api Query  Id  Subquery  Subid  Apartment Get
                 type: array
                 items:
                   $ref: '#/components/schemas/ApartmentGet'
@@ -844,7 +872,7 @@ paths:
         - apartment
       summary: Создание квартиры
       description: Создать квартиру и вернуть её
-      operationId: create_query__id__subquery__subid__apartment_post
+      operationId: create_api_query__id__subquery__subid__apartment_post
       parameters:
         - description: Id запроса
           required: true
@@ -885,13 +913,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
-  /query/{id}/subquery/{subid}/apartment/{aid}:
+  /api/query/{id}/subquery/{subid}/apartment/{aid}:
     get:
       tags:
         - apartment
       summary: Получение квартиры по id
       description: Получить квартиры по его id
-      operationId: get_query__id__subquery__subid__apartment__aid__get
+      operationId: get_api_query__id__subquery__subid__apartment__aid__get
       parameters:
         - description: Id запроса
           required: true
@@ -940,7 +968,7 @@ paths:
         - apartment
       summary: Изменение квартиры по id
       description: Изменить квартиры по его id (полное обновление модели)
-      operationId: update_query__id__subquery__subid__apartment__aid__put
+      operationId: update_api_query__id__subquery__subid__apartment__aid__put
       parameters:
         - description: Id запроса
           required: true
@@ -995,7 +1023,7 @@ paths:
         - apartment
       summary: Удаление квартиры по id
       description: Удалить квартиры по его id
-      operationId: delete_query__id__subquery__subid__apartment__aid__delete
+      operationId: delete_api_query__id__subquery__subid__apartment__aid__delete
       parameters:
         - description: Id запроса
           required: true
@@ -1040,7 +1068,7 @@ paths:
         - apartment
       summary: Изменение квартиры по id (только указанные поля будут изменены)
       description: Изменить квартиру по его id (частисно обновление модели)
-      operationId: patch_query__id__subquery__subid__apartment__aid__patch
+      operationId: patch_api_query__id__subquery__subid__apartment__aid__patch
       parameters:
         - description: Id запроса
           required: true
@@ -1105,7 +1133,7 @@ components:
         - price_trade
         - price_floor
         - price_area
-        - price_kitchen_area
+        - price_kitchen
         - price_balcony
         - price_metro
         - price_final
@@ -1142,31 +1170,31 @@ components:
           description: Корректировка на отделку
         price_trade:
           title: Price Trade
-          type: number
+          type: integer
           description: Цена после корректировки на торг
         price_floor:
           title: Price Floor
-          type: number
+          type: integer
           description: Цена после корректировки на торг
         price_area:
           title: Price Area
-          type: number
+          type: integer
           description: Цена после корректировки на площадь
-        price_kitchen_area:
-          title: Price Kitchen Area
-          type: number
+        price_kitchen:
+          title: Price Kitchen
+          type: integer
           description: Цена после корректировки на площадь кухни
         price_balcony:
           title: Price Balcony
-          type: number
+          type: integer
           description: Цена после корректировки на наличие балкона
         price_metro:
           title: Price Metro
-          type: number
+          type: integer
           description: Цена после корректировки на удаленность от метро
         price_final:
           title: Price Final
-          type: number
+          type: integer
           description: Цена после корректировки на отделку
         guid:
           title: Guid
@@ -1225,11 +1253,11 @@ components:
           description: Этаж
         apartment_area:
           title: Apartment Area
-          type: integer
+          type: number
           description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
-          type: integer
+          type: number
           description: Площадь кухни
         has_balcony:
           title: Has Balcony
@@ -1245,7 +1273,7 @@ components:
           description: Отделка
         m2price:
           title: M2Price
-          type: number
+          type: integer
           description: Цена за квадратный метр
           default: 0
         price:
@@ -1253,6 +1281,11 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
+        adjustment:
+          title: Adjustment
+          allOf:
+            - $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок
     ApartmentCreate:
       title: ApartmentCreate
       required:
@@ -1305,11 +1338,11 @@ components:
           description: Этаж
         apartment_area:
           title: Apartment Area
-          type: integer
+          type: number
           description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
-          type: integer
+          type: number
           description: Площадь кухни
         has_balcony:
           title: Has Balcony
@@ -1325,7 +1358,7 @@ components:
           description: Отделка
         m2price:
           title: M2Price
-          type: number
+          type: integer
           description: Цена за квадратный метр
           default: 0
         price:
@@ -1333,6 +1366,11 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
+        adjustment:
+          title: Adjustment
+          allOf:
+            - $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок
     ApartmentGet:
       title: ApartmentGet
       required:
@@ -1386,11 +1424,11 @@ components:
           description: Этаж
         apartment_area:
           title: Apartment Area
-          type: integer
+          type: number
           description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
-          type: integer
+          type: number
           description: Площадь кухни
         has_balcony:
           title: Has Balcony
@@ -1406,7 +1444,7 @@ components:
           description: Отделка
         m2price:
           title: M2Price
-          type: number
+          type: integer
           description: Цена за квадратный метр
           default: 0
         price:
@@ -1414,17 +1452,16 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
+        adjustment:
+          title: Adjustment
+          allOf:
+            - $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок
         guid:
           title: Guid
           type: string
           description: Уникальный идентификатор квартиры
           format: uuid4
-        adjustments:
-          title: Adjustments
-          type: array
-          items:
-            $ref: '#/components/schemas/AdjustmentGet'
-          description: Список корректировок
     ApartmentPatch:
       title: ApartmentPatch
       type: object
@@ -1470,11 +1507,11 @@ components:
           description: Этаж
         apartment_area:
           title: Apartment Area
-          type: integer
+          type: number
           description: Площадь квартиры
         kitchen_area:
           title: Kitchen Area
-          type: integer
+          type: number
           description: Площадь кухни
         has_balcony:
           title: Has Balcony
@@ -1490,7 +1527,7 @@ components:
           description: Отделка
         m2price:
           title: M2Price
-          type: number
+          type: integer
           description: Цена за квадратный метр
           default: 0
         price:
@@ -1498,8 +1535,13 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
-    Body_create_pool_post:
-      title: Body_create_pool_post
+        adjustment:
+          title: Adjustment
+          allOf:
+            - $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок
+    Body_create_api_pool_post:
+      title: Body_create_api_pool_post
       required:
         - file
       type: object
