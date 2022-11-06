@@ -19,37 +19,46 @@ from app.repositories import QueryRepository
 
 class QueryService:
     @staticmethod
+    def _sort_by_rooms(query: QueryGet) -> QueryGet:
+        for _ in range(len(query.sub_queries)):
+            query.sub_queries.sort(key=lambda x: x.input_apartments[0].rooms)
+
+        return query
+
+    @staticmethod
     async def create(db: AsyncSession, model: QueryCreate) -> QueryGet:
         query = await QueryRepository.create(db, model)
-        return QueryGet.from_orm(query)
+        query = QueryGet.from_orm(query)
+
+        return QueryService._sort_by_rooms(query)
 
     @staticmethod
     async def get_all(db: AsyncSession, offset: int = 0, limit: int = 100) -> list[QueryGet]:
         queries = await QueryRepository.get_all(db, offset=offset, limit=limit)
         if queries is None:
             raise HTTPException(404, "Запросы не найдены")
-        return [QueryGet.from_orm(q) for q in queries]
+        return [QueryService._sort_by_rooms(QueryGet.from_orm(q)) for q in queries]
 
     @staticmethod
     async def get(db: AsyncSession, guid: UUID4) -> QueryGet:
         query = await QueryRepository.get(db, guid)
         if query is None:
             raise HTTPException(404, "Запрос не найден")
-        return QueryGet.from_orm(query)
+        return QueryService._sort_by_rooms(QueryGet.from_orm(query))
 
     @staticmethod
     async def update(db: AsyncSession, guid: UUID4, user: UUID4, model: QueryCreate) -> QueryGet:
         query = await QueryRepository.update(db, guid, user, model)
         if query is None:
             raise HTTPException(404, "Запрос не найден")
-        return QueryGet.from_orm(query)
+        return QueryService._sort_by_rooms(QueryGet.from_orm(query))
 
     @staticmethod
     async def patch(db: AsyncSession, guid: UUID4, user: UUID4, model: QueryPatch) -> QueryGet:
         query = await QueryRepository.patch(db, guid, user, model)
         if query is None:
             raise HTTPException(404, "Запрос не найден")
-        return QueryGet.from_orm(query)
+        return QueryService._sort_by_rooms(QueryGet.from_orm(query))
 
     @staticmethod
     async def delete(db: AsyncSession, guid: UUID4) -> Response(status_code=204):
@@ -98,9 +107,9 @@ class QueryService:
     @staticmethod
     async def calculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:
         query = await QueryRepository.calculate_analogs(db, guid, subguid, user)
-        return QueryGet.from_orm(query)
+        return QueryService._sort_by_rooms(QueryGet.from_orm(query))
 
     @staticmethod
     async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:
         query = await QueryRepository.calculate_pool(db, guid, subguid, user)
-        return QueryGet.from_orm(query)
+        return QueryService._sort_by_rooms(QueryGet.from_orm(query))

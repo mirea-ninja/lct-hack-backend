@@ -28,7 +28,7 @@ async def send_file(file: bytes, filename: str) -> str:
 
 class PoolService:
     @staticmethod
-    async def _rename_columns(df: pd.DataFrame) -> pd.DataFrame:
+    def _rename_columns(df: pd.DataFrame) -> pd.DataFrame:
         return df.rename(
             columns={
                 "Местоположение": "address",
@@ -46,13 +46,18 @@ class PoolService:
         )
 
     @staticmethod
-    async def _split_by_rooms(df: pd.DataFrame) -> list[pd.DataFrame]:
+    def _split_by_rooms(df: pd.DataFrame) -> list[pd.DataFrame]:
         df.replace("Студия", 0, inplace=True)
         df.replace("Да", True, inplace=True)
         df.replace("Нет", False, inplace=True)
         df["has_balcony"] = df["has_balcony"].astype("bool")
         df["rooms"] = df["rooms"].astype("int32")
-        return [df[df["rooms"] == i] for i in range(df["rooms"].max() + 1)]
+
+        df.sort_values(by="rooms", inplace=True)
+
+        dfs = [df[df["rooms"] == i] for i in range(df["rooms"].max() + 1)]
+        return [i for i in dfs if not i.empty]
+
 
     @staticmethod
     async def _convert_address(address: str) -> tuple[float, float]:
@@ -98,26 +103,28 @@ class PoolService:
         await send_file(file=read_file, filename=filename)
 
         df = pd.read_excel(BytesIO(read_file))
-        df = await PoolService._rename_columns(df)
-        dfs = await PoolService._split_by_rooms(df)
+        df = PoolService._rename_columns(df)
+        dfs = PoolService._split_by_rooms(df)
 
-        df = pd.concat(dfs, ignore_index=True)
-        df.drop_duplicates(inplace=True)
+        for i in range(len(dfs)):
+            if dfs[i].empty:
+                continue
 
-        addresses = df["address"].to_list()
-        unique_addresses = list(set(addresses))
+            dfs[i].drop_duplicates(inplace=True)
 
-        tasks = [PoolService._convert_address(address) for address in unique_addresses]
-        results = await asyncio.gather(*tasks)
-        addresses_dict = dict(zip(unique_addresses, results))
+            addresses = dfs[i]["address"].to_list()
+            unique_addresses = list(set(addresses))
 
-        df["lat"] = df["address"].map(addresses_dict).apply(lambda x: x[0])
-        df["lon"] = df["address"].map(addresses_dict).apply(lambda x: x[1])
+            tasks = [PoolService._convert_address(address) for address in unique_addresses]
+            results = await asyncio.gather(*tasks)
+            addresses_dict = dict(zip(unique_addresses, results))
 
-        df = df[(df["lat"] != -1) & (df["lon"] != -1)]
+            dfs[i]["lat"] = dfs[i]["address"].map(addresses_dict).apply(lambda x: x[0])
+            dfs[i]["lon"] = dfs[i]["address"].map(addresses_dict).apply(lambda x: x[1])
+            dfs[i] = dfs[i][(dfs[i]["lat"] != -1) & (dfs[i]["lon"] != -1)]
 
-        if name is None:
-            name = df.at[0, "address"]
+            if name is None:
+                name = dfs[i]["address"].iloc[0]
 
         sub_queries = await PoolService._convert_dfs_to_model(dfs)
 
@@ -130,6 +137,10 @@ class PoolService:
         )
 
         query_db = await QueryService.create(db=db, model=query)
+
+        for _ in range(len(query_db.sub_queries)):
+            query_db.sub_queries.sort(key=lambda x: x.input_apartments[0].rooms)
+
         return query_db
 
     @staticmethod
