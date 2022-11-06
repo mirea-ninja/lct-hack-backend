@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List
 
 from fastapi import HTTPException
+from loguru import logger
 from pydantic import UUID4
 from sqlalchemy import BigInteger, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -136,11 +137,11 @@ class QueryRepository:
         return namespace[typename]
 
     @staticmethod
-    async def _find_match(adjustment: dict, key: int, value: int) -> int | float:
+    async def _find_match(adjustment: dict, key: float, value: float) -> int | float:
         for k, v in adjustment.items():
-            if k[0] <= key <= k[1]:
+            if k[0] <= key < k[1]:
                 for i, j in v.items():
-                    if i[0] <= value <= i[1]:
+                    if i[0] <= value < i[1]:
                         return j
 
     @staticmethod
@@ -205,6 +206,8 @@ class QueryRepository:
             adj = -0.045
         elif adj_type == "apt_area" or adj_type == "kitchen_area" or adj_type == "to_metro":
             adj = await QueryRepository._find_match(adjustments[adj_type], calculating_object_value, analog_value)
+            if not adj:
+                adj = 0
         elif adj_type == "floor" or adj_type == "repair_type" or adj_type == "has_balcony":
             adj = adjustments[adj_type][calculating_object_value][analog_value]
 
@@ -240,7 +243,7 @@ class QueryRepository:
             else:
                 analog_object_floor = "middle"
 
-            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, float(analog.m2price))
+            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, analog.m2price)
             floor, price_floor = await QueryRepository.get_adj_and_price(
                 "floor", standart_object_floor, analog_object_floor, price_trade
             )
@@ -281,7 +284,7 @@ class QueryRepository:
             )
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             analog.adjustment = adjustment
-        standart_object_m2price = standart_object_m2price / len(analogs)
+        standart_object_m2price = int(standart_object_m2price / len(analogs))
         standart_object.m2price = standart_object_m2price
         standart_object.price = standart_object_m2price * standart_object.apartment_area
         await db.commit()
@@ -316,7 +319,7 @@ class QueryRepository:
             else:
                 standart_object_floor = "middle"
 
-            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, float(input_apartment.m2price))
+            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, input_apartment.m2price)
             floor, price_floor = await QueryRepository.get_adj_and_price(
                 "floor", input_apartment_floor, standart_object_floor, price_trade
             )
