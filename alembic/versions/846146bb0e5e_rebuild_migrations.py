@@ -1,8 +1,8 @@
 """rebuild migrations
 
-Revision ID: 9e74d8969875
+Revision ID: 846146bb0e5e
 Revises: 
-Create Date: 2022-11-04 09:51:08.980088
+Create Date: 2022-11-06 08:15:51.918626
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '9e74d8969875'
+revision = '846146bb0e5e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -50,53 +50,24 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('guid')
     )
     op.create_index(op.f('ix_sub_query_guid'), 'sub_query', ['guid'], unique=True)
-    op.create_table('adjustment',
-    sa.Column('guid', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('sub_query_guid', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('trade', sa.Integer(), nullable=False),
-    sa.Column('price_trade', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('floor', sa.Integer(), nullable=False),
-    sa.Column('price_floor', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('apt_area', sa.Integer(), nullable=False),
-    sa.Column('price_area', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('kitchen_area', sa.Integer(), nullable=False),
-    sa.Column('price_kitchen', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('has_balcony', sa.Integer(), nullable=False),
-    sa.Column('price_balcony', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('distance_to_metro', sa.Integer(), nullable=False),
-    sa.Column('price_metro', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('quality', sa.Integer(), nullable=False),
-    sa.Column('price_final', sa.Numeric(precision=7, scale=2), nullable=False),
-    sa.Column('analog_calculated_guid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('analog_user_guid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('pool_calculated_guid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('pool_user_guid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['analog_calculated_guid'], ['sub_query.guid'], ),
-    sa.ForeignKeyConstraint(['analog_user_guid'], ['sub_query.guid'], ),
-    sa.ForeignKeyConstraint(['pool_calculated_guid'], ['sub_query.guid'], ),
-    sa.ForeignKeyConstraint(['pool_user_guid'], ['sub_query.guid'], ),
-    sa.ForeignKeyConstraint(['sub_query_guid'], ['sub_query.guid'], ),
-    sa.PrimaryKeyConstraint('guid')
-    )
-    op.create_index(op.f('ix_adjustment_guid'), 'adjustment', ['guid'], unique=True)
     op.create_table('apartment',
     sa.Column('guid', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('sub_query_guid', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('address', sa.String(), nullable=False),
     sa.Column('lat', sa.Numeric(), nullable=False),
     sa.Column('lon', sa.Numeric(), nullable=False),
+    sa.Column('link', sa.String(), nullable=True),
     sa.Column('rooms', sa.Integer(), nullable=False),
     sa.Column('segment', sa.String(), nullable=False),
     sa.Column('floors', sa.Integer(), nullable=False),
-    sa.Column('walls', sa.String(), nullable=False),
+    sa.Column('walls', sa.String(), nullable=True),
     sa.Column('floor', sa.Integer(), nullable=False),
     sa.Column('apartment_area', sa.Integer(), nullable=False),
-    sa.Column('kitchen_area', sa.Integer(), nullable=False),
-    sa.Column('has_balcony', sa.Boolean(), nullable=False),
-    sa.Column('distance_to_metro', sa.Integer(), nullable=False),
-    sa.Column('quality', sa.String(), nullable=False),
-    sa.Column('m2price', sa.Numeric(), nullable=False),
-    sa.Column('price', sa.Integer(), nullable=False),
+    sa.Column('kitchen_area', sa.Integer(), nullable=True),
+    sa.Column('has_balcony', sa.Boolean(), nullable=True),
+    sa.Column('distance_to_metro', sa.Integer(), nullable=True),
+    sa.Column('quality', sa.String(), nullable=True),
+    sa.Column('m2price', sa.Numeric(), nullable=True),
+    sa.Column('price', sa.Integer(), nullable=True),
     sa.Column('input_apartments_guid', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('standart_object_guid', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('analogs_guid', postgresql.UUID(as_uuid=True), nullable=True),
@@ -107,19 +78,47 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['output_apartments_guid'], ['sub_query.guid'], ),
     sa.ForeignKeyConstraint(['selected_analogs_guid'], ['sub_query.guid'], ),
     sa.ForeignKeyConstraint(['standart_object_guid'], ['sub_query.guid'], ),
-    sa.ForeignKeyConstraint(['sub_query_guid'], ['sub_query.guid'], ),
     sa.PrimaryKeyConstraint('guid')
     )
     op.create_index(op.f('ix_apartment_guid'), 'apartment', ['guid'], unique=True)
+    op.create_table('adjustment',
+    sa.Column('guid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('apartment_guid', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('trade', sa.Float(), nullable=False),
+    sa.Column('price_trade', sa.Numeric(), nullable=False),
+    sa.Column('floor', sa.Float(), nullable=False),
+    sa.Column('price_floor', sa.Numeric(), nullable=False),
+    sa.Column('apt_area', sa.Float(), nullable=False),
+    sa.Column('price_area', sa.Numeric(), nullable=False),
+    sa.Column('kitchen_area', sa.Float(), nullable=False),
+    sa.Column('price_kitchen', sa.Numeric(), nullable=False),
+    sa.Column('has_balcony', sa.Float(), nullable=False),
+    sa.Column('price_balcony', sa.Numeric(), nullable=False),
+    sa.Column('distance_to_metro', sa.Float(), nullable=False),
+    sa.Column('price_metro', sa.Numeric(), nullable=False),
+    sa.Column('quality', sa.Float(), nullable=False),
+    sa.Column('price_final', sa.Numeric(), nullable=False),
+    sa.Column('analog_calculated_guid', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('analog_user_guid', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('pool_calculated_guid', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('pool_user_guid', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.ForeignKeyConstraint(['analog_calculated_guid'], ['sub_query.guid'], ),
+    sa.ForeignKeyConstraint(['analog_user_guid'], ['sub_query.guid'], ),
+    sa.ForeignKeyConstraint(['apartment_guid'], ['apartment.guid'], ),
+    sa.ForeignKeyConstraint(['pool_calculated_guid'], ['sub_query.guid'], ),
+    sa.ForeignKeyConstraint(['pool_user_guid'], ['sub_query.guid'], ),
+    sa.PrimaryKeyConstraint('guid')
+    )
+    op.create_index(op.f('ix_adjustment_guid'), 'adjustment', ['guid'], unique=True)
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_apartment_guid'), table_name='apartment')
-    op.drop_table('apartment')
     op.drop_index(op.f('ix_adjustment_guid'), table_name='adjustment')
     op.drop_table('adjustment')
+    op.drop_index(op.f('ix_apartment_guid'), table_name='apartment')
+    op.drop_table('apartment')
     op.drop_index(op.f('ix_sub_query_guid'), table_name='sub_query')
     op.drop_table('sub_query')
     op.drop_index(op.f('ix_user_guid'), table_name='user')

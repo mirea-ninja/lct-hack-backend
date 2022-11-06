@@ -28,7 +28,7 @@ class Apartment(Base):
     m2price = Column(Numeric, nullable=True)
     price = Column(Integer, nullable=True)
 
-    adjustment = relationship("Adjustment", back_populates="apartment", uselist=False)
+    adjustment = relationship("Adjustment", back_populates="apartment", lazy="joined", uselist=False)
 
     input_apartments_guid = Column(UUID(as_uuid=True), ForeignKey("sub_query.guid"))
     standart_object_guid = Column(UUID(as_uuid=True), ForeignKey("sub_query.guid"))

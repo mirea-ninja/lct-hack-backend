@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from fastapi import HTTPException, Response
+from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import (
-    AdjustmentGet,
     ApartmentCreate,
     ApartmentGet,
     QueryCreate,
     QueryCreateBaseApartment,
     QueryCreateUserApartments,
     QueryGet,
-    QueryPatch, SubQueryGet,
+    QueryPatch,
+    SubQueryGet,
 )
 from app.repositories import QueryRepository
 
@@ -33,6 +34,7 @@ class QueryService:
     @staticmethod
     async def get(db: AsyncSession, guid: UUID4) -> QueryGet:
         query = await QueryRepository.get(db, guid)
+        logger.info(query)
         if query is None:
             raise HTTPException(404, "Запрос не найден")
         return QueryGet.from_orm(query)
@@ -89,11 +91,11 @@ class QueryService:
     @staticmethod
     async def set_analogs(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
-    ) -> AdjustmentGet:
-        adjustment = await QueryRepository.set_analogs(db, guid, subguid, user, analogs)
-        if adjustment is None:
-            raise HTTPException(404, "Запрос не найден")
-        return AdjustmentGet.from_orm(adjustment)
+    ) -> SubQueryGet:
+        subquery = await QueryRepository.set_analogs(db, guid, subguid, user, analogs)
+        if subquery is None:
+            raise HTTPException(404, "Подзапрос не найден")
+        return SubQueryGet.from_orm(subquery)
 
     @staticmethod
     async def calculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:

@@ -5,8 +5,14 @@ from starlette import status
 
 from app.database.connection import get_session
 from app.fixtures import set_analog_example_value, set_analogs_example_value
-from app.models import AdjustmentGet, ApartmentCreate, ApartmentGet, QueryCreateBaseApartment, \
-    QueryCreateUserApartments, QueryGet
+from app.models import (
+    ApartmentCreate,
+    ApartmentGet,
+    QueryCreateBaseApartment,
+    QueryCreateUserApartments,
+    QueryGet,
+    SubQueryGet,
+)
 from app.services import QueryService
 from app.services.auth import get_user_from_access_token, verify_access_token
 
@@ -71,7 +77,7 @@ async def create_analogs(
 
 @router.post(
     "/query/{id}/subquery/{subid}/user-analogs",
-    response_model=AdjustmentGet,
+    response_model=SubQueryGet,
     response_description="Аналоги успешно установлены",
     status_code=status.HTTP_201_CREATED,
     description="Установить подзапросу выбранные аналоги",

@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from pydantic import UUID4, BaseModel, Field
 
 
@@ -12,13 +10,13 @@ class AdjustmentBase(BaseModel):
     distance_to_metro: float = Field(description="Корректировка на удаленность от метро")
     quality: float = Field(description="Корректировка на отделку")
 
-    price_trade: Decimal = Field(description="Цена после корректировки на торг")
-    price_floor: Decimal = Field(description="Цена после корректировки на торг")
-    price_area: Decimal = Field(description="Цена после корректировки на площадь")
-    price_kitchen_area: Decimal = Field(description="Цена после корректировки на площадь кухни")
-    price_balcony: Decimal = Field(description="Цена после корректировки на наличие балкона")
-    price_metro: Decimal = Field(description="Цена после корректировки на удаленность от метро")
-    price_final: Decimal = Field(description="Цена после корректировки на отделку")
+    price_trade: float = Field(description="Цена после корректировки на торг")
+    price_floor: float = Field(description="Цена после корректировки на торг")
+    price_area: float = Field(description="Цена после корректировки на площадь")
+    price_kitchen: float = Field(description="Цена после корректировки на площадь кухни")
+    price_balcony: float = Field(description="Цена после корректировки на наличие балкона")
+    price_metro: float = Field(description="Цена после корректировки на удаленность от метро")
+    price_final: float = Field(description="Цена после корректировки на отделку")
 
 
 class AdjustmentGet(AdjustmentBase):

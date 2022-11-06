@@ -13,5 +13,12 @@ connect:
 logs:
 	docker logs --follow lct-hack-backend-backend-1
 
+
+.PHONY: clear
+clear:
+	docker-compose down
+	docker volume prune || true
+	docker-compose up -d --build
+
 .DEFAULT_GOAL :=
 

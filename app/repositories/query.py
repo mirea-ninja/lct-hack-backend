@@ -4,22 +4,20 @@ from typing import List
 
 from fastapi import HTTPException
 from pydantic import UUID4
-from sqlalchemy import BigInteger
-from sqlalchemy import delete
-from sqlalchemy import update
+from sqlalchemy import BigInteger, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
 
-from app.database.tables import Apartment
-from app.database.tables import Query
-from app.database.tables import SubQuery
-from app.models import AdjustmentCreate
-from app.models import ApartmentCreate
-from app.models import QueryCreate
-from app.models import QueryCreateBaseApartment
-from app.models import QueryCreateUserApartments
-from app.models import QueryPatch
+from app.database.tables import Apartment, Query, SubQuery
+from app.models import (
+    AdjustmentCreate,
+    ApartmentCreate,
+    QueryCreate,
+    QueryCreateBaseApartment,
+    QueryCreateUserApartments,
+    QueryPatch,
+)
 from app.repositories.adjustment import AdjustmentRepository
 
 
@@ -121,12 +119,14 @@ class QueryRepository:
     @staticmethod
     async def set_analogs(
         db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
-    ) -> None:
+    ) -> SubQuery:
         for analog in analogs.guids:
             await db.execute(
                 update(Apartment).where(Apartment.guid == analog).values({"selected_analogs_guid": subguid})
             )
-            await db.commit()
+        await db.commit()
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        return subquery
 
     @staticmethod
     async def _nameddict(typename: str, keys: list[str | tuple]) -> str:
@@ -223,12 +223,26 @@ class QueryRepository:
         repair_type = {
             "без отделки": "without_repair",
             "муниципальный ремонт": "municipal",
-            "современный ремонт": "modern",
+            "современная отделка": "modern",
         }
         for analog in analogs:
+            if standart_object.floor == 1:
+                standart_object_floor = "first"
+            elif standart_object.floor == standart_object.floors:
+                standart_object_floor = "last"
+            else:
+                standart_object_floor = "middle"
+
+            if analog.floor == 1:
+                analog_object_floor = "first"
+            elif analog.floor == standart_object.floors:
+                analog_object_floor = "last"
+            else:
+                analog_object_floor = "middle"
+
             trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, float(analog.m2price))
             floor, price_floor = await QueryRepository.get_adj_and_price(
-                "floor", standart_object.floor, analog.floor, price_trade
+                "floor", standart_object_floor, analog_object_floor, price_trade
             )
             apt_area, price_area = await QueryRepository.get_adj_and_price(
                 "apt_area", standart_object.apartment_area, analog.apartment_area, price_floor
@@ -243,7 +257,10 @@ class QueryRepository:
                 "to_metro", standart_object.distance_to_metro, analog.distance_to_metro, price_balcony
             )
             quality, price_final = await QueryRepository.get_adj_and_price(
-                "repair_type", repair_type[standart_object.quality], repair_type[analog.quality], price_metro
+                "repair_type",
+                repair_type[standart_object.quality.lower()],
+                repair_type[analog.quality.lower()],
+                price_metro,
             )
             standart_object_m2price += analog.m2price
             model = AdjustmentCreate(
@@ -257,7 +274,7 @@ class QueryRepository:
                 price_trade=price_trade,
                 price_floor=price_floor,
                 price_area=price_area,
-                price_kitchen_area=price_kitchen_area,
+                price_kitchen=price_kitchen_area,
                 price_balcony=price_balcony,
                 price_metro=price_metro,
                 price_final=price_final,
@@ -267,7 +284,6 @@ class QueryRepository:
         standart_object.m2price = standart_object_m2price
         standart_object.price = standart_object_m2price * standart_object.apartment_area
         await db.commit()
-        await db.refresh(subquery)
         query = await QueryRepository.get(db, guid)
         return query
 
@@ -282,9 +298,23 @@ class QueryRepository:
             "современный ремонт": "modern",
         }
         for input_apartment in input_apartments:
+            if input_apartment.floor == 1:
+                input_apartment_floor = "first"
+            elif input_apartment.floor == input_apartment.floors:
+                input_apartment_floor = "last"
+            else:
+                input_apartment_floor = "middle"
+
+            if standart_object.floor == 1:
+                standart_object_floor = "first"
+            elif standart_object.floor == standart_object.floors:
+                standart_object_floor = "last"
+            else:
+                standart_object_floor = "middle"
+
             trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, float(standart_object.m2price))
             floor, price_floor = await QueryRepository.get_adj_and_price(
-                "floor", input_apartment.floor, standart_object.floor, price_trade
+                "floor", input_apartment_floor, standart_object_floor, price_trade
             )
             apt_area, price_area = await QueryRepository.get_adj_and_price(
                 "apt_area", input_apartment.apartment_area, standart_object.apartment_area, price_floor
@@ -299,7 +329,10 @@ class QueryRepository:
                 "to_metro", input_apartment.distance_to_metro, standart_object.distance_to_metro, price_balcony
             )
             quality, price_final = await QueryRepository.get_adj_and_price(
-                "repair_type", repair_type[input_apartment.quality], repair_type[standart_object.quality], price_metro
+                "repair_type",
+                repair_type[input_apartment.quality.lower()],
+                repair_type[standart_object.quality.lower()],
+                price_metro,
             )
 
             model = AdjustmentCreate(
@@ -313,7 +346,7 @@ class QueryRepository:
                 price_trade=price_trade,
                 price_floor=price_floor,
                 price_area=price_area,
-                price_kitchen_area=price_kitchen_area,
+                price_kitchen=price_kitchen_area,
                 price_balcony=price_balcony,
                 price_metro=price_metro,
                 price_final=price_final,
@@ -327,6 +360,5 @@ class QueryRepository:
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             input_apartment.adjustment = adjustment
         await db.commit()
-        await db.refresh(subquery)
         query = await QueryRepository.get(db, guid)
         return query
