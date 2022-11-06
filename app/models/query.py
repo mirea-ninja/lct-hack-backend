@@ -91,3 +91,7 @@ class QueryCreateBaseApartment(BaseModel):
 
 class QueryCreateUserApartments(BaseModel):
     guids: List[UUID4] = Field(description="Уникальные идентификаторы аналогов, устанавливаемых пользователем")
+
+
+class QueryExport(BaseModel):
+    link: HttpUrl = Field(example="https://example.com/", description="Ссылка на файл с выходными данными")

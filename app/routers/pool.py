@@ -8,7 +8,7 @@ from starlette.responses import FileResponse
 
 from app.config import config
 from app.database import get_session
-from app.models import QueryGet
+from app.models import QueryGet, QueryExport
 from app.models.enums.file import AllowedFileTypes
 from app.services import PoolService
 from app.services.auth import get_user_from_access_token, verify_access_token
@@ -40,7 +40,7 @@ async def create(
 
 @router.get(
     "/export",
-    response_class=FileResponse,
+    response_model=QueryExport,
     response_description="Пул успешно обработан и экспортирован",
     status_code=status.HTTP_200_OK,
     description="Экспортировать пул в файл",
