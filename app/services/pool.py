@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import asyncio
 import secrets
+import urllib
 from io import BytesIO
-from pathlib import Path
 
 import aiohttp
 import openpyxl
@@ -13,7 +13,7 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
-from app.models import ApartmentCreate, QueryCreate, QueryGet, SubQueryCreate
+from app.models import ApartmentCreate, QueryCreate, QueryExport, QueryGet, SubQueryCreate
 from app.services.query import QueryService
 from app.storage import get_s3_client
 
@@ -145,11 +145,7 @@ class PoolService:
         return query_db
 
     @staticmethod
-    async def export(db: AsyncSession, guid: UUID4, include_adjustments: bool, split_by_lists: bool, user: UUID4):
-        query = await QueryService.get(db=db, guid=guid)
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Data"
+    def _create_excel_columns(ws, include_adjustments: bool):
         ws["A1"] = "Местоположение"
         ws["B1"] = "Количество комнат"
         ws["C1"] = "Сегмент"
@@ -163,19 +159,6 @@ class PoolService:
         ws["K1"] = "Состояние"
         ws["L1"] = "Цена за кв.м"
         ws["M1"] = "Цена"
-
-        for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=11):
-            for cell in col:
-                cell.fill = openpyxl.styles.PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
-                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
-                # cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style='thin'))
-                cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style="thick"))
-
-        for row in ws.iter_rows(min_row=1, max_row=1, min_col=1, max_col=11):
-            for cell in row:
-                cell.border = openpyxl.styles.Border(
-                    top=openpyxl.styles.Side(border_style="thick"), bottom=openpyxl.styles.Side(border_style="thick")
-                )
 
         ws.column_dimensions["A"].width = 17.5
         ws.column_dimensions["B"].width = 13.5
@@ -191,24 +174,103 @@ class PoolService:
         ws.column_dimensions["L"].width = 15
         ws.column_dimensions["M"].width = 15
 
-        Path(__file__).parent
+        if include_adjustments:
+            ws["N1"] = "Цена за м2, %"
+            ws["O1"] = "Этаж расположения, %"
+            ws["P1"] = "Площадь квартиры м2, %"
+            ws["Q1"] = "Площадь кухни м2, %"
+            ws["R1"] = "Балкон/лоджия, %"
+            ws["S1"] = "Удаленность от метро, %"
+            ws["T1"] = "Состояние, %"
+
+            ws.column_dimensions["N"].width = 15
+            ws.column_dimensions["O"].width = 15
+            ws.column_dimensions["P"].width = 15
+            ws.column_dimensions["Q"].width = 15
+            ws.column_dimensions["R"].width = 15
+            ws.column_dimensions["S"].width = 15
+            ws.column_dimensions["T"].width = 15
+
+        for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=20 if include_adjustments else 13):
+            for cell in col:
+                cell.fill = openpyxl.styles.PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+                # cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style='thin'))
+                cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style="thick"))
+
+        for row in ws.iter_rows(min_row=1, max_row=1, min_col=1, max_col=20 if include_adjustments else 13):
+            for cell in row:
+                cell.border = openpyxl.styles.Border(
+                    top=openpyxl.styles.Side(border_style="thick"), bottom=openpyxl.styles.Side(border_style="thick")
+                )
+
+    @staticmethod
+    def _append_data_to_excel(ws, sub_query, include_adjustments: bool):
+        for j in range(len(sub_query.input_apartments)):
+            apartment = sub_query.input_apartments[j]
+            row = [
+                apartment.address,
+                apartment.rooms,
+                apartment.segment,
+                apartment.floors,
+                apartment.walls,
+                apartment.floor,
+                apartment.apartment_area,
+                apartment.kitchen_area,
+                apartment.has_balcony,
+                apartment.distance_to_metro,
+                apartment.quality,
+                apartment.m2price,
+                apartment.price,
+            ]
+
+            if include_adjustments and apartment.adjustment is not None:
+                to_extend = [
+                    f"{(apartment.adjustment.price_final - apartment.m2price) * 100 / apartment.m2price:.2f}%",
+                    f"{apartment.adjustment.floor * 100:.2f}%",
+                    f"{apartment.adjustment.apt_area * 100:.2f}%",
+                    f"{apartment.adjustment.kitchen_area * 100:.2f}%",
+                    f"{apartment.adjustment.has_balcony * 100:.2f}%",
+                    f"{apartment.adjustment.distance_to_metro * 100:.2f}%",
+                    f"{apartment.adjustment.quality}",
+                ]
+
+                to_extend = [f"+{x}" if x[0] != "-" else x for x in to_extend]
+                row.extend(to_extend)
+
+            ws.append(row)
+
+    @staticmethod
+    async def export(
+        db: AsyncSession, guid: UUID4, include_adjustments: bool, split_by_lists: bool, user: UUID4
+    ) -> QueryExport:
+        query = await QueryService.get(db=db, guid=guid)
+        wb = openpyxl.Workbook()
+        ws = None
+
+        if not split_by_lists:
+            ws = wb.active
+            ws.title = "Data"
+
+            PoolService._create_excel_columns(ws, include_adjustments)
 
         for i in range(len(query.sub_queries)):
             sub_query = query.sub_queries[i]
-            for j in range(2, len(sub_query.input_apartments) + 2):
-                input_apartment = sub_query.input_apartments[j]
-                ws[f"A{i}"] = input_apartment.address
-                ws[f"B{i}"] = input_apartment.rooms
-                ws[f"C{i}"] = input_apartment.segment
-                ws[f"D{i}"] = input_apartment.floors
-                ws[f"E{i}"] = input_apartment.walls
-                ws[f"F{i}"] = input_apartment.floor
-                ws[f"G{i}"] = input_apartment.apartment_area
-                ws[f"H{i}"] = input_apartment.kitchen_area
-                ws[f"I{i}"] = input_apartment.has_balcony
-                ws[f"J{i}"] = input_apartment.distance_to_metro
-                ws[f"K{i}"] = input_apartment.quality
-                ws[f"L{i}"] = input_apartment.m2price
-                ws[f"M{i}"] = input_apartment.price
+            if split_by_lists:
+                if i == 0:
+                    ws = wb.active
+                    ws.title = f"SubQuery {i+1}"
+                ws = wb.create_sheet(f"SubQuery {i+1}")
+                PoolService._create_excel_columns(ws, include_adjustments)
 
-        # wb.save(cur_dir / 'data.xlsx')
+            PoolService._append_data_to_excel(ws, sub_query, include_adjustments)
+
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        url = await send_file(file=output, filename=f"{query.name}.xlsx")
+
+        url = urllib.parse.quote(url, safe=":/")
+
+        return QueryExport(link=url)
