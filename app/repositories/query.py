@@ -299,7 +299,7 @@ class QueryRepository:
         repair_type = {
             "без отделки": "without_repair",
             "муниципальный ремонт": "municipal",
-            "современный ремонт": "modern",
+            "современная отделка": "modern",
         }
         for input_apartment in input_apartments:
             if input_apartment.guid == standart_object.guid:
@@ -357,10 +357,8 @@ class QueryRepository:
                 price_metro=price_metro,
                 price_final=price_final,
             )
-            input_apartment.m2price = (price_final - standart_object_m2price) * 100 / standart_object_m2price
-            input_apartment.price = (
-                (price_final - standart_object_m2price) * 100 / standart_object_m2price
-            ) * standart_object.apartment_area
+            input_apartment.m2price = price_final
+            input_apartment.price = int(price_final * input_apartment.apartment_area)
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             input_apartment.adjustment = adjustment
         await db.commit()
