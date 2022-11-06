@@ -365,6 +365,10 @@ paths:
       responses:
         '200':
           description: Пул успешно обработан и экспортирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryExport'
         '422':
           description: Validation Error
           content:
@@ -583,7 +587,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: 6cb0a91f-c430-4df4-907c-37d3c468e4af
+              guid: 1a3823b4-5d7d-424a-95c7-10a62e6b81cd
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -724,10 +728,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 10f1e0e3-b65b-4afb-8687-a868b2177277
-                - 5ee5e3a6-d17b-492d-b882-2cee5fd7f192
-                - 503a50be-82f8-44ef-b1eb-b3c6fafa2d52
-                - 35884749-a3f6-45a7-aee3-4a614b9d2e26
+                - 000935d9-1a0b-4f99-ad8c-0be7a9c2966b
+                - 654b0fb9-771a-4b3a-afe3-92ff92795f10
+                - 7f8952dd-c762-4154-ab0d-fc49c8bbc9c1
+                - 23554d92-ca1c-49cf-a5b3-f2fe3caa8901
       responses:
         '201':
           description: Аналоги успешно установлены
@@ -1645,6 +1649,20 @@ components:
             type: string
             format: uuid4
           description: Уникальные идентификаторы аналогов, устанавливаемых пользователем
+    QueryExport:
+      title: QueryExport
+      required:
+        - link
+      type: object
+      properties:
+        link:
+          title: Link
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Ссылка на файл с выходными данными
+          format: uri
+          example: https://example.com/
     QueryGet:
       title: QueryGet
       required:
