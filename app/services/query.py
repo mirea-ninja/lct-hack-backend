@@ -43,7 +43,6 @@ class QueryService:
     @staticmethod
     async def get(db: AsyncSession, guid: UUID4) -> QueryGet:
         query = await QueryRepository.get(db, guid)
-        logger.info(query)
         if query is None:
             raise HTTPException(404, "Запрос не найден")
         return QueryService._sort_by_rooms(QueryGet.from_orm(query))

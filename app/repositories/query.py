@@ -312,7 +312,7 @@ class QueryRepository:
             else:
                 standart_object_floor = "middle"
 
-            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, float(standart_object.m2price))
+            trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, float(input_apartment.m2price))
             floor, price_floor = await QueryRepository.get_adj_and_price(
                 "floor", input_apartment_floor, standart_object_floor, price_trade
             )

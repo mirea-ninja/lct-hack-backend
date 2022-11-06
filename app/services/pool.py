@@ -58,7 +58,6 @@ class PoolService:
         dfs = [df[df["rooms"] == i] for i in range(df["rooms"].max() + 1)]
         return [i for i in dfs if not i.empty]
 
-
     @staticmethod
     async def _convert_address(address: str) -> tuple[float, float]:
         url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address"
