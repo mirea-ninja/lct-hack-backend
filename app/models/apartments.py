@@ -24,11 +24,11 @@ class ApartmentBase(BaseModel):
     quality: Optional[str] = Field(description="Отделка")
     m2price: Optional[int] = Field(0, description="Цена за квадратный метр")
     price: Optional[int] = Field(0, description="Цена квартиры")
-    adjustment: Optional[AdjustmentGet] = Field(description="Список корректировок")
 
 
 class ApartmentGet(ApartmentBase):
     guid: UUID4 = Field(description="Уникальный идентификатор квартиры")
+    adjustment: Optional[AdjustmentGet] = Field(description="Список корректировок")
 
     class Config:
         orm_mode = True

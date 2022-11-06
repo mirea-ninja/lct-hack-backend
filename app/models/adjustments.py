@@ -1,5 +1,7 @@
 from pydantic import UUID4, BaseModel, Field
 
+from app.models.utils import optional
+
 
 class AdjustmentBase(BaseModel):
     trade: float = Field(description="Корректировка на торг")
@@ -32,5 +34,6 @@ class AdjustmentCreate(AdjustmentBase):
     pass
 
 
+@optional
 class AdjustmentPatch(AdjustmentCreate):
     pass

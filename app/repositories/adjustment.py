@@ -28,8 +28,10 @@ class AdjustmentRepository:
         return res.scalar()
 
     @staticmethod
-    async def patch(db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4, model: AdjustmentPatch) -> Adjustment:
-        adjustment = await AdjustmentRepository.get(db, guid, subid, aid)
+    async def patch(
+        db: AsyncSession, guid: UUID4, subid: UUID4, aid: UUID4, adjid: UUID4, model: AdjustmentPatch
+    ) -> Adjustment:
+        adjustment = await AdjustmentRepository.get(db, guid, subid, adjid)
 
         if adjustment is None:
             raise HTTPException(404, "Корректировки не найдены")
@@ -37,7 +39,7 @@ class AdjustmentRepository:
         if model is None or not model.dict(exclude_unset=True):
             raise HTTPException(400, "Должно быть задано хотя бы одно новое поле модели")
 
-        await db.execute(update(Adjustment).where(Adjustment.guid == aid).values(**model.dict()))
+        await db.execute(update(Adjustment).where(Adjustment.guid == adjid).values(**model.dict()))
         await db.commit()
         await db.refresh(adjustment)
 

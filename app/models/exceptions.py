@@ -63,6 +63,7 @@ endpoint_message = {
     ("PUT", "/api/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка изменения квартиры по id",
     ("PATCH", "/api/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка частичного изменения квартиры по id",
     ("DELETE", "/api/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка удаления квартиры по id",
+    ("POST", "/api/query/{id}/subquery/{subid}/apartment/{aid}/adjustment/{adjid}"): "Ошибка изменения корректировки",
 }
 
 

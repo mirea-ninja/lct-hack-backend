@@ -4,11 +4,10 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.responses import FileResponse
 
 from app.config import config
 from app.database import get_session
-from app.models import QueryGet, QueryExport
+from app.models import QueryExport, QueryGet
 from app.models.enums.file import AllowedFileTypes
 from app.services import PoolService
 from app.services.auth import get_user_from_access_token, verify_access_token
