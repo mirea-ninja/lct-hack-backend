@@ -587,7 +587,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: 1a3823b4-5d7d-424a-95c7-10a62e6b81cd
+              guid: 39660447-0498-450c-ada4-9ac6d1a7d562
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -728,10 +728,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 000935d9-1a0b-4f99-ad8c-0be7a9c2966b
-                - 654b0fb9-771a-4b3a-afe3-92ff92795f10
-                - 7f8952dd-c762-4154-ab0d-fc49c8bbc9c1
-                - 23554d92-ca1c-49cf-a5b3-f2fe3caa8901
+                - f5a52011-0cdd-4d0e-aba1-0a1fc69928c2
+                - 5d1808d6-2993-4141-b40e-43eb02b6bbb0
+                - ba601018-a998-4a33-9663-35ec31e1eed9
+                - b6eef540-42e2-457e-bdfe-7926ade48b7a
       responses:
         '201':
           description: Аналоги успешно установлены
@@ -1140,6 +1140,71 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
+  /api/query/{id}/subquery/{subid}/apartment/{aid}/adjustment/{adjid}:
+    patch:
+      tags:
+        - adjustment
+      summary: Изменение квартиры по id (только указанные поля будут изменены)
+      description: Изменить квартиру по его id (частисно обновление модели)
+      operationId: patch_api_query__id__subquery__subid__apartment__aid__adjustment__adjid__patch
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+        - description: Id квартиры
+          required: true
+          schema:
+            title: Aid
+            type: string
+            description: Id квартиры
+            format: uuid4
+          name: aid
+          in: path
+        - description: Id корректировки
+          required: true
+          schema:
+            title: Adjid
+            type: string
+            description: Id корректировки
+            format: uuid4
+          name: adjid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdjustmentPatch'
+        required: true
+      responses:
+        '200':
+          description: Успешное частичное обновление квартиры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdjustmentGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
 components:
   schemas:
     AdjustmentGet:
@@ -1223,6 +1288,66 @@ components:
           type: string
           description: Уникальный идентификатор квартиры, для которой проводилась корректировка автоматически
           format: uuid4
+    AdjustmentPatch:
+      title: AdjustmentPatch
+      type: object
+      properties:
+        trade:
+          title: Trade
+          type: number
+          description: Корректировка на торг
+        floor:
+          title: Floor
+          type: number
+          description: Корректировка на этаж
+        apt_area:
+          title: Apt Area
+          type: number
+          description: Корректировка на площадь квартиры
+        kitchen_area:
+          title: Kitchen Area
+          type: number
+          description: Корректировка на площадь кухни
+        has_balcony:
+          title: Has Balcony
+          type: number
+          description: Корректировка на наличие балкона
+        distance_to_metro:
+          title: Distance To Metro
+          type: number
+          description: Корректировка на удаленность от метро
+        quality:
+          title: Quality
+          type: number
+          description: Корректировка на отделку
+        price_trade:
+          title: Price Trade
+          type: integer
+          description: Цена после корректировки на торг
+        price_floor:
+          title: Price Floor
+          type: integer
+          description: Цена после корректировки на торг
+        price_area:
+          title: Price Area
+          type: integer
+          description: Цена после корректировки на площадь
+        price_kitchen:
+          title: Price Kitchen
+          type: integer
+          description: Цена после корректировки на площадь кухни
+        price_balcony:
+          title: Price Balcony
+          type: integer
+          description: Цена после корректировки на наличие балкона
+        price_metro:
+          title: Price Metro
+          type: integer
+          description: Цена после корректировки на удаленность от метро
+        price_final:
+          title: Price Final
+          type: integer
+          description: Цена после корректировки на отделку
     ApartmentBase:
       title: ApartmentBase
       required:
@@ -1303,11 +1428,6 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
-        adjustment:
-          title: Adjustment
-          allOf:
-            - $ref: '#/components/schemas/AdjustmentGet'
-          description: Список корректировок
     ApartmentCreate:
       title: ApartmentCreate
       required:
@@ -1388,11 +1508,6 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
-        adjustment:
-          title: Adjustment
-          allOf:
-            - $ref: '#/components/schemas/AdjustmentGet'
-          description: Список корректировок
     ApartmentGet:
       title: ApartmentGet
       required:
@@ -1474,16 +1589,16 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
-        adjustment:
-          title: Adjustment
-          allOf:
-            - $ref: '#/components/schemas/AdjustmentGet'
-          description: Список корректировок
         guid:
           title: Guid
           type: string
           description: Уникальный идентификатор квартиры
           format: uuid4
+        adjustment:
+          title: Adjustment
+          allOf:
+            - $ref: '#/components/schemas/AdjustmentGet'
+          description: Список корректировок
     ApartmentPatch:
       title: ApartmentPatch
       type: object
@@ -1557,11 +1672,6 @@ components:
           type: integer
           description: Цена квартиры
           default: 0
-        adjustment:
-          title: Adjustment
-          allOf:
-            - $ref: '#/components/schemas/AdjustmentGet'
-          description: Список корректировок
     Body_create_api_pool_post:
       title: Body_create_api_pool_post
       required:
@@ -2047,3 +2157,5 @@ tags:
     description: Работа с подзапросами
   - name: apartment
     description: Работа с квартирами
+  - name: adjustment
+    description: Работа с корректировками
