@@ -37,7 +37,6 @@ class Message(BaseModel):
 endpoint_message = {
     ("POST", "/api/signin"): "Ошибка входа в систему",
     ("POST", "/api/signup"): "Ошибка регистрации в системе",
-
     ("POST", "/api/user"): "Ошибка создания пользователя",
     ("GET", "/api/user"): "Ошибка получения всех пользователей",
     ("GET", "/api/user/{id}"): "Ошибка получения пользователя по id",
@@ -45,23 +44,19 @@ endpoint_message = {
     ("PUT", "/api/user/{id}"): "Ошибка изменения пользователя по id",
     ("PATCH", "/api/user/{id}"): "Ошибка частичного изменения пользователя по id",
     ("DELETE", "/api/user/{id}"): "Ошибка удаления пользователя по id",
-
     ("POST", "/api/pool"): "Ошибка загрузки пула",
     ("GET", "/api/export"): "Ошибка экспорта пула",
-
     ("GET", "/api/query"): "Ошибка получения всех запросов",
     ("GET", "/api/query/{id}"): "Ошибка получения запроса по id",
     ("PUT", "/api/query/{id}"): "Ошибка изменения запроса по id",
     ("PATCH", "/api/query/{id}"): "Ошибка частичного изменения запроса по id",
     ("DELETE", "/api/query/{id}"): "Ошибка удаления запроса по id",
-
     ("POST", "/api/query/{id}/subquery/{subid}/base-apartment"): "Ошибка установки эталонного объекта",
     ("GET", "/api/query/{id}/subquery/{subid}/analogs"): "Ошибка получения аналогов",
     ("POST", "/api/query/{id}/subquery/{subid}/analogs"): "Ошибка установки аналогов",
     ("POST", "/api/query/{id}/subquery/{subid}/user-analogs"): "Ошибка установки аналогов пользователя",
     ("GET", "/api/query/{id}/subquery/{subid}/calculate-analogs"): "Ошибка расчета аналогов",
     ("GET", "/api/query/{id}/subquery/{subid}/calculate-pool"): "Ошибка расчета пула",
-
     ("POST", "/api/query/{id}/subquery/{subid}/apartment"): "Ошибка создания квартиры",
     ("GET", "/api/query/{id}/subquery/{subid}/apartment"): "Ошибка получения всех квартир",
     ("GET", "/api/query/{id}/subquery/{subid}/apartment/{aid}"): "Ошибка получения квартиры по id",

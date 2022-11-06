@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, Path
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -50,8 +50,11 @@ async def create(
 async def export(
     id: UUID4 = Query(description="Id запроса"),
     include_adjustments: bool = Query(False, description="Включить корректировки", alias="includeAdjustments"),
+    split_by_lists: bool = Query(False, description="Разбить данные по листам", alias="splitByLists"),
     user: UUID4 = Depends(get_user_from_access_token),
     db: AsyncSession = Depends(get_session),
     pool_service: PoolService = Depends(),
 ):
-    return await pool_service.export(db=db, guid=id, include_adjustments=include_adjustments, user=user)
+    return await pool_service.export(
+        db=db, guid=id, include_adjustments=include_adjustments, split_by_lists=split_by_lists, user=user
+    )

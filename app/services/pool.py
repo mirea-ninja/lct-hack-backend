@@ -145,69 +145,70 @@ class PoolService:
         return query_db
 
     @staticmethod
-    async def export(db: AsyncSession, guid: UUID4, include_adjustments: bool, user: UUID4):
+    async def export(db: AsyncSession, guid: UUID4, include_adjustments: bool, split_by_lists: bool, user: UUID4):
         query = await QueryService.get(db=db, guid=guid)
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = 'Data'
-        ws['A1'] = 'Местоположение'
-        ws['B1'] = 'Количество комнат'
-        ws['C1'] = 'Сегмент'
-        ws['D1'] = 'Этажность дома'
-        ws['E1'] = 'Материал стен'
-        ws['F1'] = 'Этаж расположения'
-        ws['G1'] = 'Площадь квартиры, кв.м'
-        ws['H1'] = 'Площадь кухни, кв.м'
-        ws['I1'] = 'Наличие балкона/лоджии'
-        ws['J1'] = 'Удаленность от станции метро, мин. пешком'
-        ws['K1'] = 'Состояние'
-        ws['L1'] = 'Цена за кв.м'
-        ws['M1'] = 'Цена'
+        ws.title = "Data"
+        ws["A1"] = "Местоположение"
+        ws["B1"] = "Количество комнат"
+        ws["C1"] = "Сегмент"
+        ws["D1"] = "Этажность дома"
+        ws["E1"] = "Материал стен"
+        ws["F1"] = "Этаж расположения"
+        ws["G1"] = "Площадь квартиры, кв.м"
+        ws["H1"] = "Площадь кухни, кв.м"
+        ws["I1"] = "Наличие балкона/лоджии"
+        ws["J1"] = "Удаленность от станции метро, мин. пешком"
+        ws["K1"] = "Состояние"
+        ws["L1"] = "Цена за кв.м"
+        ws["M1"] = "Цена"
 
         for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=11):
             for cell in col:
-                cell.fill = openpyxl.styles.PatternFill(start_color='D3D3D3', end_color='D3D3D3', fill_type='solid')
+                cell.fill = openpyxl.styles.PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
                 cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
                 # cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style='thin'))
-                cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style='thick'))
+                cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style="thick"))
 
         for row in ws.iter_rows(min_row=1, max_row=1, min_col=1, max_col=11):
             for cell in row:
-                cell.border = openpyxl.styles.Border(top=openpyxl.styles.Side(border_style='thick'),
-                                                     bottom=openpyxl.styles.Side(border_style='thick'))
+                cell.border = openpyxl.styles.Border(
+                    top=openpyxl.styles.Side(border_style="thick"), bottom=openpyxl.styles.Side(border_style="thick")
+                )
 
-        ws.column_dimensions['A'].width = 17.5
-        ws.column_dimensions['B'].width = 13.5
-        ws.column_dimensions['C'].width = 23
-        ws.column_dimensions['D'].width = 15
-        ws.column_dimensions['E'].width = 15
-        ws.column_dimensions['F'].width = 15
-        ws.column_dimensions['G'].width = 15.5
-        ws.column_dimensions['H'].width = 15.5
-        ws.column_dimensions['I'].width = 15.5
-        ws.column_dimensions['J'].width = 15
-        ws.column_dimensions['K'].width = 15
-        ws.column_dimensions['L'].width = 15
-        ws.column_dimensions['M'].width = 15
+        ws.column_dimensions["A"].width = 17.5
+        ws.column_dimensions["B"].width = 13.5
+        ws.column_dimensions["C"].width = 23
+        ws.column_dimensions["D"].width = 15
+        ws.column_dimensions["E"].width = 15
+        ws.column_dimensions["F"].width = 15
+        ws.column_dimensions["G"].width = 15.5
+        ws.column_dimensions["H"].width = 15.5
+        ws.column_dimensions["I"].width = 15.5
+        ws.column_dimensions["J"].width = 15
+        ws.column_dimensions["K"].width = 15
+        ws.column_dimensions["L"].width = 15
+        ws.column_dimensions["M"].width = 15
 
-        cur_dir = Path(__file__).parent
+        Path(__file__).parent
 
         for i in range(len(query.sub_queries)):
             sub_query = query.sub_queries[i]
             for j in range(2, len(sub_query.input_apartments) + 2):
                 input_apartment = sub_query.input_apartments[j]
-                ws[f'A{i}'] = input_apartment.address
-                ws[f'B{i}'] = input_apartment.rooms
-                ws[f'C{i}'] = input_apartment.segment
-                ws[f'D{i}'] = input_apartment.floors
-                ws[f'E{i}'] = input_apartment.walls
-                ws[f'F{i}'] = input_apartment.floor
-                ws[f'G{i}'] = input_apartment.apartment_area
-                ws[f'H{i}'] = input_apartment.kitchen_area
-                ws[f'I{i}'] = input_apartment.has_balcony
-                ws[f'J{i}'] = input_apartment.distance_to_metro
-                ws[f'K{i}'] = input_apartment.quality
-                ws[f'L{i}'] = input_apartment.m2price
-                ws[f'M{i}'] = input_apartment.price
+                ws[f"A{i}"] = input_apartment.address
+                ws[f"B{i}"] = input_apartment.rooms
+                ws[f"C{i}"] = input_apartment.segment
+                ws[f"D{i}"] = input_apartment.floors
+                ws[f"E{i}"] = input_apartment.walls
+                ws[f"F{i}"] = input_apartment.floor
+                ws[f"G{i}"] = input_apartment.apartment_area
+                ws[f"H{i}"] = input_apartment.kitchen_area
+                ws[f"I{i}"] = input_apartment.has_balcony
+                ws[f"J{i}"] = input_apartment.distance_to_metro
+                ws[f"K{i}"] = input_apartment.quality
+                ws[f"L{i}"] = input_apartment.m2price
+                ws[f"M{i}"] = input_apartment.price
 
         # wb.save(cur_dir / 'data.xlsx')

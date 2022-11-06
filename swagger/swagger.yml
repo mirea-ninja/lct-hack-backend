@@ -353,6 +353,15 @@ paths:
             default: false
           name: includeAdjustments
           in: query
+        - description: Разбить данные по листам
+          required: false
+          schema:
+            title: Splitbylists
+            type: boolean
+            description: Разбить данные по листам
+            default: false
+          name: splitByLists
+          in: query
       responses:
         '200':
           description: Пул успешно обработан и экспортирован
@@ -574,7 +583,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: ae10133d-2b62-4b16-96c1-4ac60805a822
+              guid: 6cb0a91f-c430-4df4-907c-37d3c468e4af
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -715,10 +724,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 5ce1e8dc-bbe9-4cc5-a6c3-63c7cd7acf17
-                - 34e6ef7b-9e2d-458a-90d2-546b50170ba2
-                - e33bb243-dccc-42d3-b08f-ead157801145
-                - f43c4973-c4c3-4d83-97e5-1d0496c0f665
+                - 10f1e0e3-b65b-4afb-8687-a868b2177277
+                - 5ee5e3a6-d17b-492d-b882-2cee5fd7f192
+                - 503a50be-82f8-44ef-b1eb-b3c6fafa2d52
+                - 35884749-a3f6-45a7-aee3-4a614b9d2e26
       responses:
         '201':
           description: Аналоги успешно установлены
