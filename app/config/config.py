@@ -48,6 +48,7 @@ class Config(_Settings):
 
     BACKEND_DISABLE_AUTH: bool
     BACKEND_DISABLE_FILE_SENDING: bool
+    BACKEND_DISABLE_REGISTRATION: bool
 
     # Storage
     STORAGE_REGION: str

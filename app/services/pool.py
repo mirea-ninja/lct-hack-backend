@@ -4,11 +4,13 @@ import asyncio
 import secrets
 import urllib
 from io import BytesIO
+from tempfile import NamedTemporaryFile
 
 import aiohttp
 import openpyxl
 import pandas as pd
 from fastapi import UploadFile
+from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -101,7 +103,7 @@ class PoolService:
     async def create(db: AsyncSession, user: UUID4, name: str, file: UploadFile) -> QueryGet:
         read_file = await file.read()
         filename = await PoolService._create_random_name()
-        await send_file(file=read_file, filename=filename)
+        await send_file(file=read_file, filename=f"{filename}.xlsx")
 
         df = pd.read_excel(BytesIO(read_file))
         df = PoolService._rename_columns(df)
@@ -265,12 +267,10 @@ class PoolService:
 
             PoolService._append_data_to_excel(ws, sub_query, include_adjustments)
 
-        output = BytesIO()
-        wb.save(output)
-        output.seek(0)
-
-        url = await send_file(file=output, filename=f"{query.name}.xlsx")
-
-        url = urllib.parse.quote(url, safe=":/")
-
-        return QueryExport(link=url)
+        with NamedTemporaryFile() as tmp:
+            wb.save(tmp.name)
+            tmp.seek(0)
+            stream = tmp.read()
+        filename = await PoolService._create_random_name()
+        await send_file(file=bytes(stream), filename=f"{filename}.xlsx")
+        return QueryExport(link=f"{config.STORAGE_ENDPOINT}/{config.STORAGE_BUCKET_NAME}/{filename}.xlsx")

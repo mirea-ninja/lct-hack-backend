@@ -87,6 +87,8 @@ class AuthService:
         return Token(access_token=access_token)
 
     async def signup(self, db: AsyncSession, model: UserCreate) -> Token:
+        if config.BACKEND_DISABLE_REGISTRATION:
+            raise HTTPException(403, "Регистрация отключена")
         user = await UsersRepository.get_user_by_email(db=db, email=model.email)
         if user:
             raise HTTPException(409, "Пользователь с таким email уже существует")
