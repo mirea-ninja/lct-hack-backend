@@ -15,7 +15,8 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
-from app.models import ApartmentCreate, QueryCreate, QueryExport, QueryGet, SubQueryCreate
+from app.models import ApartmentCreate, QueryCreate, QueryExport, QueryGet, SubQueryCreate, QueryPatch
+from app.repositories import QueryRepository
 from app.services.query import QueryService
 from app.storage import get_s3_client
 
@@ -273,4 +274,6 @@ class PoolService:
             stream = tmp.read()
         filename = await PoolService._create_random_name()
         await send_file(file=bytes(stream), filename=f"{filename}.xlsx")
-        return QueryExport(link=f"{config.STORAGE_ENDPOINT}/{config.STORAGE_BUCKET_NAME}/{filename}.xlsx")
+        link = f"{config.STORAGE_ENDPOINT}/{config.STORAGE_BUCKET_NAME}/{filename}.xlsx"
+        await QueryRepository.set_link(db=db, guid=guid, link=link)
+        return QueryExport(link=link)

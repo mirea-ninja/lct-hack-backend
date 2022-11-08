@@ -92,7 +92,7 @@ class QueryRepository:
 
     @staticmethod
     async def set_base(
-        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
+            db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
     ) -> Apartment:
         await db.execute(
             update(Apartment).where(Apartment.guid == stantart_object.guid).values({"standart_object_guid": subguid})
@@ -116,7 +116,7 @@ class QueryRepository:
 
     @staticmethod
     async def set_analogs(
-        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
+            db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
     ) -> SubQuery:
         for analog in analogs.guids:
             await db.execute(
@@ -143,7 +143,7 @@ class QueryRepository:
 
     @staticmethod
     async def get_adj_and_price(
-        adj_type: str, calculating_object_value: int | str, analog_value: int | str, analog_price: int
+            adj_type: str, calculating_object_value: int | str, analog_value: int | str, analog_price: int
     ) -> tuple[float, int]:
         Floor = await QueryRepository._nameddict("Floor", ["first", "middle", "last"])
         AptArea = await QueryRepository._nameddict(
@@ -360,4 +360,12 @@ class QueryRepository:
             input_apartment.adjustment = adjustment
         await db.commit()
         query = await QueryRepository.get(db, guid)
+        return query
+
+    @staticmethod
+    async def set_link(db: AsyncSession, guid: UUID4, link: str) -> Query:
+        query = await QueryRepository.get(db, guid)
+        query.output_file = link
+        await db.commit()
+        await db.refresh(query)
         return query
