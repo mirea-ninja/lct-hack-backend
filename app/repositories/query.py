@@ -281,7 +281,10 @@ class QueryRepository:
             )
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
             analog.adjustment = adjustment
-        standart_object_m2price = int(standart_object_m2price / len(analogs))
+        try:
+            standart_object_m2price = int(standart_object_m2price / len(analogs))
+        except ZeroDivisionError:
+            standart_object_m2price = 0
         standart_object.m2price = standart_object_m2price
         standart_object.price = standart_object_m2price * standart_object.apartment_area
         await db.commit()
