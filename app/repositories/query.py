@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import List, Union
 
 from fastapi import HTTPException
 from pydantic import UUID4
-from sqlalchemy import BigInteger, delete, update
+from sqlalchemy import BigInteger, asc, delete, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import cast
@@ -19,7 +20,7 @@ from app.models import (
     QueryCreateUserApartments,
     QueryPatch,
 )
-from app.models.enums import AdjustmentType
+from app.models.enums import AdjustmentType, SortByEnum
 from app.repositories.adjustment import AdjustmentRepository
 
 
@@ -44,8 +45,38 @@ class QueryRepository:
         return query
 
     @staticmethod
-    async def get_all(db: AsyncSession, offset: int = 0, limit: int = 100) -> List[Query]:
-        res = await db.execute(select(Query).offset(cast(offset, BigInteger)).limit(limit))
+    async def get_all(
+        db: AsyncSession,
+        sort: SortByEnum,
+        start: datetime,
+        end: datetime,
+        segment: list[str],
+        walls: list[str],
+        floors_min: int,
+        floors_max: int,
+        limit: int = 0,
+        offset: int = 100,
+    ) -> List[Query]:
+        query = select(Query).offset(cast(offset, BigInteger)).limit(limit)
+        if sort:
+            query = (
+                query.order_by(desc(Query.created_at))
+                if sort == SortByEnum.DESC
+                else query.order_by(asc(Query.created_at))
+            )
+        if start:
+            query = query.where(Query.created_at >= start)
+        if end:
+            query = query.where(Query.created_at <= end)
+        if segment:
+            pass
+        if walls:
+            pass
+        if floors_min:
+            pass
+        if floors_max:
+            pass
+        res = await db.execute(query)
         return res.scalars().unique().all()
 
     @staticmethod

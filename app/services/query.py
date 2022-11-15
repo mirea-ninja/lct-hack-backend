@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from fastapi import HTTPException, Response
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +16,7 @@ from app.models import (
     QueryPatch,
     SubQueryGet,
 )
+from app.models.enums import SortByEnum
 from app.repositories import QueryRepository
 
 
@@ -33,8 +36,30 @@ class QueryService:
         return QueryService._sort_by_rooms(query)
 
     @staticmethod
-    async def get_all(db: AsyncSession, offset: int = 0, limit: int = 100) -> list[QueryGet]:
-        queries = await QueryRepository.get_all(db, offset=offset, limit=limit)
+    async def get_all(
+        db: AsyncSession,
+        sort: SortByEnum,
+        start: datetime,
+        end: datetime,
+        segment: list[str],
+        walls: list[str],
+        floors_min: int,
+        floors_max: int,
+        limit: int = 0,
+        offset: int = 100,
+    ) -> list[QueryGet]:
+        queries = await QueryRepository.get_all(
+            db=db,
+            sort=sort,
+            start=start,
+            end=end,
+            segment=segment,
+            walls=walls,
+            floors_min=floors_min,
+            floors_max=floors_max,
+            limit=limit,
+            offset=offset,
+        )
         if queries is None:
             raise HTTPException(404, "Запросы не найдены")
         return [QueryService._sort_by_rooms(QueryGet.from_orm(q)) for q in queries]

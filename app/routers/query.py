@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from fastapi import APIRouter, Depends, Path, Query
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,6 +9,7 @@ from starlette import status
 from app.config import config
 from app.database.connection import get_session
 from app.models import QueryCreate, QueryGet, QueryPatch
+from app.models.enums import SortByEnum
 from app.services import QueryService
 from app.services.auth import get_user_from_access_token, verify_access_token
 
@@ -23,11 +27,29 @@ router = APIRouter(prefix=config.BACKEND_PREFIX, dependencies=[Depends(verify_ac
 )
 async def get_all(
     db: AsyncSession = Depends(get_session),
+    sort: SortByEnum = Query(None, description="Cортировка"),
+    start: datetime = Query(None, description="Дата начала"),
+    end: datetime = Query(None, description="Дата окончания"),
+    segment: Optional[list[str]] = Query(None, description="Сегмент"),
+    walls: Optional[list[str]] = Query(None, description="Стены"),
+    floors_min: int = Query(None, description="Минимальное количество этажей"),
+    floors_max: int = Query(None, description="Максимальное количество этажей"),
     limit: int = Query(100, ge=1),
     offset: int = Query(0, ge=0),
     query_service: QueryService = Depends(),
 ):
-    return await query_service.get_all(db=db, limit=limit, offset=offset)
+    return await query_service.get_all(
+        db=db,
+        sort=sort,
+        start=start,
+        end=end,
+        segment=segment,
+        walls=walls,
+        floors_min=floors_min,
+        floors_max=floors_max,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get(

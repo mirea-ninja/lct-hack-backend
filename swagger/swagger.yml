@@ -385,6 +385,68 @@ paths:
       description: Получить список всех запросов
       operationId: get_all_api_query_get
       parameters:
+        - description: Cортировка
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/SortByEnum'
+            description: Cортировка
+          name: sort
+          in: query
+        - description: Дата начала
+          required: false
+          schema:
+            title: Start
+            type: string
+            description: Дата начала
+            format: date-time
+          name: start
+          in: query
+        - description: Дата окончания
+          required: false
+          schema:
+            title: End
+            type: string
+            description: Дата окончания
+            format: date-time
+          name: end
+          in: query
+        - description: Сегмент
+          required: false
+          schema:
+            title: Segment
+            type: array
+            items:
+              type: string
+            description: Сегмент
+          name: segment
+          in: query
+        - description: Стены
+          required: false
+          schema:
+            title: Walls
+            type: array
+            items:
+              type: string
+            description: Стены
+          name: walls
+          in: query
+        - description: Минимальное количество этажей
+          required: false
+          schema:
+            title: Floors Min
+            type: integer
+            description: Минимальное количество этажей
+          name: floors_min
+          in: query
+        - description: Максимальное количество этажей
+          required: false
+          schema:
+            title: Floors Max
+            type: integer
+            description: Максимальное количество этажей
+          name: floors_max
+          in: query
         - required: false
           schema:
             title: Limit
@@ -587,7 +649,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: f76adda9-261f-4ebf-b561-9eab5421d773
+              guid: 0f44bbf0-dfac-4e31-be43-fe16b7f09ffb
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -728,10 +790,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - ac400744-55b7-4659-9194-fdab8afd4d4b
-                - e9ab2c5d-f41f-4d5b-bcb8-de6c8ee5ed6e
-                - d3296912-737a-49e7-a1f8-a2f1ec339d85
-                - adf0cd14-c478-4235-8617-554ba7557bfe
+                - 629350ef-cc4a-40cd-bffd-50d34896451c
+                - 29cbedb2-36bb-47d5-ae72-5056c2665c64
+                - da8b4970-a798-44bb-ae73-a3b3aebe458a
+                - 75643385-4c31-4f56-9a1d-d473000a41de
       responses:
         '201':
           description: Аналоги успешно установлены
@@ -1978,6 +2040,13 @@ components:
           type: string
           description: Уникальный идентификатор пользователя, обновившего запись
           format: uuid4
+    SortByEnum:
+      title: SortByEnum
+      enum:
+        - asc
+        - desc
+      type: string
+      description: An enumeration.
     SubQueryCreate:
       title: SubQueryCreate
       type: object
