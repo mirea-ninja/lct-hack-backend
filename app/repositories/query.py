@@ -16,8 +16,9 @@ from app.models import (
     QueryCreate,
     QueryCreateBaseApartment,
     QueryCreateUserApartments,
-    QueryPatch,
+    QueryPatch
 )
+from app.models.enums import AdjustmentType
 from app.repositories.adjustment import AdjustmentRepository
 
 
@@ -140,6 +141,66 @@ class QueryRepository:
                 for i, j in v.items():
                     if i[0] <= value < i[1]:
                         return j
+
+    @staticmethod
+    async def get_adjustments(type: AdjustmentType, key: float) -> int | float:
+        Floor = await QueryRepository._nameddict("Floor", ["first", "middle", "last"])
+        AptArea = await QueryRepository._nameddict(
+            "AptArea", [(0, 30), (30, 50), (50, 65), (65, 90), (90, 120), (120, 1000)]
+        )
+        KitchenArea = await QueryRepository._nameddict("KitchenArea", [(0, 7), (7, 10), (10, 15)])
+        HasBalcony = await QueryRepository._nameddict("HasBalcony", [True, False])
+        ToMetro = await QueryRepository._nameddict("ToMetro", [(0, 5), (5, 10), (10, 15), (15, 30), (30, 60), (60, 90)])
+        RepairType = await QueryRepository._nameddict("RepairType", ["without_repair", "municipal", "modern"])
+
+        floor = {
+            "first": Floor(0, -0.07, -0.031),
+            "middle": Floor(0.075, 0, 0.042),
+            "last": Floor(-0.032, -0.04, 0),
+        }
+        apt_area = {
+            (0, 30): AptArea(0, 0.06, 0.14, 0.21, 0.28, 0.31),
+            (30, 50): AptArea(-0.06, 0, 0.07, 0.14, 0.21, 0.24),
+            (50, 65): AptArea(-0.12, -0.07, 0, 0.06, 0.13, 0.16),
+            (65, 90): AptArea(-0.17, -0.12, -0.06, 0, 0.06, 0.09),
+            (90, 120): AptArea(-0.22, -0.17, -0.11, -0.06, 0, 0.03),
+            (120, 1000): AptArea(-0.24, -0.19, -0.13, -0.08, -0.03, 0),
+        }
+        kitchen_area = {
+            (0, 7): KitchenArea(0, -0.029, -0.083),
+            (7, 10): KitchenArea(0.03, 0, -0.055),
+            (10, 15): KitchenArea(0.09, 0.058, 0),
+        }
+        has_balcony = {
+            True: HasBalcony(0, -0.05),
+            False: HasBalcony(0.053, 0),
+        }
+        to_metro = {
+            (0, 5): ToMetro(0, 0.07, 0.12, 0.17, 0.24, 0.29),
+            (5, 10): ToMetro(-0.07, 0, 0.04, 0.9, 0.15, 0.20),
+            (10, 15): ToMetro(-0.11, -0.04, 0, 0.05, 0.11, 0.15),
+            (15, 30): ToMetro(-0.15, -0.08, -0.05, 0, 0.06, 0.1),
+            (30, 60): ToMetro(-0.19, -0.13, -0.1, -0.06, 0, 0.04),
+            (60, 90): ToMetro(-0.22, -0.17, -0.13, -0.09, -0.04, 0),
+        }
+        repair_type = {
+            "without_repair": RepairType(0, -13400, -20100),
+            "municipal": RepairType(13400, 0, -6700),
+            "modern": RepairType(20100, 6700, 0),
+        }
+
+        adjustments = dict(
+            floor=floor,
+            apt_area=apt_area,
+            kitchen_area=kitchen_area,
+            has_balcony=has_balcony,
+            to_metro=to_metro,
+            repair_type=repair_type,
+        )
+
+        for k, v in adjustments[type.value].items():
+            if k[0] <= key < k[1]:
+                return v
 
     @staticmethod
     async def get_adj_and_price(

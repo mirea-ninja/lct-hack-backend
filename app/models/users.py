@@ -8,9 +8,9 @@ from app.models.utils import optional
 
 class UserBase(BaseModel):
     email: EmailStr = Field(description="Email адрес пользователя")
-    first_name: str = Field(description="Имя пользователя")
-    last_name: str = Field(description="Фамилия пользователя")
-    middle_name: Optional[str] = Field(None, description="Отчество пользователя(при наличии)")
+    first_name: str = Field(description="Имя пользователя", alias="firstName")
+    last_name: str = Field(description="Фамилия пользователя", alias="lastName")
+    middle_name: Optional[str] = Field(None, description="Отчество пользователя(при наличии)", alias="middleName")
 
     class Config:
         orm_mode = True
@@ -23,8 +23,8 @@ class UserCreate(UserBase):
 class UserGet(UserBase):
     guid: UUID4 = Field(description="Уникальный идентификатор пользователя")
     password: str = Field(description="Пароль пользователя")
-    created_at: datetime = Field(description="Время создания пользователя")
-    updated_at: datetime = Field(description="Время последнего обновления пользователя")
+    created_at: datetime = Field(description="Время создания пользователя", alias="createdAt")
+    updated_at: datetime = Field(description="Время последнего обновления пользователя", alias="updatedAt")
 
     class Config:
         orm_mode = True

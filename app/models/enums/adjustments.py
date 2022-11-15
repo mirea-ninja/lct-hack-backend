@@ -85,3 +85,12 @@ class Quality(int, BaseEnum):
     PLUS_6700 = 6700
     PLUS_13400 = 13400
     PLUS_20100 = 20100
+
+
+class AdjustmentType(str, BaseEnum):
+    APT_AREA = "apt_area"
+    KITCHEN_AREA = "kitchen_area"
+    TO_METRO = "to_metro"
+    HAS_BALCONY = "has_balcony"
+    FLOOR = "floor"
+    REPAIR_TYPE = "repair_type"
