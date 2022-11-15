@@ -20,6 +20,9 @@ class AdjustmentBase(BaseModel):
     price_metro: int = Field(description="Цена после корректировки на удаленность от метро", alias="priceMetro")
     price_final: int = Field(description="Цена после корректировки на отделку", alias="priceFinal")
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 class AdjustmentGet(AdjustmentBase):
     guid: UUID4 = Field(
@@ -37,3 +40,7 @@ class AdjustmentCreate(AdjustmentBase):
 @optional
 class AdjustmentPatch(AdjustmentCreate):
     pass
+
+
+class AdjusmentGetValues(BaseModel):
+    adjustments: list[float] = Field(description="Список корректировок")

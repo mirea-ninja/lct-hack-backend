@@ -61,23 +61,34 @@ class QueryBase(BaseModel):
     input_file: HttpUrl = Field(description="Ссылка на файл с входными данными", alias="inputFile")
     output_file: Optional[HttpUrl] = Field(None, description="Ссылка на файл с выходными данными", alias="outputFile")
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 class QueryCreate(QueryBase):
     sub_queries: List[SubQueryCreate] = Field(description="Список подзапросов", alias="subQueries")
     created_by: UUID4 = Field(description="Уникальный идентификатор пользователя, создавшего запись", alias="createdBy")
-    updated_by: UUID4 = Field(description="Уникальный идентификатор пользователя, обновившего запись", alias="updatedBy")
+    updated_by: UUID4 = Field(
+        description="Уникальный идентификатор пользователя, обновившего запись", alias="updatedBy"
+    )
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class QueryGet(QueryBase):
     guid: UUID4 = Field(description="Уникальный идентификатор записи")
     sub_queries: List[SubQueryGet] = Field(description="Список подзапросов", alias="subQueries")
     created_by: UUID4 = Field(description="Уникальный идентификатор пользователя, создавшего запись", alias="createdBy")
-    updated_by: UUID4 = Field(description="Уникальный идентификатор пользователя, обновившего запись", alias="updatedBy")
+    updated_by: UUID4 = Field(
+        description="Уникальный идентификатор пользователя, обновившего запись", alias="updatedBy"
+    )
     created_at: datetime = Field(description="Время создания записи", alias="createdAt")
     updated_at: datetime = Field(description="Время последнего обновления записи", alias="updatedAt")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
 @optional

@@ -25,6 +25,9 @@ class ApartmentBase(BaseModel):
     m2price: Optional[int] = Field(0, description="Цена за квадратный метр")
     price: Optional[int] = Field(0, description="Цена квартиры")
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 class ApartmentGet(ApartmentBase):
     guid: UUID4 = Field(description="Уникальный идентификатор квартиры")

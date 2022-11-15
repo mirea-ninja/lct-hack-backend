@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Union
 
 from fastapi import HTTPException
 from pydantic import UUID4
@@ -16,7 +16,7 @@ from app.models import (
     QueryCreate,
     QueryCreateBaseApartment,
     QueryCreateUserApartments,
-    QueryPatch
+    QueryPatch,
 )
 from app.models.enums import AdjustmentType
 from app.repositories.adjustment import AdjustmentRepository
@@ -93,7 +93,7 @@ class QueryRepository:
 
     @staticmethod
     async def set_base(
-            db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, stantart_object: QueryCreateBaseApartment
     ) -> Apartment:
         await db.execute(
             update(Apartment).where(Apartment.guid == stantart_object.guid).values({"standart_object_guid": subguid})
@@ -117,7 +117,7 @@ class QueryRepository:
 
     @staticmethod
     async def set_analogs(
-            db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
+        db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4, analogs: QueryCreateUserApartments
     ) -> SubQuery:
         for analog in analogs.guids:
             await db.execute(
@@ -143,7 +143,7 @@ class QueryRepository:
                         return j
 
     @staticmethod
-    async def get_adjustments(type: AdjustmentType, key: float) -> int | float:
+    async def get_adjustments(type: AdjustmentType, key: Union[float, bool, str]) -> list:
         Floor = await QueryRepository._nameddict("Floor", ["first", "middle", "last"])
         AptArea = await QueryRepository._nameddict(
             "AptArea", [(0, 30), (30, 50), (50, 65), (65, 90), (90, 120), (120, 1000)]
@@ -198,13 +198,18 @@ class QueryRepository:
             repair_type=repair_type,
         )
 
-        for k, v in adjustments[type.value].items():
-            if k[0] <= key < k[1]:
-                return v
+        if type == AdjustmentType.FLOOR or type == AdjustmentType.HAS_BALCONY or type == AdjustmentType.REPAIR_TYPE:
+            for k, v in adjustments[type.value].items():
+                if k == key:
+                    return list(v.values())
+        else:
+            for k, v in adjustments[type.value].items():
+                if k[0] <= key < k[1]:
+                    return list(v.values())
 
     @staticmethod
     async def get_adj_and_price(
-            adj_type: str, calculating_object_value: int | str, analog_value: int | str, analog_price: int
+        adj_type: str, calculating_object_value: int | str, analog_value: int | str, analog_price: int
     ) -> tuple[float, int]:
         Floor = await QueryRepository._nameddict("Floor", ["first", "middle", "last"])
         AptArea = await QueryRepository._nameddict(

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import secrets
-import urllib
 from io import BytesIO
 from tempfile import NamedTemporaryFile
 
@@ -10,12 +9,11 @@ import aiohttp
 import openpyxl
 import pandas as pd
 from fastapi import UploadFile
-from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
-from app.models import ApartmentCreate, QueryCreate, QueryExport, QueryGet, SubQueryCreate, QueryPatch
+from app.models import ApartmentCreate, QueryCreate, QueryExport, QueryGet, SubQueryCreate
 from app.repositories import QueryRepository
 from app.services.query import QueryService
 from app.storage import get_s3_client
