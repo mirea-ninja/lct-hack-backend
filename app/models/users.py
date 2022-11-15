@@ -31,6 +31,7 @@ class UserGet(UserBase):
         orm_mode = True
         allow_population_by_field_name = True
 
+
 @optional
 class UserPatch(UserCreate):
     pass

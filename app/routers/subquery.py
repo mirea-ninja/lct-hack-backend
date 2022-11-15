@@ -116,6 +116,25 @@ async def calculate_analogs(
 
 
 @router.post(
+    "/query/{id}/subquery/{subid}/recalculate-analogs",
+    response_model=QueryGet,
+    response_description="Аналоги успешно рассчитаны",
+    status_code=status.HTTP_200_OK,
+    description="Рассчитать аналоги для подзапроса",
+    summary="Расчет аналогов для подзапроса",
+    # responses={},
+)
+async def recalculate_analogs(
+    id: UUID4 = Path(None, description="Id запроса"),
+    subid: UUID4 = Path(None, description="Id подзапроса"),
+    user: UUID4 = Depends(get_user_from_access_token),
+    db: AsyncSession = Depends(get_session),
+    query_service: QueryService = Depends(),
+):
+    return await query_service.recalculate_analogs(db=db, guid=id, subguid=subid, user=user)
+
+
+@router.post(
     "/query/{id}/subquery/{subid}/calculate-pool",
     response_model=QueryGet,
     response_description="Пул успешно рассчитан",

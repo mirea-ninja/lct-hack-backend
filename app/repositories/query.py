@@ -12,6 +12,7 @@ from sqlalchemy.sql.expression import cast
 from app.database.tables import Apartment, Query, SubQuery
 from app.models import (
     AdjustmentCreate,
+    AdjustmentPatch,
     ApartmentCreate,
     QueryCreate,
     QueryCreateBaseApartment,
@@ -346,6 +347,42 @@ class QueryRepository:
                 price_final=price_final,
             )
             adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
+            analog.adjustment = adjustment
+        try:
+            standart_object_m2price = int(standart_object_m2price / len(analogs))
+        except ZeroDivisionError:
+            standart_object_m2price = 0
+        standart_object.m2price = standart_object_m2price
+        standart_object.price = standart_object_m2price * standart_object.apartment_area
+        await db.commit()
+        query = await QueryRepository.get(db, guid)
+        return query
+
+    @staticmethod
+    async def recalculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> Query:
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        standart_object = subquery.standart_object
+        standart_object_m2price = 0
+        analogs = subquery.selected_analogs
+        for analog in analogs:
+            price_trade = analog.m2price * (1 + analog.adjustment.trade)
+            price_floor = price_trade * (1 + analog.adjustment.floor)
+            price_area = price_floor * (1 + analog.adjustment.apt_area)
+            price_kitchen_area = price_area * (1 + analog.adjustment.kitchen_area)
+            price_balcony = price_kitchen_area * (1 + analog.adjustment.has_balcony)
+            price_metro = price_balcony * (1 + analog.adjustment.distance_to_metro)
+            price_final = price_metro + analog.adjustment.quality
+            standart_object_m2price += price_final
+            model = AdjustmentPatch(
+                price_trade=price_trade,
+                price_floor=price_floor,
+                price_area=price_area,
+                price_kitchen=price_kitchen_area,
+                price_balcony=price_balcony,
+                price_metro=price_metro,
+                price_final=price_final,
+            )
+            adjustment = await AdjustmentRepository.patch(db, guid, subguid, analog.guid, analog.adjustment.guid, model)
             analog.adjustment = adjustment
         try:
             standart_object_m2price = int(standart_object_m2price / len(analogs))

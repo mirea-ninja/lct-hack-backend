@@ -587,7 +587,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: c2efdfea-0d09-4621-a4c5-40dabd4304d3
+              guid: f76adda9-261f-4ebf-b561-9eab5421d773
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -728,10 +728,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - 9b2f42d9-08a5-437d-ab84-5e04717fd854
-                - 1199e884-df0f-4f00-9244-86c5af860bc0
-                - 8abde9fa-68a2-44ab-bfef-5b35e1726772
-                - 81684b24-66ec-4965-adad-158521b97712
+                - ac400744-55b7-4659-9194-fdab8afd4d4b
+                - e9ab2c5d-f41f-4d5b-bcb8-de6c8ee5ed6e
+                - d3296912-737a-49e7-a1f8-a2f1ec339d85
+                - adf0cd14-c478-4235-8617-554ba7557bfe
       responses:
         '201':
           description: Аналоги успешно установлены
@@ -754,6 +754,47 @@ paths:
       summary: Расчет аналогов для подзапроса
       description: Рассчитать аналоги для подзапроса
       operationId: calculate_analogs_api_query__id__subquery__subid__calculate_analogs_post
+      parameters:
+        - description: Id запроса
+          required: true
+          schema:
+            title: Id
+            type: string
+            description: Id запроса
+            format: uuid4
+          name: id
+          in: path
+        - description: Id подзапроса
+          required: true
+          schema:
+            title: Subid
+            type: string
+            description: Id подзапроса
+            format: uuid4
+          name: subid
+          in: path
+      responses:
+        '200':
+          description: Аналоги успешно рассчитаны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGet'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /api/query/{id}/subquery/{subid}/recalculate-analogs:
+    post:
+      tags:
+        - subquery
+      summary: Расчет аналогов для подзапроса
+      description: Рассчитать аналоги для подзапроса
+      operationId: recalculate_analogs_api_query__id__subquery__subid__recalculate_analogs_post
       parameters:
         - description: Id запроса
           required: true

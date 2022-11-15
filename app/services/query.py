@@ -110,6 +110,11 @@ class QueryService:
         return QueryService._sort_by_rooms(QueryGet.from_orm(query))
 
     @staticmethod
+    async def recalculate_analogs(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:
+        query = await QueryRepository.recalculate_analogs(db, guid, subguid, user)
+        return QueryService._sort_by_rooms(QueryGet.from_orm(query))
+
+    @staticmethod
     async def calculate_pool(db: AsyncSession, guid: UUID4, subguid: UUID4, user: UUID4) -> QueryGet:
         query = await QueryRepository.calculate_pool(db, guid, subguid, user)
         return QueryService._sort_by_rooms(QueryGet.from_orm(query))
