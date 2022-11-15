@@ -587,7 +587,7 @@ paths:
                 - $ref: '#/components/schemas/QueryCreateBaseApartment'
               description: Список аналогов
             example:
-              guid: 39660447-0498-450c-ada4-9ac6d1a7d562
+              guid: c2efdfea-0d09-4621-a4c5-40dabd4304d3
       responses:
         '201':
           description: Эталонный объект успешно установлен
@@ -728,10 +728,10 @@ paths:
               description: Список аналогов
             example:
               guids:
-                - f5a52011-0cdd-4d0e-aba1-0a1fc69928c2
-                - 5d1808d6-2993-4141-b40e-43eb02b6bbb0
-                - ba601018-a998-4a33-9663-35ec31e1eed9
-                - b6eef540-42e2-457e-bdfe-7926ade48b7a
+                - 9b2f42d9-08a5-437d-ab84-5e04717fd854
+                - 1199e884-df0f-4f00-9244-86c5af860bc0
+                - 8abde9fa-68a2-44ab-bfef-5b35e1726772
+                - 81684b24-66ec-4965-adad-158521b97712
       responses:
         '201':
           description: Аналоги успешно установлены
@@ -1140,6 +1140,48 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
         - HTTPBearer: []
+  /api/adjustment:
+    get:
+      tags:
+        - adjustment
+      summary: Получение списка значений корректировок по типу корректировки
+      description: Получить список значений корректировок по типу корректировки
+      operationId: get_api_adjustment_get
+      parameters:
+        - description: Тип корректировки
+          required: true
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/AdjustmentType'
+            description: Тип корректировки
+          name: type
+          in: query
+        - description: Значение
+          required: true
+          schema:
+            title: Value
+            anyOf:
+              - type: number
+              - type: boolean
+              - type: string
+            description: Значение
+          name: value
+          in: query
+      responses:
+        '200':
+          description: Успешное частичное обновление квартиры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdjusmentGetValues'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
   /api/query/{id}/subquery/{subid}/apartment/{aid}/adjustment/{adjid}:
     patch:
       tags:
@@ -1207,23 +1249,35 @@ paths:
         - HTTPBearer: []
 components:
   schemas:
+    AdjusmentGetValues:
+      title: AdjusmentGetValues
+      required:
+        - adjustments
+      type: object
+      properties:
+        adjustments:
+          title: Adjustments
+          type: array
+          items:
+            type: number
+          description: Список корректировок
     AdjustmentGet:
       title: AdjustmentGet
       required:
         - trade
         - floor
         - apt_area
-        - kitchen_area
-        - has_balcony
-        - distance_to_metro
+        - kitchenArea
+        - hasBalcony
+        - distanceToMetro
         - quality
-        - price_trade
-        - price_floor
-        - price_area
-        - price_kitchen
-        - price_balcony
-        - price_metro
-        - price_final
+        - priceTrade
+        - priceFloor
+        - priceArea
+        - priceKitchen
+        - priceBalcony
+        - priceMetro
+        - priceFinal
         - guid
       type: object
       properties:
@@ -1239,48 +1293,48 @@ components:
           title: Apt Area
           type: number
           description: Корректировка на площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
+        kitchenArea:
+          title: Kitchenarea
           type: number
           description: Корректировка на площадь кухни
-        has_balcony:
-          title: Has Balcony
+        hasBalcony:
+          title: Hasbalcony
           type: number
           description: Корректировка на наличие балкона
-        distance_to_metro:
-          title: Distance To Metro
+        distanceToMetro:
+          title: Distancetometro
           type: number
           description: Корректировка на удаленность от метро
         quality:
           title: Quality
           type: number
           description: Корректировка на отделку
-        price_trade:
-          title: Price Trade
+        priceTrade:
+          title: Pricetrade
           type: integer
           description: Цена после корректировки на торг
-        price_floor:
-          title: Price Floor
+        priceFloor:
+          title: Pricefloor
           type: integer
           description: Цена после корректировки на торг
-        price_area:
-          title: Price Area
+        priceArea:
+          title: Pricearea
           type: integer
           description: Цена после корректировки на площадь
-        price_kitchen:
-          title: Price Kitchen
+        priceKitchen:
+          title: Pricekitchen
           type: integer
           description: Цена после корректировки на площадь кухни
-        price_balcony:
-          title: Price Balcony
+        priceBalcony:
+          title: Pricebalcony
           type: integer
           description: Цена после корректировки на наличие балкона
-        price_metro:
-          title: Price Metro
+        priceMetro:
+          title: Pricemetro
           type: integer
           description: Цена после корректировки на удаленность от метро
-        price_final:
-          title: Price Final
+        priceFinal:
+          title: Pricefinal
           type: integer
           description: Цена после корректировки на отделку
         guid:
@@ -1304,50 +1358,61 @@ components:
           title: Apt Area
           type: number
           description: Корректировка на площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
+        kitchenArea:
+          title: Kitchenarea
           type: number
           description: Корректировка на площадь кухни
-        has_balcony:
-          title: Has Balcony
+        hasBalcony:
+          title: Hasbalcony
           type: number
           description: Корректировка на наличие балкона
-        distance_to_metro:
-          title: Distance To Metro
+        distanceToMetro:
+          title: Distancetometro
           type: number
           description: Корректировка на удаленность от метро
         quality:
           title: Quality
           type: number
           description: Корректировка на отделку
-        price_trade:
-          title: Price Trade
+        priceTrade:
+          title: Pricetrade
           type: integer
           description: Цена после корректировки на торг
-        price_floor:
-          title: Price Floor
+        priceFloor:
+          title: Pricefloor
           type: integer
           description: Цена после корректировки на торг
-        price_area:
-          title: Price Area
+        priceArea:
+          title: Pricearea
           type: integer
           description: Цена после корректировки на площадь
-        price_kitchen:
-          title: Price Kitchen
+        priceKitchen:
+          title: Pricekitchen
           type: integer
           description: Цена после корректировки на площадь кухни
-        price_balcony:
-          title: Price Balcony
+        priceBalcony:
+          title: Pricebalcony
           type: integer
           description: Цена после корректировки на наличие балкона
-        price_metro:
-          title: Price Metro
+        priceMetro:
+          title: Pricemetro
           type: integer
           description: Цена после корректировки на удаленность от метро
-        price_final:
-          title: Price Final
+        priceFinal:
+          title: Pricefinal
           type: integer
           description: Цена после корректировки на отделку
+    AdjustmentType:
+      title: AdjustmentType
+      enum:
+        - apt_area
+        - kitchen_area
+        - to_metro
+        - has_balcony
+        - floor
+        - repair_type
+      type: string
+      description: An enumeration.
     ApartmentBase:
       title: ApartmentBase
       required:
@@ -1356,7 +1421,7 @@ components:
         - segment
         - floors
         - floor
-        - apartment_area
+        - apartmentArea
       type: object
       properties:
         address:
@@ -1398,20 +1463,20 @@ components:
           title: Floor
           type: integer
           description: Этаж
-        apartment_area:
-          title: Apartment Area
+        apartmentArea:
+          title: Apartmentarea
           type: number
           description: Площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
+        kitchenArea:
+          title: Kitchenarea
           type: number
           description: Площадь кухни
-        has_balcony:
-          title: Has Balcony
+        hasBalcony:
+          title: Hasbalcony
           type: boolean
           description: Наличие балкона
-        distance_to_metro:
-          title: Distance To Metro
+        distanceToMetro:
+          title: Distancetometro
           type: integer
           description: Расстояние до метро
         quality:
@@ -1436,7 +1501,7 @@ components:
         - segment
         - floors
         - floor
-        - apartment_area
+        - apartmentArea
       type: object
       properties:
         address:
@@ -1478,20 +1543,20 @@ components:
           title: Floor
           type: integer
           description: Этаж
-        apartment_area:
-          title: Apartment Area
+        apartmentArea:
+          title: Apartmentarea
           type: number
           description: Площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
+        kitchenArea:
+          title: Kitchenarea
           type: number
           description: Площадь кухни
-        has_balcony:
-          title: Has Balcony
+        hasBalcony:
+          title: Hasbalcony
           type: boolean
           description: Наличие балкона
-        distance_to_metro:
-          title: Distance To Metro
+        distanceToMetro:
+          title: Distancetometro
           type: integer
           description: Расстояние до метро
         quality:
@@ -1516,7 +1581,7 @@ components:
         - segment
         - floors
         - floor
-        - apartment_area
+        - apartmentArea
         - guid
       type: object
       properties:
@@ -1559,20 +1624,20 @@ components:
           title: Floor
           type: integer
           description: Этаж
-        apartment_area:
-          title: Apartment Area
+        apartmentArea:
+          title: Apartmentarea
           type: number
           description: Площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
+        kitchenArea:
+          title: Kitchenarea
           type: number
           description: Площадь кухни
-        has_balcony:
-          title: Has Balcony
+        hasBalcony:
+          title: Hasbalcony
           type: boolean
           description: Наличие балкона
-        distance_to_metro:
-          title: Distance To Metro
+        distanceToMetro:
+          title: Distancetometro
           type: integer
           description: Расстояние до метро
         quality:
@@ -1642,20 +1707,20 @@ components:
           title: Floor
           type: integer
           description: Этаж
-        apartment_area:
-          title: Apartment Area
+        apartmentArea:
+          title: Apartmentarea
           type: number
           description: Площадь квартиры
-        kitchen_area:
-          title: Kitchen Area
+        kitchenArea:
+          title: Kitchenarea
           type: number
           description: Площадь кухни
-        has_balcony:
-          title: Has Balcony
+        hasBalcony:
+          title: Hasbalcony
           type: boolean
           description: Наличие балкона
-        distance_to_metro:
-          title: Distance To Metro
+        distanceToMetro:
+          title: Distancetometro
           type: integer
           description: Расстояние до метро
         quality:
@@ -1695,43 +1760,43 @@ components:
     QueryCreate:
       title: QueryCreate
       required:
-        - input_file
-        - sub_queries
-        - created_by
-        - updated_by
+        - inputFile
+        - subQueries
+        - createdBy
+        - updatedBy
       type: object
       properties:
         name:
           title: Name
           type: string
           description: Название запроса
-        input_file:
-          title: Input File
+        inputFile:
+          title: Inputfile
           maxLength: 2083
           minLength: 1
           type: string
           description: Ссылка на файл с входными данными
           format: uri
-        output_file:
-          title: Output File
+        outputFile:
+          title: Outputfile
           maxLength: 2083
           minLength: 1
           type: string
           description: Ссылка на файл с выходными данными
           format: uri
-        sub_queries:
-          title: Sub Queries
+        subQueries:
+          title: Subqueries
           type: array
           items:
             $ref: '#/components/schemas/SubQueryCreate'
           description: Список подзапросов
-        created_by:
-          title: Created By
+        createdBy:
+          title: Createdby
           type: string
           description: Уникальный идентификатор пользователя, создавшего запись
           format: uuid4
-        updated_by:
-          title: Updated By
+        updatedBy:
+          title: Updatedby
           type: string
           description: Уникальный идентификатор пользователя, обновившего запись
           format: uuid4
@@ -1776,28 +1841,28 @@ components:
     QueryGet:
       title: QueryGet
       required:
-        - input_file
+        - inputFile
         - guid
-        - sub_queries
-        - created_by
-        - updated_by
-        - created_at
-        - updated_at
+        - subQueries
+        - createdBy
+        - updatedBy
+        - createdAt
+        - updatedAt
       type: object
       properties:
         name:
           title: Name
           type: string
           description: Название запроса
-        input_file:
-          title: Input File
+        inputFile:
+          title: Inputfile
           maxLength: 2083
           minLength: 1
           type: string
           description: Ссылка на файл с входными данными
           format: uri
-        output_file:
-          title: Output File
+        outputFile:
+          title: Outputfile
           maxLength: 2083
           minLength: 1
           type: string
@@ -1808,29 +1873,29 @@ components:
           type: string
           description: Уникальный идентификатор записи
           format: uuid4
-        sub_queries:
-          title: Sub Queries
+        subQueries:
+          title: Subqueries
           type: array
           items:
             $ref: '#/components/schemas/SubQueryGet'
           description: Список подзапросов
-        created_by:
-          title: Created By
+        createdBy:
+          title: Createdby
           type: string
           description: Уникальный идентификатор пользователя, создавшего запись
           format: uuid4
-        updated_by:
-          title: Updated By
+        updatedBy:
+          title: Updatedby
           type: string
           description: Уникальный идентификатор пользователя, обновившего запись
           format: uuid4
-        created_at:
-          title: Created At
+        createdAt:
+          title: Createdat
           type: string
           description: Время создания записи
           format: date-time
-        updated_at:
-          title: Updated At
+        updatedAt:
+          title: Updatedat
           type: string
           description: Время последнего обновления записи
           format: date-time
@@ -1842,33 +1907,33 @@ components:
           title: Name
           type: string
           description: Название запроса
-        input_file:
-          title: Input File
+        inputFile:
+          title: Inputfile
           maxLength: 2083
           minLength: 1
           type: string
           description: Ссылка на файл с входными данными
           format: uri
-        output_file:
-          title: Output File
+        outputFile:
+          title: Outputfile
           maxLength: 2083
           minLength: 1
           type: string
           description: Ссылка на файл с выходными данными
           format: uri
-        sub_queries:
-          title: Sub Queries
+        subQueries:
+          title: Subqueries
           type: array
           items:
             $ref: '#/components/schemas/SubQueryCreate'
           description: Список подзапросов
-        created_by:
-          title: Created By
+        createdBy:
+          title: Createdby
           type: string
           description: Уникальный идентификатор пользователя, создавшего запись
           format: uuid4
-        updated_by:
-          title: Updated By
+        updatedBy:
+          title: Updatedby
           type: string
           description: Уникальный идентификатор пользователя, обновившего запись
           format: uuid4
@@ -2020,8 +2085,8 @@ components:
       title: UserCreate
       required:
         - email
-        - first_name
-        - last_name
+        - firstName
+        - lastName
         - password
       type: object
       properties:
@@ -2030,16 +2095,16 @@ components:
           type: string
           description: Email адрес пользователя
           format: email
-        first_name:
-          title: First Name
+        firstName:
+          title: Firstname
           type: string
           description: Имя пользователя
-        last_name:
-          title: Last Name
+        lastName:
+          title: Lastname
           type: string
           description: Фамилия пользователя
-        middle_name:
-          title: Middle Name
+        middleName:
+          title: Middlename
           type: string
           description: Отчество пользователя(при наличии)
         password:
@@ -2050,12 +2115,12 @@ components:
       title: UserGet
       required:
         - email
-        - first_name
-        - last_name
+        - firstName
+        - lastName
         - guid
         - password
-        - created_at
-        - updated_at
+        - createdAt
+        - updatedAt
       type: object
       properties:
         email:
@@ -2063,16 +2128,16 @@ components:
           type: string
           description: Email адрес пользователя
           format: email
-        first_name:
-          title: First Name
+        firstName:
+          title: Firstname
           type: string
           description: Имя пользователя
-        last_name:
-          title: Last Name
+        lastName:
+          title: Lastname
           type: string
           description: Фамилия пользователя
-        middle_name:
-          title: Middle Name
+        middleName:
+          title: Middlename
           type: string
           description: Отчество пользователя(при наличии)
         guid:
@@ -2084,13 +2149,13 @@ components:
           title: Password
           type: string
           description: Пароль пользователя
-        created_at:
-          title: Created At
+        createdAt:
+          title: Createdat
           type: string
           description: Время создания пользователя
           format: date-time
-        updated_at:
-          title: Updated At
+        updatedAt:
+          title: Updatedat
           type: string
           description: Время последнего обновления пользователя
           format: date-time
@@ -2103,16 +2168,16 @@ components:
           type: string
           description: Email адрес пользователя
           format: email
-        first_name:
-          title: First Name
+        firstName:
+          title: Firstname
           type: string
           description: Имя пользователя
-        last_name:
-          title: Last Name
+        lastName:
+          title: Lastname
           type: string
           description: Фамилия пользователя
-        middle_name:
-          title: Middle Name
+        middleName:
+          title: Middlename
           type: string
           description: Отчество пользователя(при наличии)
         password:
