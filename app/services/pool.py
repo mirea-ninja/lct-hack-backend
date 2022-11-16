@@ -196,7 +196,7 @@ class PoolService:
         for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=20 if include_adjustments else 13):
             for cell in col:
                 cell.fill = openpyxl.styles.PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
-                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+                cell.alignment = openpyxl.styles.Alignment(wrap_text=True, horizontal="center", vertical="center")
                 cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style="thin"))
 
         for row in ws.iter_rows(min_row=1, max_row=1, min_col=1, max_col=20 if include_adjustments else 13):
@@ -204,6 +204,7 @@ class PoolService:
                 cell.border = openpyxl.styles.Border(
                     top=openpyxl.styles.Side(border_style="thick"), bottom=openpyxl.styles.Side(border_style="thick")
                 )
+                cell.alignment = openpyxl.styles.Alignment(wrap_text=True, horizontal="center", vertical="center")
 
     @staticmethod
     def _append_data_to_excel(ws, sub_query, include_adjustments: bool):
