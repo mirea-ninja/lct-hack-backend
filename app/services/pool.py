@@ -162,19 +162,19 @@ class PoolService:
         ws["L1"] = "Цена за кв.м"
         ws["M1"] = "Цена"
 
-        ws.column_dimensions["A"].width = 17.5
-        ws.column_dimensions["B"].width = 13.5
-        ws.column_dimensions["C"].width = 23
-        ws.column_dimensions["D"].width = 15
-        ws.column_dimensions["E"].width = 15
-        ws.column_dimensions["F"].width = 15
-        ws.column_dimensions["G"].width = 15.5
-        ws.column_dimensions["H"].width = 15.5
-        ws.column_dimensions["I"].width = 15.5
-        ws.column_dimensions["J"].width = 15
-        ws.column_dimensions["K"].width = 15
-        ws.column_dimensions["L"].width = 15
-        ws.column_dimensions["M"].width = 15
+        ws.column_dimensions["A"].width = 18
+        ws.column_dimensions["B"].width = 14
+        ws.column_dimensions["C"].width = 24
+        ws.column_dimensions["D"].width = 16
+        ws.column_dimensions["E"].width = 16
+        ws.column_dimensions["F"].width = 16
+        ws.column_dimensions["G"].width = 16
+        ws.column_dimensions["H"].width = 16
+        ws.column_dimensions["I"].width = 16
+        ws.column_dimensions["J"].width = 16
+        ws.column_dimensions["K"].width = 16
+        ws.column_dimensions["L"].width = 16
+        ws.column_dimensions["M"].width = 25
 
         if include_adjustments:
             ws["N1"] = "Цена за м2, %"
@@ -185,20 +185,19 @@ class PoolService:
             ws["S1"] = "Удаленность от метро, %"
             ws["T1"] = "Состояние, %"
 
-            ws.column_dimensions["N"].width = 15
-            ws.column_dimensions["O"].width = 15
-            ws.column_dimensions["P"].width = 15
-            ws.column_dimensions["Q"].width = 15
-            ws.column_dimensions["R"].width = 15
-            ws.column_dimensions["S"].width = 15
-            ws.column_dimensions["T"].width = 15
+            ws.column_dimensions["N"].width = 16
+            ws.column_dimensions["O"].width = 16
+            ws.column_dimensions["P"].width = 16
+            ws.column_dimensions["Q"].width = 16
+            ws.column_dimensions["R"].width = 16
+            ws.column_dimensions["S"].width = 16
+            ws.column_dimensions["T"].width = 16
 
         for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=20 if include_adjustments else 13):
             for cell in col:
                 cell.fill = openpyxl.styles.PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
                 cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
-                # cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style='thin'))
-                cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style="thick"))
+                cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(border_style="thin"))
 
         for row in ws.iter_rows(min_row=1, max_row=1, min_col=1, max_col=20 if include_adjustments else 13):
             for cell in row:
