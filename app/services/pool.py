@@ -219,7 +219,7 @@ class PoolService:
                 apartment.floor,
                 apartment.apartment_area,
                 apartment.kitchen_area,
-                apartment.has_balcony,
+                "Да" if apartment.has_balcony else "Нет",
                 apartment.distance_to_metro,
                 apartment.quality,
                 apartment.m2price,
