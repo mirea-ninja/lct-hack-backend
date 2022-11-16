@@ -226,7 +226,7 @@ class PoolService:
                 apartment.price,
             ]
 
-            if include_adjustments and apartment.adjustment is not None:
+            if include_adjustments and apartment.adjustment:
                 to_extend = [
                     f"{(apartment.adjustment.price_final - apartment.m2price) * 100 / apartment.m2price:.2f}%"
                     if apartment.m2price > 0
