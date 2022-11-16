@@ -36,7 +36,7 @@ class QueryRepository:
         )
         for sub_query in model.sub_queries:
             sub_query_object = SubQuery(
-                input_apartments=[Apartment(**apartment.dict(exclude_unset=True)) for apartment in sub_query.input_apartments],
+                input_apartments=[Apartment(**apartment.dict()) for apartment in sub_query.input_apartments],
             )
             query.sub_queries.append(sub_query_object)
         db.add(query)

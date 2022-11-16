@@ -39,7 +39,7 @@ class AdjustmentRepository:
         if model is None or not model.dict(exclude_unset=True):
             raise HTTPException(400, "Должно быть задано хотя бы одно новое поле модели")
 
-        await db.execute(update(Adjustment).where(Adjustment.guid == adjid).values(**model.dict()))
+        await db.execute(update(Adjustment).where(Adjustment.guid == adjid).values(**model.dict(exclude_unset=True)))
         await db.commit()
         await db.refresh(adjustment)
 
