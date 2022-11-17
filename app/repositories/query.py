@@ -395,6 +395,70 @@ class QueryRepository:
         standart_object = subquery.standart_object
         standart_object_m2price = 0
         analogs = subquery.selected_analogs
+        repair_type = {
+            "без отделки": "without_repair",
+            "муниципальный ремонт": "municipal",
+            "современная отделка": "modern",
+        }
+        for analog in analogs:
+            if analog.adjustment is None:
+                if standart_object.floor == 1:
+                    standart_object_floor = "first"
+                elif standart_object.floor == standart_object.floors:
+                    standart_object_floor = "last"
+                else:
+                    standart_object_floor = "middle"
+
+                if analog.floor == 1:
+                    analog_object_floor = "first"
+                elif analog.floor == standart_object.floors:
+                    analog_object_floor = "last"
+                else:
+                    analog_object_floor = "middle"
+
+                trade, price_trade = await QueryRepository.get_adj_and_price("trade", 0, 0, analog.m2price)
+                floor, price_floor = await QueryRepository.get_adj_and_price(
+                    "floor", standart_object_floor, analog_object_floor, price_trade
+                )
+                apt_area, price_area = await QueryRepository.get_adj_and_price(
+                    "apt_area", standart_object.apartment_area, analog.apartment_area, price_floor
+                )
+                kitchen_area, price_kitchen_area = await QueryRepository.get_adj_and_price(
+                    "kitchen_area", standart_object.kitchen_area, analog.kitchen_area, price_area
+                )
+                has_balcony, price_balcony = await QueryRepository.get_adj_and_price(
+                    "has_balcony", standart_object.has_balcony, analog.has_balcony, price_kitchen_area
+                )
+                distance_to_metro, price_metro = await QueryRepository.get_adj_and_price(
+                    "to_metro", standart_object.distance_to_metro, analog.distance_to_metro, price_balcony
+                )
+                quality, price_final = await QueryRepository.get_adj_and_price(
+                    "repair_type",
+                    repair_type[standart_object.quality.lower()],
+                    repair_type[analog.quality.lower()],
+                    price_metro,
+                )
+                model = AdjustmentCreate(
+                    trade=trade,
+                    floor=floor,
+                    apt_area=apt_area,
+                    kitchen_area=kitchen_area,
+                    has_balcony=has_balcony,
+                    distance_to_metro=distance_to_metro,
+                    quality=quality,
+                    price_trade=price_trade,
+                    price_floor=price_floor,
+                    price_area=price_area,
+                    price_kitchen=price_kitchen_area,
+                    price_balcony=price_balcony,
+                    price_metro=price_metro,
+                    price_final=price_final,
+                )
+                adjustment = await AdjustmentRepository.create(db, guid, subguid, model)
+                analog.adjustment = adjustment
+                await db.commit()
+        subquery = await QueryRepository.get_subquery(db, subguid)
+        analogs = subquery.selected_analogs
         for analog in analogs:
             price_trade = analog.m2price * (1 + analog.adjustment.trade)
             price_floor = price_trade * (1 + analog.adjustment.floor)

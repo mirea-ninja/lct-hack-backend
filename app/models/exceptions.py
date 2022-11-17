@@ -14,7 +14,7 @@ from app.config import config
 async def catch_unhandled_exceptions(request: Request, call_next):
     try:
         return await call_next(request)
-    except Exception as exc:
+    except Exception:
         error = {
             "message": get_endpoint_message(request),
             "errors": [Message(message="Отказано в обработке из-за неизвестной ошибки на сервере")],
